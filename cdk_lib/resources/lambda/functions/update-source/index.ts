@@ -9,7 +9,7 @@ export type CdkLibProps = {
   vpc: ec2.Vpc
 }
 
-export class ApiFunctionsDeployUpdateSourceConstruct extends Construct {
+export class UpdateSourceConstruct extends Construct {
   constructor(scope: Construct, id: string, props: CdkLibProps) {
     super(scope, id)
     const { vpc } = props
