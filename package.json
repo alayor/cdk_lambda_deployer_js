@@ -4,7 +4,7 @@
   "description": "Library with CDK resources and utilities that help to deploy JavaScript functions to AWS lambda.",
   "main": "index.ts",
   "scripts": {
-    "test": "jest"
+    "test": "tsc && jest"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "@types/node": "^17.0.21",
     "aws-cdk": "^2.15.0",
     "aws-cdk-lib": "^2.15.0",
+    "aws-sdk": "^2.1087.0",
     "constructs": "^10.0.77",
     "jest": "^27.5.1",
     "prettier": "^2.5.1",
