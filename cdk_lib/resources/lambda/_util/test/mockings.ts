@@ -3,3 +3,9 @@ export function returnPromiseObject(returnedValue?: any) {
     promise: () => Promise.resolve(returnedValue),
   })
 }
+
+export function returnPromiseObjectWithError(error?: any) {
+  return () => ({
+    promise: () => Promise.reject(error),
+  })
+}
