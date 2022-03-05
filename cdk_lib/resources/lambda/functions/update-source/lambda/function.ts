@@ -8,10 +8,8 @@ export async function handler(_event: any) {
     s3 = new aws.S3({ apiVersion: '2006-03-01' })
   }
   if (await isLocked()) {
-    return 'locked'
+
   }
-  // return 'not locked'
-  return ''
 }
 
 async function isLocked(): Promise<boolean> {
