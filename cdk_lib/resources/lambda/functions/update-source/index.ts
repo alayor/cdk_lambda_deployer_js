@@ -15,7 +15,7 @@ export class UpdateSourceConstruct extends Construct {
     const { vpc } = props
     new lambdaNodeJs.NodejsFunction(this, 'Function', {
       runtime: lambda.Runtime.NODEJS_14_X,
-      entry: path.join(__dirname, 'lambda/function.ts'),
+      entry: path.join(__dirname, 'function/src/index.ts'),
       handler: 'handler',
       functionName: 'CdkLambdaDeployer_UpdateSource',
       timeout: cdk.Duration.minutes(10),
