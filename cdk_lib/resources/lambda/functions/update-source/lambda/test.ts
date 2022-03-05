@@ -1,4 +1,6 @@
 import { handler } from './function'
+import { when } from 'jest-when'
+import { LOCK_FILE, PROD_BUCKET } from './constants'
 
 const mS3Instance = {
   getObject: jest.fn(),
@@ -13,10 +15,15 @@ jest.mock('aws-sdk', () => {
 
 beforeEach(() => {})
 
-test('Test 1', async () => {
-  mS3Instance.getObject.mockImplementation(() => ({
-    promise: () => Promise.resolve('mock'),
-  }))
+test('Do Not Get Metadata When Lock File Exists', async () => {
+  //given
+  when(mS3Instance.getObject)
+    .calledWith({ Bucket: PROD_BUCKET, Key: LOCK_FILE })
+    .mockImplementation(() => ({
+      promise: () => Promise.resolve(), // No error thrown
+    }))
+  //when
   const response = await handler(null)
-  expect(response).toEqual('mock')
+  //then
+  expect(response).toEqual('locked')
 })
