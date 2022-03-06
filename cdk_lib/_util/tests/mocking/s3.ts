@@ -13,3 +13,16 @@ export function whenS3GetObjectThrowsError(calledWith: any, error: any) {
 export function whenS3GetObjectReturnsPromiseObject(calledWith: any, object: any) {
   whenS3GetObject(calledWith, returnPromiseObject(jest.mocked(object)))
 }
+
+export function whenS3GetObjectReturnsBody(calledWith: any, body: string) {
+  whenS3GetObject(
+    calledWith,
+    returnPromiseObject(
+      jest.mocked({
+        Body: {
+          toString: () => body,
+        },
+      }),
+    ),
+  )
+}

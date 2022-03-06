@@ -12,6 +12,7 @@ import {
 } from 'cdk_lib/_util/tests/mocking/s3'
 
 beforeEach(() => {
+  jest.clearAllMocks()
   whenS3GetObjectReturnsPromiseObject(
     { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     {},

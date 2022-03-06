@@ -5,7 +5,7 @@
       "zipPath": "functions/customer/orders/place/function.zip"
     },
     "products_get_all": {
-      "hash": "2b153860fbeae5dab974895e5e5c5fc17e8c7a5b3f3caefd41950e2c741f3bb1",
+      "hash": "17157460fbeae50a1a3f895e5e5c587884fc7a5b3f3caefd4fdae6dc741f3bb1",
       "zipPath": "functions/customer/products/get_all/function.zip"
     }
   }
