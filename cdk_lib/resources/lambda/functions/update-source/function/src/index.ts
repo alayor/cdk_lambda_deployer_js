@@ -9,7 +9,7 @@ export async function handler(_event: any) {
     s3 = new aws.S3({ apiVersion: '2006-03-01' })
   }
   if (await isLocked()) {
-    console.error(
+    console.warn(
       `The current deploying process has not finished or it failed as 
  the file update_in_progress.lock still exists in ${PROD_BUCKET} bucket.`,
     )

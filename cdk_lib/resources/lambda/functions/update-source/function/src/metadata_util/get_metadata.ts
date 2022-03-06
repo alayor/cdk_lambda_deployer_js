@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import { Metadata } from '../types'
-import { STAGE_BUCKET } from '../constants'
+import {FUNCTIONS_METADATA_FILE_NAME, STAGE_BUCKET} from '../constants'
 
 export async function getFunctionsMetadata(s3: aws.S3): Promise<{
   stageMetadata: Metadata
