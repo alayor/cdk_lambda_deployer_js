@@ -37,13 +37,16 @@ test('New Prod metadata is created from stage metadata.', async () => {
   //when
   await handler(null)
   //then
-  const newProdMetadata = require('./data/metadata/newProdFromStage1.json') as Metadata
+  expectNewProdToBe(JSON.stringify(require('./data/metadata/newProdFromStage1.json')))
+})
+
+function expectNewProdToBe(body: string) {
   expect(s3.putObject).toBeCalledWith({
     Bucket: PROD_BUCKET,
     Key: FUNCTIONS_METADATA_FILE_NAME,
-    Body: JSON.stringify(newProdMetadata),
+    Body: body,
   })
-})
+}
 
 test('Prod metadata is updated from stage metadata with new functions.', async () => {
   //given
@@ -60,15 +63,10 @@ test('Prod metadata is updated from stage metadata with new functions.', async (
   //when
   await handler(null)
   //then
-  const newProdMetadata = require('./data/metadata/updatedProd1FromStage1.json') as Metadata
-  expect(s3.putObject).toBeCalledWith({
-    Bucket: PROD_BUCKET,
-    Key: FUNCTIONS_METADATA_FILE_NAME,
-    Body: JSON.stringify(newProdMetadata),
-  })
+  expectNewProdToBe(JSON.stringify(require('./data/metadata/updatedProd1FromStage1.json')))
 })
 
-test('Prod metadata is updated with new versions from stage metadata with updated functions.', async () => {
+test('Prod metadata is updated with new versions from stage metadata with updated function hash.', async () => {
   //given
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '2' }))
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
@@ -84,10 +82,23 @@ test('Prod metadata is updated with new versions from stage metadata with update
   //when
   await handler(null)
   //then
-  const newProdMetadata = require('./data/metadata/updatedProd2FromStage1.json') as Metadata
-  expect(s3.putObject).toBeCalledWith({
-    Bucket: PROD_BUCKET,
-    Key: FUNCTIONS_METADATA_FILE_NAME,
-    Body: JSON.stringify(newProdMetadata),
-  })
+  expectNewProdToBe(JSON.stringify(require('./data/metadata/updatedProd2FromStage1.json')))
+})
+
+test('Prod metadata functions are removed if they do not exist on stage metadata.', async () => {
+  //given
+  const stageMetadata = require('./data/metadata/stage2.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(stageMetadata),
+  )
+  const prodMetadata = require('./data/metadata/prod2.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(prodMetadata),
+  )
+  //when
+  await handler(null)
+  //then
+  expectNewProdToBe(JSON.stringify(require('./data/metadata/updatedProd2FromStage2.json')))
 })
