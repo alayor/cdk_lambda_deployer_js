@@ -1,6 +1,8 @@
 import * as aws from 'aws-sdk'
 import { LOCK_FILE, PROD_BUCKET } from './constants'
 import { getFunctionsMetadata } from './metadata_util/get_metadata'
+import { createFunctionSource } from './change_handlers/create_function_source'
+import ChangesSummary from './changes_summary'
 
 let s3: aws.S3
 
@@ -16,6 +18,8 @@ export async function handler(_event: any) {
     return
   }
   const { stageMetadata, prodMetadata } = await getFunctionsMetadata(s3)
+  const changesSummary = new ChangesSummary()
+  await createFunctionSource(s3, stageMetadata, prodMetadata, changesSummary)
 }
 
 async function isLocked(): Promise<boolean> {

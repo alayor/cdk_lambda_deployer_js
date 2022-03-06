@@ -1,4 +1,5 @@
-require('cdk_lib/_util/tests/mocking/aws_sdk')
+import { s3 } from 'cdk_lib/_util/tests/mocking/aws_sdk' // this must be at the top
+import { when } from 'jest-when'
 import {
   FUNCTIONS_METADATA_FILE_NAME,
   LOCK_FILE,
@@ -10,22 +11,18 @@ import {
   whenS3GetObjectReturnsPromiseObject,
   whenS3GetObjectThrowsError,
 } from 'cdk_lib/_util/tests/mocking/s3'
+import { Metadata } from '../src/types'
+import { returnPromiseObject } from 'cdk_lib/_util/tests/mocking/promises'
 
 beforeEach(() => {
+  when(s3.getObject).mockImplementation(returnPromiseObject({}))
+  when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '1' }))
   whenS3GetObjectThrowsError({ Bucket: PROD_BUCKET, Key: LOCK_FILE }, { code: 'NoSuchKey' })
-  whenS3GetObjectReturnsPromiseObject(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
-    {},
-  )
-  whenS3GetObjectReturnsPromiseObject(
-    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
-    {},
-  )
 })
 
-test('Test create functions from metadata', async () => {
+test('New functions are copied from stage to prod bucket', async () => {
   //given
-  const metadata = require('./data/functionsMetadata1.json')
+  const metadata = require('./data/functionsMetadata1.json') as Metadata
   whenS3GetObjectReturnsPromiseObject(
     { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     {
@@ -36,4 +33,11 @@ test('Test create functions from metadata', async () => {
   )
   //when
   await handler(null)
+  //then
+  const zipPath = metadata?.customer?.orders_place?.zipPath
+  expect(s3.copyObject).toBeCalledWith({
+    Bucket: PROD_BUCKET,
+    Key: zipPath,
+    CopySource: STAGE_BUCKET + '/' + zipPath,
+  })
 })
