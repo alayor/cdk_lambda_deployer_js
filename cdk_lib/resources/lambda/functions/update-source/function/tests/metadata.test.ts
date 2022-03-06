@@ -19,6 +19,7 @@ beforeEach(() => {
   jest.clearAllMocks()
   when(s3.getObject).mockImplementation(returnPromiseObject({}))
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '1' }))
+  when(s3.deleteObject).mockImplementation(returnPromiseObject({ VersionId: '1' }))
   whenS3GetObjectThrowsError({ Bucket: PROD_BUCKET, Key: LOCK_FILE }, { code: 'NoSuchKey' })
 })
 
@@ -81,13 +82,13 @@ test('Updated functions are copied from stage to prod bucket', async () => {
   //given
   const stageMetadata = require('./data/stageMetadata1.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
-      JSON.stringify(stageMetadata),
+    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(stageMetadata),
   )
   const prodMetadata = require('./data/prodMetadata2.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
-      JSON.stringify(prodMetadata),
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(prodMetadata),
   )
   //when
   await handler(null)
@@ -103,5 +104,27 @@ test('Updated functions are copied from stage to prod bucket', async () => {
     Bucket: PROD_BUCKET,
     Key: existingFunctionZipPath,
     CopySource: STAGE_BUCKET + '/' + existingFunctionZipPath,
+  })
+})
+
+test('Functions in prod metadata but not in stage metadata are deleted from prod bucket.', async () => {
+  //given
+  const stageMetadata = require('./data/stageMetadata2.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(stageMetadata),
+  )
+  const prodMetadata = require('./data/prodMetadata2.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(prodMetadata),
+  )
+  //when
+  await handler(null)
+  //then
+  const deletedZipPath = prodMetadata?.customer?.products_get_all?.zipPath
+  expect(s3.deleteObject).toBeCalledWith({
+    Bucket: PROD_BUCKET,
+    Key: deletedZipPath,
   })
 })

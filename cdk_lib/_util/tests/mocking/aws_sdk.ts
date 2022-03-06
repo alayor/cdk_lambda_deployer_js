@@ -1,6 +1,7 @@
 const s3 = {
   getObject: jest.fn(),
   copyObject: jest.fn(),
+  deleteObject: jest.fn(),
   promise: jest.fn(),
 }
 
