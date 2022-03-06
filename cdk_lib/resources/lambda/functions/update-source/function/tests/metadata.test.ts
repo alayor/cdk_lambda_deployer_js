@@ -1,4 +1,5 @@
 import { s3 } from 'cdk_lib/_util/tests/mocking/aws_sdk' // this must be at the top
+import * as _ from 'lodash'
 import { when } from 'jest-when'
 import {
   FUNCTIONS_METADATA_FILE_NAME,
@@ -34,10 +35,14 @@ test('New functions are copied from stage to prod bucket', async () => {
   //when
   await handler(null)
   //then
-  const zipPath = metadata?.customer?.orders_place?.zipPath
-  expect(s3.copyObject).toBeCalledWith({
-    Bucket: PROD_BUCKET,
-    Key: zipPath,
-    CopySource: STAGE_BUCKET + '/' + zipPath,
+  const zipPaths = _.flatten(
+    Object.values(metadata).map((func) => Object.values(func).map((obj) => obj.zipPath)),
+  )
+  zipPaths.forEach((zipPath) => {
+    expect(s3.copyObject).toBeCalledWith({
+      Bucket: PROD_BUCKET,
+      Key: zipPath,
+      CopySource: STAGE_BUCKET + '/' + zipPath,
+    })
   })
 })
