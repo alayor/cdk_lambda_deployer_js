@@ -1,6 +1,7 @@
 import * as aws from 'aws-sdk'
 import { LOCK_FILE, PROD_BUCKET } from './constants'
 import { getFunctionsMetadata } from './metadata_util/get_metadata'
+import { saveNewMetadata } from './metadata_util/save_metadata'
 import { createFunctionSource } from './change_handlers/create_function_source'
 import { updateFunctionSource } from './change_handlers/update_function_source'
 import { deleteFunctionSource } from './change_handlers/delete_function_source'
@@ -24,6 +25,14 @@ export async function handler(_event: any) {
   await createFunctionSource(s3, stageMetadata, prodMetadata, changesSummary)
   await updateFunctionSource(s3, stageMetadata, prodMetadata, changesSummary)
   await deleteFunctionSource(s3, stageMetadata, prodMetadata, changesSummary)
+
+  console.log('changesSummary: ', changesSummary.getChangesSummary())
+  if (!changesSummary.hasChanges()) {
+    console.log('No changes detected.')
+    return
+  }
+  await saveNewMetadata(s3, stageMetadata, prodMetadata, changesSummary)
+  console.log('Done.')
 }
 
 async function isLocked(): Promise<boolean> {

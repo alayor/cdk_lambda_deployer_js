@@ -18,6 +18,7 @@ import { returnPromiseObject } from 'cdk_lib/_util/tests/mocking/promises'
 beforeEach(() => {
   jest.clearAllMocks()
   when(s3.getObject).mockImplementation(returnPromiseObject({}))
+  when(s3.putObject).mockImplementation(returnPromiseObject({}))
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '1' }))
   when(s3.deleteObject).mockImplementation(returnPromiseObject({ VersionId: '1' }))
   whenS3GetObjectThrowsError({ Bucket: PROD_BUCKET, Key: LOCK_FILE }, { code: 'NoSuchKey' })
