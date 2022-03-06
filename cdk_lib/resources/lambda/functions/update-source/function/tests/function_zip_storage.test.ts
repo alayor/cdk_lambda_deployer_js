@@ -26,7 +26,7 @@ beforeEach(() => {
 
 test('Create functions from stage metadata when prod metadata is not existing.', async () => {
   //given
-  const metadata = require('./data/stageMetadata1.json') as Metadata
+  const metadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(metadata),
@@ -52,12 +52,12 @@ test('Create functions from stage metadata when prod metadata is not existing.',
 
 test('Create functions from stage metadata for functions not existing in prod metadata.', async () => {
   //given
-  const stageMetadata = require('./data/stageMetadata1.json') as Metadata
+  const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
-  const prodMetadata = require('./data/prodMetadata1.json') as Metadata
+  const prodMetadata = require('./data/metadata/prod1.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(prodMetadata),
@@ -81,12 +81,12 @@ test('Create functions from stage metadata for functions not existing in prod me
 
 test('Updated functions are copied from stage to prod bucket', async () => {
   //given
-  const stageMetadata = require('./data/stageMetadata1.json') as Metadata
+  const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
-  const prodMetadata = require('./data/prodMetadata2.json') as Metadata
+  const prodMetadata = require('./data/metadata/prod2.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(prodMetadata),
@@ -110,12 +110,12 @@ test('Updated functions are copied from stage to prod bucket', async () => {
 
 test('Functions in prod metadata but not in stage metadata are deleted from prod bucket.', async () => {
   //given
-  const stageMetadata = require('./data/stageMetadata2.json') as Metadata
+  const stageMetadata = require('./data/metadata/stage2.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
-  const prodMetadata = require('./data/prodMetadata2.json') as Metadata
+  const prodMetadata = require('./data/metadata/prod2.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(prodMetadata),

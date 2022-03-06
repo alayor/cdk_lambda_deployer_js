@@ -25,7 +25,7 @@ beforeEach(() => {
 
 test('New Prod metadata is created from stage metadata.', async () => {
   //given
-  const metadata = require('./data/stageMetadata1.json') as Metadata
+  const metadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(metadata),
@@ -37,7 +37,7 @@ test('New Prod metadata is created from stage metadata.', async () => {
   //when
   await handler(null)
   //then
-  const newProdMetadata = require('./data/newProdMetadataFromStage1.json') as Metadata
+  const newProdMetadata = require('./data/metadata/newProdFromStage1.json') as Metadata
   expect(s3.putObject).toBeCalledWith({
     Bucket: PROD_BUCKET,
     Key: FUNCTIONS_METADATA_FILE_NAME,
@@ -47,12 +47,12 @@ test('New Prod metadata is created from stage metadata.', async () => {
 
 test('Prod metadata is updated from stage metadata with new functions.', async () => {
   //given
-  const stageMetadata = require('./data/stageMetadata1.json') as Metadata
+  const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
-  const prodMetadata = require('./data/prodMetadata1.json') as Metadata
+  const prodMetadata = require('./data/metadata/prod1.json') as Metadata
   whenS3GetObjectReturnsBody(
     { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     JSON.stringify(prodMetadata),
@@ -60,7 +60,7 @@ test('Prod metadata is updated from stage metadata with new functions.', async (
   //when
   await handler(null)
   //then
-  const newProdMetadata = require('./data/updatedProdMetadata1FromStage1.json') as Metadata
+  const newProdMetadata = require('./data/metadata/updatedProd1FromStage1.json') as Metadata
   expect(s3.putObject).toBeCalledWith({
     Bucket: PROD_BUCKET,
     Key: FUNCTIONS_METADATA_FILE_NAME,
