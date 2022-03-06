@@ -1,31 +1,30 @@
-import { when } from 'jest-when'
+const { s3 } = require('cdk_lib/_util/tests/mocking/aws_sdk')
 import {
   FUNCTIONS_METADATA_FILE_NAME,
   LOCK_FILE,
   PROD_BUCKET,
   STAGE_BUCKET,
 } from '../src/constants'
-import {
-  returnPromiseObject,
-  returnPromiseObjectWithError,
-} from 'cdk_lib/_util/tests/mocking/promises'
-import { s3 } from 'cdk_lib/_util/tests/mocking/aws_sdk'
 import { handler } from '../src'
+import {
+  whenS3GetObjectReturnsPromiseObject,
+  whenS3GetObjectThrowsError,
+} from 'cdk_lib/_util/tests/mocking/s3'
 
 beforeEach(() => {
-  when(s3.getObject)
-    .calledWith({ Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME })
-    .mockImplementation(returnPromiseObject(jest.mocked({})))
-  when(s3.getObject)
-    .calledWith({ Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME })
-    .mockImplementation(returnPromiseObject(jest.mocked({})))
+  whenS3GetObjectReturnsPromiseObject(
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    {},
+  )
+  whenS3GetObjectReturnsPromiseObject(
+    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    {},
+  )
 })
 
 test('Do Not Get Metadata When Lock File Exists', async () => {
   //given
-  when(s3.getObject)
-    .calledWith({ Bucket: PROD_BUCKET, Key: LOCK_FILE })
-    .mockImplementation(returnPromiseObject()) // No error thrown
+  whenS3GetObjectReturnsPromiseObject({ Bucket: PROD_BUCKET, Key: LOCK_FILE }, {}) // No error thrown
   //when
   await handler(null)
   //then
@@ -37,9 +36,7 @@ test('Do Not Get Metadata When Lock File Exists', async () => {
 
 test('Get Metadata When Lock File Does Not Exist', async () => {
   //given
-  when(s3.getObject)
-    .calledWith({ Bucket: PROD_BUCKET, Key: LOCK_FILE })
-    .mockImplementation(returnPromiseObjectWithError({ code: 'NoSuchKey' }))
+  whenS3GetObjectThrowsError({ Bucket: PROD_BUCKET, Key: LOCK_FILE }, { code: 'NoSuchKey' })
   //when
   await handler(null)
   //then
