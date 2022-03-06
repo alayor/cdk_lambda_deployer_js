@@ -21,9 +21,9 @@ beforeEach(() => {
   whenS3GetObjectThrowsError({ Bucket: PROD_BUCKET, Key: LOCK_FILE }, { code: 'NoSuchKey' })
 })
 
-test('New functions are copied from stage to prod bucket', async () => {
+test('Create functions from stage metadata when prod metadata is not existing.', async () => {
   //given
-  const metadata = require('./data/functionsMetadata1.json') as Metadata
+  const metadata = require('./data/stageMetadata1.json') as Metadata
   whenS3GetObjectReturnsPromiseObject(
     { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
     {
@@ -31,6 +31,10 @@ test('New functions are copied from stage to prod bucket', async () => {
         toString: () => JSON.stringify(metadata),
       },
     },
+  )
+  whenS3GetObjectThrowsError(
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { code: 'NoSuchKey' },
   )
   //when
   await handler(null)
@@ -46,3 +50,42 @@ test('New functions are copied from stage to prod bucket', async () => {
     })
   })
 })
+
+test('Create functions from stage metadata for functions not existing in prod metadata.', async () => {
+  //given
+  const stageMetadata = require('./data/stageMetadata1.json') as Metadata
+  whenS3GetObjectReturnsPromiseObject(
+      { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+      {
+        Body: {
+          toString: () => JSON.stringify(stageMetadata),
+        },
+      },
+  )
+  const prodMetadata = require('./data/prodMetadata1.json') as Metadata
+  whenS3GetObjectReturnsPromiseObject(
+      { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+      {
+        Body: {
+          toString: () => JSON.stringify(prodMetadata),
+        },
+      },
+  )
+  //when
+  await handler(null)
+  //then
+  const newFunctionZipPath = stageMetadata?.customer?.products_get_all?.zipPath
+  expect(s3.copyObject).toBeCalledWith({
+    Bucket: PROD_BUCKET,
+    Key: newFunctionZipPath,
+    CopySource: STAGE_BUCKET + '/' + newFunctionZipPath,
+  })
+  const existingFunctionZipPath = stageMetadata?.customer?.orders_place?.zipPath
+  expect(s3.copyObject).not.toBeCalledWith({
+    Bucket: PROD_BUCKET,
+    Key: existingFunctionZipPath,
+    CopySource: STAGE_BUCKET + '/' + newFunctionZipPath,
+  })
+})
+
+test('Updated functions are copied from stage to prod bucket', async () => {})
