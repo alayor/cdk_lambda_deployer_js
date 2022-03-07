@@ -89,6 +89,7 @@ test('Save -created- summary changes when stage metadata has new functions.', as
 
 test('Save -updated- summary changes when stage metadata has new versions.', async () => {
   //given
+  when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '2' }))
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
       { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
