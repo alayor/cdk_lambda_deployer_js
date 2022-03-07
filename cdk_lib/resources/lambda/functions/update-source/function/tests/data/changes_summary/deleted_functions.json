@@ -1,0 +1,14 @@
+{
+  "changes": {
+    "create": {},
+    "update": {},
+    "delete": {
+      "customer": ["products_get_all"]
+    }
+  },
+  "newVersions": {
+    "customer": {
+      "products_get_all": "1"
+    }
+  }
+}
