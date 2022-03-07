@@ -42,7 +42,7 @@ test('Do not save metadata if changes summary has no changes.', async () => {
   expect(s3.putObject).not.toBeCalled()
 })
 
-test('Save changes summary with new functions when prod metadata is not existing', async () => {
+test('Save -created- summary changes when prod metadata is not existing.', async () => {
   //given
   const metadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
@@ -68,3 +68,21 @@ function expectNewChangesSummaryToBe(body: string) {
     Body: body,
   })
 }
+
+test('Save -created- summary changes when stage metadata has new functions.', async () => {
+  //given
+  const stageMetadata = require('./data/metadata/stage1.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(stageMetadata),
+  )
+  const prodMetadata = require('./data/metadata/prod1.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(prodMetadata),
+  )
+  //when
+  await handler(null)
+  //then
+  expectNewChangesSummaryToBe(JSON.stringify(require('./data/changes_summary/new_functions.json')))
+})
