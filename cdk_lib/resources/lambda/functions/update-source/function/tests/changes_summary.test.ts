@@ -86,3 +86,21 @@ test('Save -created- summary changes when stage metadata has new functions.', as
   //then
   expectNewChangesSummaryToBe(JSON.stringify(require('./data/changes_summary/new_functions.json')))
 })
+
+test('Save -updated- summary changes when stage metadata has new versions.', async () => {
+  //given
+  const stageMetadata = require('./data/metadata/stage1.json') as Metadata
+  whenS3GetObjectReturnsBody(
+      { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+      JSON.stringify(stageMetadata),
+  )
+  const prodMetadata = require('./data/metadata/prod2.json') as Metadata
+  whenS3GetObjectReturnsBody(
+      { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+      JSON.stringify(prodMetadata),
+  )
+  //when
+  await handler(null)
+  //then
+  expectNewChangesSummaryToBe(JSON.stringify(require('./data/changes_summary/new_functions_versions.json')))
+})
