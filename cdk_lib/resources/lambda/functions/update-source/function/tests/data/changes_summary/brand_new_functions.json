@@ -1,0 +1,15 @@
+{
+  "changes": {
+    "create": {
+      "customer": ["orders_place", "products_get_all"]
+    },
+    "update": {},
+    "delete": {}
+  },
+  "newVersions": {
+    "customer": {
+      "orders_place": "1",
+      "products_get_all": "1"
+    }
+  }
+}

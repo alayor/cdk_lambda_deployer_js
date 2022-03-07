@@ -1,6 +1,7 @@
 import { s3 } from 'cdk_lib/_util/tests/mocking/aws_sdk' // this must be at the top
 import { when } from 'jest-when'
 import {
+  FUNCTIONS_CHANGES_SUMMARY_FILE_NAME,
   FUNCTIONS_METADATA_FILE_NAME,
   LOCK_FILE,
   PROD_BUCKET,
@@ -40,3 +41,30 @@ test('Do not save metadata if changes summary has no changes.', async () => {
   //then
   expect(s3.putObject).not.toBeCalled()
 })
+
+test('Save changes summary with new functions when prod metadata is not existing', async () => {
+  //given
+  const metadata = require('./data/metadata/stage1.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(metadata),
+  )
+  whenS3GetObjectThrowsError(
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { code: 'NoSuchKey' },
+  )
+  //when
+  await handler(null)
+  //then
+  expectNewChangesSummaryToBe(
+    JSON.stringify(require('./data/changes_summary/brand_new_functions.json')),
+  )
+})
+
+function expectNewChangesSummaryToBe(body: string) {
+  expect(s3.putObject).toBeCalledWith({
+    Bucket: PROD_BUCKET,
+    Key: FUNCTIONS_CHANGES_SUMMARY_FILE_NAME,
+    Body: body,
+  })
+}
