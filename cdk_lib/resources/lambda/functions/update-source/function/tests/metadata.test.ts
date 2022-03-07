@@ -37,7 +37,7 @@ test('New Prod metadata is created from stage metadata.', async () => {
   //when
   await handler(null)
   //then
-  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/newProdFromStage1.json')))
+  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/new_prod_from_stage1.json')))
 })
 
 function expectNewProdMetadataToBe(body: string) {
@@ -63,7 +63,7 @@ test('Prod metadata is updated from stage metadata with new functions.', async (
   //when
   await handler(null)
   //then
-  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/updatedProd1FromStage1.json')))
+  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/updated_prod1_from_stage1.json')))
 })
 
 test('Prod metadata is updated with new versions from stage metadata with updated function hash.', async () => {
@@ -82,7 +82,7 @@ test('Prod metadata is updated with new versions from stage metadata with update
   //when
   await handler(null)
   //then
-  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/updatedProd2FromStage1.json')))
+  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/updated_prod2_from_stage1.json')))
 })
 
 test('Prod metadata functions are removed if they do not exist on stage metadata.', async () => {
@@ -100,5 +100,5 @@ test('Prod metadata functions are removed if they do not exist on stage metadata
   //when
   await handler(null)
   //then
-  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/updatedProd2FromStage2.json')))
+  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/updated_prod2_from_stage2.json')))
 })
