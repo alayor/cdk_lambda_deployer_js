@@ -6,7 +6,8 @@ import {
 } from './constants'
 import { ChangesSummary } from './types'
 import { createFunctions } from './change_handlers/create_function'
-import {updateFunctions} from "./change_handlers/update_function";
+import { updateFunctions } from './change_handlers/update_function'
+import { deleteFunctions } from './change_handlers/delete_function'
 
 let s3: aws.S3
 let lambda: aws.Lambda
@@ -31,6 +32,9 @@ export async function handler(_event: any) {
   })
   await createFunctions(lambda, metadata, changesSummary)
   await updateFunctions(lambda, metadata, changesSummary)
+  await deleteFunctions(lambda, metadata, changesSummary)
+
+  console.log('Done.')
 }
 
 function hasChanges(changesSummary: ChangesSummary): boolean {
