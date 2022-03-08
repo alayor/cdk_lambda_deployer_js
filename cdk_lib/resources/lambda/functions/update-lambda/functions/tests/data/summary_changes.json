@@ -1,0 +1,10 @@
+{
+  "changes": {
+    "create": {
+      "customer": ["order_place"]
+    },
+    "update": {},
+    "delete": {}
+  },
+  "newVersions": {}
+}

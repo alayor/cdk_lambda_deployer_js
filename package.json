@@ -4,7 +4,7 @@
   "description": "Library with CDK resources and utilities that help to deploy JavaScript functions to AWS lambda.",
   "main": "index.ts",
   "scripts": {
-    "test": "tsc && jest"
+    "test": "tsc && jest --silent"
   },
   "repository": {
     "type": "git",
