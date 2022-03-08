@@ -6,10 +6,16 @@ const s3 = {
   promise: jest.fn(),
 }
 
+const lambda = {
+  createFunction: jest.fn(),
+  promise: jest.fn(),
+}
+
 jest.mock('aws-sdk', () => {
   return {
     S3: jest.fn(() => s3),
+    Lambda: jest.fn(() => lambda),
   }
 })
 
-export { s3 }
+export { s3, lambda }

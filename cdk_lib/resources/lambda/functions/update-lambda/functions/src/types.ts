@@ -1,4 +1,4 @@
-type MetadataBody = {
+export type MetadataBody = {
     hash: string
     zipPath: string
     version: string

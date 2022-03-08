@@ -1,4 +1,4 @@
-import { s3 } from 'cdk_lib/_util/tests/mocking/aws_sdk' // this must be at the top
+import { s3, lambda } from 'cdk_lib/_util/tests/mocking/aws_sdk' // this must be at the top
 import { when } from 'jest-when'
 import {
   FUNCTIONS_CHANGES_SUMMARY_FILE_NAME,
@@ -13,6 +13,7 @@ import { returnPromiseObject } from 'cdk_lib/_util/tests/mocking/promises'
 beforeEach(() => {
   jest.clearAllMocks()
   when(s3.getObject).mockImplementation(returnPromiseObject({}))
+  when(lambda.createFunction).mockImplementation(returnPromiseObject({}))
 })
 
 test('Do not get metadata if changes summary has no changes.', async () => {
@@ -31,18 +32,20 @@ test('Do not get metadata if changes summary has no changes.', async () => {
   })
 })
 
-test('Get metadata if changes summary has changes.', async () => {
+test('create lambda function for each -create- action in the changes summary', async () => {
   //given
-  const stageMetadata = require('./data/summary_changes.json') as Metadata
+  const summaryChanges = require('./data/summary_changes.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_CHANGES_SUMMARY_FILE_NAME },
-    JSON.stringify(stageMetadata),
+      { Bucket: PROD_BUCKET, Key: FUNCTIONS_CHANGES_SUMMARY_FILE_NAME },
+      JSON.stringify(summaryChanges),
+  )
+  const metadata = require('./data/metadata1.json') as Metadata
+  whenS3GetObjectReturnsBody(
+      { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+      JSON.stringify(metadata),
   )
   //when
   await handler(null)
   //then
-  expect(s3.getObject).toBeCalledWith({
-    Bucket: PROD_BUCKET,
-    Key: FUNCTIONS_METADATA_FILE_NAME,
-  })
+  expect(lambda.createFunction).toBeCalled()
 })
