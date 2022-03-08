@@ -2,6 +2,7 @@ import * as aws from 'aws-sdk'
 import {
   FUNCTIONS_CHANGES_SUMMARY_FILE_NAME,
   FUNCTIONS_METADATA_FILE_NAME,
+  LOCK_FILE,
   PROD_BUCKET,
 } from './constants'
 import { ChangesSummary } from './types'
@@ -33,7 +34,7 @@ export async function handler(_event: any) {
   await createFunctions(lambda, metadata, changesSummary)
   await updateFunctions(lambda, metadata, changesSummary)
   await deleteFunctions(lambda, metadata, changesSummary)
-
+  await deleteLock()
   console.log('Done.')
 }
 
@@ -52,4 +53,20 @@ function hasChanges(changesSummary: ChangesSummary): boolean {
 async function getS3File(key: string) {
   const versionChangesFile = await s3.getObject({ Bucket: PROD_BUCKET, Key: key }).promise()
   return JSON.parse(versionChangesFile.Body?.toString() ?? '{}')
+}
+
+async function deleteLock() {
+  try {
+    await s3
+      .deleteObject({
+        Bucket: PROD_BUCKET,
+        Key: LOCK_FILE,
+      })
+      .promise()
+  } catch (err: any) {
+    if (err.code === 'NoSuchKey') {
+      console.log(`File not found: ${LOCK_FILE}`)
+    }
+    throw err
+  }
 }

@@ -13,6 +13,7 @@ import { returnPromiseObject } from 'cdk_lib/_util/tests/mocking/promises'
 beforeEach(() => {
   jest.clearAllMocks()
   when(s3.getObject).mockImplementation(returnPromiseObject({}))
+  when(s3.deleteObject).mockImplementation(returnPromiseObject({}))
   when(lambda.createFunction).mockImplementation(returnPromiseObject({}))
   when(lambda.updateFunctionCode).mockImplementation(returnPromiseObject({}))
   when(lambda.deleteFunction).mockImplementation(returnPromiseObject({}))
