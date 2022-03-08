@@ -8,6 +8,7 @@ const s3 = {
 
 const lambda = {
   createFunction: jest.fn(),
+  updateFunctionCode: jest.fn(),
   promise: jest.fn(),
 }
 

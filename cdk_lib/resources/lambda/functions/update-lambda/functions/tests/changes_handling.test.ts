@@ -14,6 +14,7 @@ beforeEach(() => {
   jest.clearAllMocks()
   when(s3.getObject).mockImplementation(returnPromiseObject({}))
   when(lambda.createFunction).mockImplementation(returnPromiseObject({}))
+  when(lambda.updateFunctionCode).mockImplementation(returnPromiseObject({}))
 })
 
 test('Do not get metadata if changes summary has no changes.', async () => {
@@ -68,6 +69,47 @@ test('Create lambda function for each -create- action in the changes summary', a
       Handler: 'function.handler',
       Runtime: 'nodejs14.x',
       //TODO: Add Layer
+    })
+  })
+})
+
+test('Update lambda function code for each -update- action in the changes summary', async () => {
+  //given
+  const summaryChanges = require('./data/summary_changes.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_CHANGES_SUMMARY_FILE_NAME },
+    JSON.stringify(summaryChanges),
+  )
+  const metadata = require('./data/metadata1.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(metadata),
+  )
+  //when
+  await handler(null)
+  //then
+  const expectedKeysAndFunctionNames: Array<{
+    S3Key: string
+    FunctionName: string
+    S3ObjectVersion: string
+  }> = [
+    {
+      S3Key: 'functions/customer/products/get_one/function.zip',
+      FunctionName: 'api_customer_products_get_one',
+      S3ObjectVersion: '2',
+    },
+    {
+      S3Key: 'functions/deliverer/auth/login/function.zip',
+      FunctionName: 'api_deliverer_auth_login',
+      S3ObjectVersion: '3',
+    },
+  ]
+  expectedKeysAndFunctionNames.forEach(({ S3Key, FunctionName, S3ObjectVersion }) => {
+    expect(lambda.updateFunctionCode).toBeCalledWith({
+      FunctionName,
+      S3Bucket: PROD_BUCKET,
+      S3Key,
+      S3ObjectVersion,
     })
   })
 })

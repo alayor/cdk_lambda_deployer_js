@@ -3,7 +3,10 @@
     "create": {
       "customer": ["orders_place", "products_get_all"]
     },
-    "update": {},
+    "update": {
+      "customer": ["products_get_one"],
+      "deliverer": ["auth_login"]
+    },
     "delete": {}
   },
   "newVersions": {}
