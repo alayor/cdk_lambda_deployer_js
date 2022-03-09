@@ -8,6 +8,8 @@ import {
 
 beforeEach(() => {
   jest.clearAllMocks()
+  whenS3GetObjectReturnsPromiseObject({ Bucket: PROD_BUCKET, Key: LIBS_METADATA_FILE_NAME }, {})
+  whenS3GetObjectReturnsPromiseObject({ Bucket: STAGE_BUCKET, Key: LIBS_METADATA_FILE_NAME }, {})
 })
 
 test('Do Not Get Metadata When Lock File Exists', async () => {
@@ -17,6 +19,18 @@ test('Do Not Get Metadata When Lock File Exists', async () => {
   await handler(null)
   //then
   expect(s3.getObject).not.toBeCalledWith({
+    Bucket: STAGE_BUCKET,
+    Key: LIBS_METADATA_FILE_NAME,
+  })
+})
+
+test('Get Metadata When Lock File Does Not Exists', async () => {
+  //given
+  whenS3GetObjectThrowsError({ Bucket: PROD_BUCKET, Key: LOCK_FILE }, { code: 'NoSuchKey' })
+  //when
+  await handler(null)
+  //then
+  expect(s3.getObject).toBeCalledWith({
     Bucket: STAGE_BUCKET,
     Key: LIBS_METADATA_FILE_NAME,
   })
