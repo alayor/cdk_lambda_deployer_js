@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import { LOCK_FILE, PROD_BUCKET } from './constants'
-import { getLibsMetadata } from './metadata_util/get_metadata'
+import { getLibsMetadata, getLibsToUpdate } from './metadata_util/get_metadata'
 
 let s3: aws.S3
 
@@ -16,6 +16,11 @@ export async function handler(_event: any) {
     return
   }
   const { stageMetadata, prodMetadata } = await getLibsMetadata(s3)
+  const libsToUpdate = getLibsToUpdate(stageMetadata, prodMetadata)
+  if (!libsToUpdate.length) {
+    console.log('No changes detected.')
+    return
+  }
 }
 
 async function isLocked(): Promise<boolean> {

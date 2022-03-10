@@ -27,3 +27,32 @@ async function getMetadata(s3: aws.S3, bucket: string): Promise<Metadata | null>
     throw err
   }
 }
+
+export function getLibsToUpdate(stageMetadata: Metadata, prodMetadata: Metadata) {
+  const libsToUpdate = []
+  const apiLibs = Object.keys(stageMetadata)
+  for (const apiLib of apiLibs) {
+    if (shouldUpdateLib(stageMetadata, prodMetadata, apiLib)) {
+      libsToUpdate.push(apiLib)
+    }
+  }
+  return libsToUpdate
+}
+
+function shouldUpdateLib(stageMetadata: Metadata, prodMetadata: Metadata, apiLib: string): boolean {
+  if (!prodMetadata[apiLib]) {
+    return true
+  }
+  const stageFiles = stageMetadata[apiLib].files
+  const prodFiles = prodMetadata[apiLib].files
+  const stageFileKeys = Object.keys(stageFiles)
+  for (const fileKey of stageFileKeys) {
+    if (!prodFiles[fileKey]) {
+      return true
+    }
+    if (prodFiles[fileKey].hash !== stageFiles[fileKey].hash) {
+      return true
+    }
+  }
+  return false
+}
