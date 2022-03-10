@@ -42,3 +42,22 @@ function expectNewProdMetadataToBe(body: string) {
     Body: body,
   })
 }
+
+test('Metadata versions are updated in prod metadata.', async () => {
+  //given
+  when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '2' }))
+  const stageMetadata = require('./data/metadata/stage1.json') as Metadata
+  whenS3GetObjectReturnsBody(
+      { Bucket: STAGE_BUCKET, Key: LIBS_METADATA_FILE_NAME },
+      JSON.stringify(stageMetadata),
+  )
+  const prodMetadata = require('./data/metadata/prod3.json') as Metadata
+  whenS3GetObjectReturnsBody(
+      { Bucket: PROD_BUCKET, Key: LIBS_METADATA_FILE_NAME },
+      JSON.stringify(prodMetadata),
+  )
+  //when
+  await handler(null)
+  //then
+  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/prod_from_stage1_and_prod3.json')))
+})

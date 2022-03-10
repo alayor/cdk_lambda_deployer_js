@@ -27,7 +27,7 @@ export async function handler(_event: any) {
   console.log('prodMetadata: ', JSON.stringify(prodMetadata, null, 2))
   console.log('libsToUpdate: ', JSON.stringify(libsToUpdate, null, 2))
   const newVersions = await updateLayerSources(s3, libsToUpdate)
-  await saveNewMetadata(s3, stageMetadata, newVersions)
+  await saveNewMetadata(s3, stageMetadata, prodMetadata, newVersions)
   console.log('Done.')
 }
 

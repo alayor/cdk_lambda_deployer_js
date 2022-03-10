@@ -13,7 +13,7 @@
         "hash": "7b200d34bd86ed7f2a88b53adab3c11c9f3c3e36ec7e2a808b169b56619f7715"
       }
     },
-    "s3Version": "1"
+    "s3Version": "2"
   },
   "admin_lib": {
     "files": {

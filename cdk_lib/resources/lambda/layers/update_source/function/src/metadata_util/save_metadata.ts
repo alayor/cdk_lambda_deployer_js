@@ -6,13 +6,14 @@ import { LOCK_FILE } from '../constants'
 export async function saveNewMetadata(
   s3: aws.S3,
   stageMetadata: Metadata,
+  prodMetadata: Metadata,
   newVersions: NewVersions,
 ) {
   const libNames = Object.keys(stageMetadata)
   const newProdMetadata = libNames.reduce((acc, libName) => {
     acc[libName] = {
       ...stageMetadata[libName],
-      s3Version: newVersions[libName],
+      s3Version: newVersions[libName] || prodMetadata[libName].s3Version,
     }
     return acc
   }, stageMetadata)
