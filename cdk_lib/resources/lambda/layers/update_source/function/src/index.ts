@@ -1,6 +1,7 @@
 import * as aws from 'aws-sdk'
 import { LOCK_FILE, PROD_BUCKET } from './constants'
 import { getLibsMetadata, getLibsToUpdate } from './metadata_util/get_metadata'
+import { updateLayerSources } from './layer_source_update/index'
 
 let s3: aws.S3
 
@@ -21,6 +22,10 @@ export async function handler(_event: any) {
     console.log('No changes detected.')
     return
   }
+  console.log('stageMetadata: ', JSON.stringify(stageMetadata, null, 2))
+  console.log('prodMetadata: ', JSON.stringify(prodMetadata, null, 2))
+  console.log('libsToUpdate: ', JSON.stringify(libsToUpdate, null, 2))
+  const newVersions = await updateLayerSources(s3, libsToUpdate)
 }
 
 async function isLocked(): Promise<boolean> {

@@ -14,10 +14,6 @@
     }
   },
   "admin_lib": {
-    "files": {
-      "knexfile": {
-        "hash": "529c6a3eb3935c892a269ab85bc73f07c0eb62633dfadbb6870f59c365e3e910"
-      }
-    }
+    "files": {}
   }
 }
