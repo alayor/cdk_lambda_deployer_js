@@ -10,6 +10,7 @@ const lambda = {
   createFunction: jest.fn(),
   updateFunctionCode: jest.fn(),
   deleteFunction: jest.fn(),
+  getLayerVersion: jest.fn(),
   promise: jest.fn(),
 }
 

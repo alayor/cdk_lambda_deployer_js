@@ -1,6 +1,11 @@
 import * as aws from 'aws-sdk'
-import { LIBS_CHANGES_SUMMARY_FILE_NAME, LIBS_METADATA_FILE_NAME, PROD_BUCKET } from './constants'
-import { hasSummaryChanges } from './preconditions_util'
+import {
+  FUNCTIONS_METADATA_FILE_NAME,
+  LIBS_CHANGES_SUMMARY_FILE_NAME,
+  LIBS_METADATA_FILE_NAME,
+  PROD_BUCKET,
+} from './constants'
+import { hasLayerVersionsChanges, hasSummaryChanges } from './preconditions_util'
 
 let s3: aws.S3
 
@@ -14,9 +19,15 @@ export async function handler(event: any) {
     return
   }
   const libsMetadata = await getS3File(LIBS_METADATA_FILE_NAME)
+  const hasLayerVersionChanges = await hasLayerVersionsChanges(libsMetadata)
+  if (!hasLayerVersionChanges && !event.forceUpdate) {
+    console.log('No new layer versions detected.')
+    return
+  }
+  const functionsMetadata = await getS3File(FUNCTIONS_METADATA_FILE_NAME)
 }
 
 async function getS3File(key: string) {
-  const versionChangesFile = await s3.getObject({ Bucket: PROD_BUCKET, Key: key }).promise()
-  return JSON.parse(versionChangesFile.Body?.toString() ?? '{}')
+  const file = await s3.getObject({ Bucket: PROD_BUCKET, Key: key }).promise()
+  return JSON.parse(file.Body?.toString() ?? '{}')
 }
