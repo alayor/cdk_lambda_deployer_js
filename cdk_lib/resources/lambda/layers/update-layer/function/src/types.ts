@@ -1,12 +1,20 @@
-export type LibFile = Record<string, { hash: string }>
+type LibFile = Record<string, { hash: string }>
 
-type MetadataBody = {
+type LibMetadataBody = {
     files: LibFile
     s3Version: string
+    layerVersion: number
 }
 
-export type Metadata = { [libName: string]: MetadataBody }
-
-export type NewVersions = { [libName: string]: string }
+export type LibMetadata = { [libName: string]: LibMetadataBody }
 
 export type ChangesSummary = string[]
+
+export type LayerVersions = { [libName: string]: number }
+
+type ApiFunction = {
+    hash: string
+    zipPath: string
+    version: string
+}
+export type FunctionMetadata = Record<string, Record<string, ApiFunction>>
