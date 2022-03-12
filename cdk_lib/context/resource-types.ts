@@ -1,0 +1,11 @@
+export enum S3BucketType {
+    STAGE,
+    PROD,
+}
+
+export enum LambdaFunctionType {
+    DEPLOY_API_FUNCTIONS_UPDATE_SOURCE,
+    DEPLOY_API_FUNCTIONS_UPDATE_LAMBDA,
+    DEPLOY_API_LIBS_UPDATE_SOURCE,
+    DEPLOY_API_LIBS_UPDATE_LAYER,
+}
