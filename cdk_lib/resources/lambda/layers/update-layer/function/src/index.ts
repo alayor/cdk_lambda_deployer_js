@@ -6,12 +6,17 @@ import {
   PROD_BUCKET,
 } from './constants'
 import { hasLayerVersionsChanges, hasSummaryChanges } from './preconditions_util'
+import { publishLayerVersions } from './layer_updater'
 
 let s3: aws.S3
+let lambda: aws.Lambda
 
 export async function handler(event: any) {
   if (!s3) {
     s3 = new aws.S3({ apiVersion: '2006-03-01' })
+  }
+  if (!lambda) {
+    lambda = new aws.Lambda({ apiVersion: '2015-03-31' })
   }
   const changesSummary = await getS3File(LIBS_CHANGES_SUMMARY_FILE_NAME)
   if (!hasSummaryChanges(changesSummary)) {
@@ -25,6 +30,10 @@ export async function handler(event: any) {
     return
   }
   const functionsMetadata = await getS3File(FUNCTIONS_METADATA_FILE_NAME)
+  console.log('changesSummary: ', JSON.stringify(changesSummary, null, 2))
+  console.log('libsMetadata: ', JSON.stringify(libsMetadata, null, 2))
+  console.log('functionsMetadata: ', JSON.stringify(functionsMetadata, null, 2))
+  const layerVersions = await publishLayerVersions(lambda, changesSummary, libsMetadata)
 }
 
 async function getS3File(key: string) {
