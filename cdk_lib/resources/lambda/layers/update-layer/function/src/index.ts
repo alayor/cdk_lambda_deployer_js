@@ -6,7 +6,7 @@ import {
   PROD_BUCKET,
 } from './constants'
 import { hasLayerVersionsChanges, hasSummaryChanges } from './preconditions_util'
-import { publishLayerVersions } from './layer_updater'
+import { publishLayerVersions, updateFunctionsLayers } from './layer_updater'
 import { saveLayerVersions } from './metadata_util/save_metadata'
 
 let s3: aws.S3
@@ -36,6 +36,10 @@ export async function handler(event: any) {
   console.log('functionsMetadata: ', JSON.stringify(functionsMetadata, null, 2))
   const layerVersions = await publishLayerVersions(lambda, changesSummary, libsMetadata)
   await saveLayerVersions(s3, libsMetadata, layerVersions)
+  await updateFunctionsLayers(lambda, changesSummary, libsMetadata, functionsMetadata)
+
+  console.log('layerVersions: ', JSON.stringify(layerVersions, null, 2))
+  console.log('Done.')
 }
 
 async function getS3File(key: string) {

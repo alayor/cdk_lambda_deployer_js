@@ -20,6 +20,7 @@ beforeEach(() => {
   when(s3.putObject).mockImplementation(returnPromiseObject({}))
   when(lambda.publishLayerVersion).mockImplementation(returnPromiseObject({ Version: 1 }))
   when(lambda.getLayerVersion).mockImplementation(returnPromiseObject({}))
+  when(lambda.updateFunctionConfiguration).mockImplementation(returnPromiseObject({}))
 })
 
 test('Do Not Get Libs Metadata If Changes Summary Has No Changes', async () => {

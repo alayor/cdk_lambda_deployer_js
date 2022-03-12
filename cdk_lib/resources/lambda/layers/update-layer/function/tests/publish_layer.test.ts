@@ -20,6 +20,7 @@ beforeEach(() => {
   when(s3.putObject).mockImplementation(returnPromiseObject({}))
   when(lambda.publishLayerVersion).mockImplementation(returnPromiseObject({ Version: 1 }))
   when(lambda.getLayerVersion).mockImplementation(returnPromiseObject({}))
+  when(lambda.updateFunctionConfiguration).mockImplementation(returnPromiseObject({}))
 })
 
 test('Publish Layer Versions For Lib Changes', async () => {
@@ -53,5 +54,43 @@ test('Publish Layer Versions For Lib Changes', async () => {
       S3ObjectVersion: '2',
     },
     CompatibleRuntimes: ['nodejs14.x'],
+  })
+})
+
+test('Update Lambda Functions Configuration With New Layer Version', async () => {
+  //given
+  process.env.AWS_ACCOUNT = '1234'
+  const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
+    JSON.stringify(changesSummary),
+  )
+  const libsMetadata = require('./data/metadata/libs1.json') as LibMetadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: LIBS_METADATA_FILE_NAME },
+    JSON.stringify(libsMetadata),
+  )
+  when(lambda.getLayerVersion).mockImplementation(
+    returnPromiseObjectWithError({ code: 'ResourceNotFoundException' }),
+  )
+  const functionsMetadata = require('./data/metadata/functions1.json') as LibMetadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    JSON.stringify(functionsMetadata),
+  )
+  when(lambda.publishLayerVersion).mockImplementation(returnPromiseObject({ Version: 4 }))
+  //when
+  await handler({})
+  //then
+  const functionNames = [
+    'api_customer_orders_place',
+    'api_customer_products_get_all',
+    'api_customer_products_get_one',
+  ]
+  functionNames.forEach((functionName) => {
+    expect(lambda.updateFunctionConfiguration).toBeCalledWith({
+      FunctionName: functionName,
+      Layers: ['arn:aws:lambda:us-west-1:1234:layer:api_customer_lib:4'],
+    })
   })
 })

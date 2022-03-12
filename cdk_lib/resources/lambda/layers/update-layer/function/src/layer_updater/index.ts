@@ -50,5 +50,6 @@ export async function updateFunctionsLayers(
 }
 
 function buildLayerVersionArn(libName: string, layerVersion: number) {
-  return `arn:aws:lambda:us-west-1:605738121036:layer:api_${libName}:${layerVersion}`
+  const account = process.env.AWS_ACCOUNT
+  return `arn:aws:lambda:us-west-1:${account}:layer:api_${libName}:${layerVersion}`
 }
