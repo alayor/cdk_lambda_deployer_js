@@ -44,5 +44,13 @@ test('Publish Layer Versions For Lib Changes', async () => {
   //when
   await handler({})
   //then
-  expect(lambda.publishLayerVersion).toBeCalled()
+  expect(lambda.publishLayerVersion).toBeCalledWith({
+    LayerName: 'api_customer_lib',
+    Content: {
+      S3Bucket: PROD_BUCKET,
+      S3Key: 'libs/customer_lib/nodejs.zip',
+      S3ObjectVersion: '2',
+    },
+    CompatibleRuntimes: ['nodejs14.x'],
+  })
 })
