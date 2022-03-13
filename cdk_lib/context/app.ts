@@ -5,7 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as lambdaNodeJs from 'aws-cdk-lib/aws-lambda-nodejs'
 
 export enum AppName {
-  MARKET_C2C,
+  DEFAULT,
 }
 
 export interface IApp {
