@@ -1,6 +1,6 @@
 .idea/
 cdk_lib/
-js_lib
+js_lib/
 .gitignore
 .npmignore
 .npmrc
