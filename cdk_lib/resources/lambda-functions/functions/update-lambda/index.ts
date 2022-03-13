@@ -22,9 +22,9 @@ export class UpdateLambdaConstruct extends MainConstruct {
 
         const func = new lambdaNodeJs.NodejsFunction(this, 'Function', {
             runtime: lambda.Runtime.NODEJS_14_X,
-            entry: path.join(__dirname, 'function/index.ts'),
+            entry: path.join(__dirname, 'function/src/index.ts'),
             handler: 'handler',
-            functionName: 'ApiFunctionsDeploy_UpdateLambda',
+            functionName: 'CdkLambdaDeployer_UpdateLambda',
             timeout: cdk.Duration.minutes(10),
             vpc: context.getVpc(),
             environment: {

@@ -7,7 +7,7 @@ import MainConstruct, { MainConstructProps } from 'cdk_lib/context/main-construc
 import { LambdaFunctionType, S3BucketType } from 'cdk_lib/context/resource-types'
 import * as iam from 'aws-cdk-lib/aws-iam'
 
-export class UpdateSourceConstruct extends MainConstruct {
+export class UpdateFunctionsSourceConstruct extends MainConstruct {
   constructor(scope: Construct, id: string, props: MainConstructProps) {
     super(scope, id, props)
     const { context } = props
@@ -16,7 +16,7 @@ export class UpdateSourceConstruct extends MainConstruct {
       runtime: lambda.Runtime.NODEJS_14_X,
       entry: path.join(__dirname, 'function/src/index.ts'),
       handler: 'handler',
-      functionName: 'CdkLambdaDeployer_UpdateSource',
+      functionName: 'CdkLambdaDeployer_UpdateFunctionsSource',
       timeout: cdk.Duration.minutes(10),
       vpc: context.getVpc(),
     })
