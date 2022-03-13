@@ -11,9 +11,9 @@ using Amazon S3 as well as deploying that source to AWS lambda.
 JS_LIB is a library that will help build the metadata files needed to deploy the functions source to 
 AWS Lambda.
 
-How to the Construct in CDK_LIB
+# Set up CDK_LIB
 
-You have two options to add the CDK_LIB components to your CDK project.
+You have two options to add the CDK_LIB resources to your CDK project.
 
 1. You can add it as a Constructor on your Stack.
 ```
@@ -33,3 +33,5 @@ new CDKLambdaDeployerStack(app, 'CDKLambdaDeployerStack', {
   vpc: mainStack.vpc as unknown as CDKLambdaDeployerVpc,
 }) 
 ```
+
+# Set up JS_LIB
