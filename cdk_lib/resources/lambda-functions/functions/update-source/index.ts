@@ -55,6 +55,6 @@ export class UpdateSourceConstruct extends MainConstruct {
       func?.role?.addToPrincipalPolicy(iam.PolicyStatement.fromJson(policy))
     })
 
-    context.setLambdaFunction(LambdaFunctionType.DEPLOY_API_FUNCTIONS_UPDATE_SOURCE, func)
+    context.setLambdaFunction(LambdaFunctionType.UPDATE_FUNCTIONS_SOURCE, func)
   }
 }
