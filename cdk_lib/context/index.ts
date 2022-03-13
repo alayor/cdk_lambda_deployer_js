@@ -19,7 +19,7 @@ export default class Context implements IApp {
   constructor(defaultApp: AppName) {
     this._defaultApp = defaultApp
     this._apps = new Map<AppName, AppModel>()
-    this._apps.set(AppName.MARKET_C2C, new AppModel())
+    this._apps.set(AppName.DEFAULT, new AppModel())
   }
 
   get accountId() {

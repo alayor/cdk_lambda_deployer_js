@@ -15,4 +15,4 @@ How to the Construct in CDK_LIB
 
 Just add this line on your Stack constructor
 
-```new CDKLambdaDeployerConstruct(this, 'CDKLambdaDeployer')```
+```new CDKLambdaDeployerConstruct(this, 'CDKLambdaDeployer', { vpc: MyVpc })```
