@@ -16,7 +16,8 @@ How to the Construct in CDK_LIB
 You have two options to add the CDK_LIB components to your CDK project.
 
 1. You can add it as a Constructor on your Stack.
-```new CDKLambdaDeployerConstruct(
+```
+new CDKLambdaDeployerConstruct(
       this as unknown as CDKLambdaDeployerConstructType,
       'CDKLambdaDeployer',
       {
@@ -27,7 +28,8 @@ You have two options to add the CDK_LIB components to your CDK project.
 
 2. You can add it as a new stack
 
-``` new CDKLambdaDeployerStack(app, 'CDKLambdaDeployerStack', {
+``` 
+new CDKLambdaDeployerStack(app, 'CDKLambdaDeployerStack', {
   vpc: mainStack.vpc as unknown as CDKLambdaDeployerVpc,
 }) 
 ```
