@@ -13,6 +13,21 @@ AWS Lambda.
 
 How to the Construct in CDK_LIB
 
-Just add this line on your Stack constructor
+You have two options to add the CDK_LIB components to your CDK project.
 
-```new CDKLambdaDeployerConstruct(this, 'CDKLambdaDeployer', { vpc: MyVpc })```
+1. You can add it as a Constructor on your Stack.
+```new CDKLambdaDeployerConstruct(
+      this as unknown as CDKLambdaDeployerConstructType,
+      'CDKLambdaDeployer',
+      {
+        vpc: myVpc as unknown as CDKLambdaDeployerVpcType,
+      },
+    )
+```
+
+2. You can add it as a new stack
+
+``` new CDKLambdaDeployerStack(app, 'CDKLambdaDeployerStack', {
+  vpc: mainStack.vpc as unknown as CDKLambdaDeployerVpc,
+}) 
+```
