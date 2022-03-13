@@ -1,14 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
-import * as ecr from 'aws-cdk-lib/aws-ecr'
-import * as rds from 'aws-cdk-lib/aws-rds'
-import * as ecs from 'aws-cdk-lib/aws-ecs'
 import * as s3 from 'aws-cdk-lib/aws-s3'
-import * as codebuild from 'aws-cdk-lib/aws-codebuild'
 import * as lambdaNodeJs from 'aws-cdk-lib/aws-lambda-nodejs'
-import {
-  LambdaFunctionType,
-  S3BucketType,
-} from 'cdk_lib/context/resource-types'
+import { LambdaFunctionType, S3BucketType } from 'cdk_lib/context/resource-types'
 import { AppModel, AppName, IApp } from 'cdk_lib/context/app'
 import { AppResourceNotSetError } from 'cdk_lib/context/errors'
 

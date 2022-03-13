@@ -25,8 +25,8 @@
     ],
     "baseUrl": "./",
     "paths": {
-      "src/*": ["src/*"],
-      "lib/*": ["lib/*"]
+      "cdk_lib/*": ["cdk_lib/*"],
+      "js_lib/*": ["js_lib/*"]
     }
   },
   "ts-node": {
