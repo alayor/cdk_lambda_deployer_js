@@ -6,11 +6,8 @@ import { S3BucketsConstruct } from './resources/s3-buckets/index'
 import { LambdaFunctionsConstruct } from './resources/lambda-functions'
 import { Stack } from 'aws-cdk-lib'
 
-export type CDKLambdaDeployerVpcType = ec2.Vpc
-export type CDKLambdaDeployerConstructType = Construct
-
 export type CDKLambdaDeployerProps = {
-  vpc?: CDKLambdaDeployerVpcType
+  vpc?: ec2.Vpc
   vpcId?: string
 }
 
