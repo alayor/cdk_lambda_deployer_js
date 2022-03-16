@@ -3,6 +3,10 @@ export enum S3BucketType {
     PROD,
 }
 
+export enum CodeBuildProjectType {
+    DEPLOY,
+}
+
 export enum LambdaFunctionType {
     UPDATE_FUNCTIONS_SOURCE,
     UPDATE_LAMBDA,

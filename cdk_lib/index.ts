@@ -5,6 +5,7 @@ import { AppName } from './context/app'
 import { S3BucketsConstruct } from './resources/s3-buckets/index'
 import { LambdaFunctionsConstruct } from './resources/lambda-functions'
 import { Stack } from 'aws-cdk-lib'
+import { CodeBuildProjectsConstruct } from 'cdk_lib/resources/code-build-projects'
 
 export type CDKLambdaDeployerProps = {
   vpc?: ec2.Vpc
@@ -28,6 +29,7 @@ export class CDKLambdaDeployerConstruct extends Construct {
     const context = new Context(AppName.DEFAULT)
     context.setVpc(vpc || (ec2.Vpc.fromLookup(this, 'Vpc', { vpcId }) as ec2.Vpc))
     new S3BucketsConstruct(this, 'S3Buckets', { context })
+    new CodeBuildProjectsConstruct(this, 'CodeBuildProjects', { context })
     new LambdaFunctionsConstruct(this, 'LambdaFunctions', { context })
   }
 }

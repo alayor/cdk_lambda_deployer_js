@@ -1,7 +1,8 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as lambdaNodeJs from 'aws-cdk-lib/aws-lambda-nodejs'
-import { LambdaFunctionType, S3BucketType } from 'cdk_lib/context/resource-types'
+import * as codebuild from 'aws-cdk-lib/aws-codebuild'
+import {CodeBuildProjectType, LambdaFunctionType, S3BucketType} from 'cdk_lib/context/resource-types'
 import { AppModel, AppName, IApp } from 'cdk_lib/context/app'
 import { AppResourceNotSetError } from 'cdk_lib/context/errors'
 
@@ -41,6 +42,14 @@ export default class Context implements IApp {
 
   getS3Bucket(type: S3BucketType): s3.Bucket {
     return this.getApp(this._defaultApp).getS3Bucket(type)
+  }
+
+  setCodeBuildProject(type: CodeBuildProjectType, project: codebuild.PipelineProject): void {
+    this.getApp(this._defaultApp).setCodeBuildProject(type, project)
+  }
+
+  getCodeBuildProject(type: CodeBuildProjectType): codebuild.PipelineProject {
+    return this.getApp(this._defaultApp).getCodeBuildProject(type)
   }
 
   setLambdaFunction(type: LambdaFunctionType, project: lambdaNodeJs.NodejsFunction): void {
