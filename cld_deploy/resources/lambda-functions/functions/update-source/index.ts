@@ -14,11 +14,13 @@ export class UpdateFunctionsSourceConstruct extends MainConstruct {
 
     const func = new lambdaNodeJs.NodejsFunction(this, 'Function', {
       runtime: lambda.Runtime.NODEJS_14_X,
-      entry: path.join(__dirname, 'function/src/index.ts'),
+      entry: path.join(__dirname, 'function/src/index.js'),
+      depsLockFilePath: '',
       handler: 'handler',
       functionName: 'CdkLambdaDeployer_UpdateFunctionsSource',
       timeout: cdk.Duration.minutes(10),
       vpc: context.getVpc(),
+      allowPublicSubnet: true,
     })
 
     const stageBucketArn = context.getS3Bucket(S3BucketType.STAGE).bucketArn
