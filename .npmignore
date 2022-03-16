@@ -1,6 +1,6 @@
 .idea/
-cdk_lib/
-js_lib/
+cld_deploy/
+cld_build/
 .gitignore
 .npmignore
 .npmrc

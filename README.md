@@ -12,7 +12,7 @@ using Amazon S3 as well as deploying that source to AWS lambda.
 
 # Set up CLD_DEPLOY
 
-You have two options to add the CDK_LIB resources to your CDK project.
+You have two options to add the CLD_DEPLOY resources to your CDK project.
 
 1. You can add it as a Constructor on your Stack.
 ```
@@ -33,4 +33,4 @@ new CDKLambdaDeployerStack(app, 'CDKLambdaDeployerStack', {
 }) 
 ```
 
-# Set up JS_LIB
+# Set up CLD_BUILD
