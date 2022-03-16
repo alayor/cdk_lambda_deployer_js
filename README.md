@@ -17,10 +17,14 @@ You have two options to add the CLD_DEPLOY resources to your CDK project.
 1. You can add it as a Constructor on your Stack.
 ```
 new CDKLambdaDeployerConstruct(
-      this as unknown as CDKLambdaDeployerConstructType,
+      this,
       'CDKLambdaDeployer',
       {
-        vpc: myVpc as unknown as CDKLambdaDeployerVpcType,
+        vpc: myVpc,
+        githubRepoOwner: 'repo_owner',
+        githubRepoName: 'repo_name',
+        githubRepoBranch: 'master',
+        githubTokenSecretId: 'github_token_secret_id'
       },
     )
 ```
@@ -28,9 +32,14 @@ new CDKLambdaDeployerConstruct(
 2. You can add it as a new stack
 
 ``` 
-new CDKLambdaDeployerStack(app, 'CDKLambdaDeployerStack', {
-  vpc: mainStack.vpc as unknown as CDKLambdaDeployerVpc,
-}) 
+new cld_deploy.CDKLambdaDeployerStack(app, 'CDKLambdaDeployer', {
+    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+    vpcId: 'vpc-xxxx',
+    githubRepoOwner: 'repo_owner',
+    githubRepoName: 'repo_name',
+    githubRepoBranch: 'master',
+    githubTokenSecretId: 'github_token_secret_id'
+})
 ```
 
 # Set up CLD_BUILD
