@@ -2,16 +2,15 @@
 Library with CDK resources and utilities that help to deploy JavaScript functions to AWS lambda.
 
 This solution is composed of two parts: 
-* CDK_LIB
-* JS_LIB
+* CLD_BUILD
+* CLD_DEPLOY
 
-CDK_LIB is a set of CDK constructs that will be in charge of hosting the functions and layers source
+CLD_BUILD is a library that will help build the metadata files needed to deploy the functions source to AWS Lambda.
+
+CLD_DEPLOY is a set of CDK constructs that will be in charge of hosting the functions and layers source
 using Amazon S3 as well as deploying that source to AWS lambda.
 
-JS_LIB is a library that will help build the metadata files needed to deploy the functions source to 
-AWS Lambda.
-
-# Set up CDK_LIB
+# Set up CLD_DEPLOY
 
 You have two options to add the CDK_LIB resources to your CDK project.
 
