@@ -15,7 +15,7 @@ export async function zipFunctions() {
     makeDirPath(dirPath)
     const output = fs.createWriteStream(path.join(dirPath, '/function.zip'))
     archive.pipe(output)
-    archive.append(fs.createReadStream(functionPath), { name: 'function.js' })
+    archive.append(fs.createReadStream(functionPath), { name: 'function.js' }) //TODO: Get file name from Config
     archive.finalize()
     zippedFunctions.push(functionPath)
   })

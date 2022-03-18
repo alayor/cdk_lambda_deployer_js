@@ -23,11 +23,11 @@ export async function generateFunctionsMetadata(config: Config) {
 }
 
 async function generateFunctionMetadata(config: Config, apiName: string) {
-  const { functionsPath } = config
+  const { functionsPath, functionFileName } = config
   const pathPrefix = `${functionsPath}/${apiName}/`
   const functionPaths = await getFilePaths(pathPrefix, /\.js$/)
   return functionPaths.reduce((prev: FunctionMetadata, fullPath) => {
-    const functionPath = fullPath.replace(pathPrefix, '').replace('/function.js', '')
+    const functionPath = fullPath.replace(pathPrefix, '').replace(`/${functionFileName}`, '')
     const key = functionPath.replace(/\//g, '_')
     const zipPath = path.join('functions', apiName, functionPath, 'function.zip')
     prev[key] = {

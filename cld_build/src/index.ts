@@ -7,7 +7,13 @@ import { buildLibs } from 'cld_build/libs'
 import { outputFolderName } from 'cld_build/constants'
 import { Config } from 'cld_build/types'
 
-const config = JSON.parse(process.argv[2]) as Config
+const configArg = JSON.parse(process.argv[2]) as Config
+const config: Config = {
+  functionsPath: configArg.functionsPath || 'src/functions',
+  functionFileName: configArg.functionsPath || 'function.js',
+  modelNames: configArg.modelNames || [],
+  outputPath: configArg.outputPath || 'output'
+}
 
 if (fs.existsSync(outputFolderName)) {
   rimraf.sync(outputFolderName)

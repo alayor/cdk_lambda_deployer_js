@@ -30,7 +30,7 @@ async function createFunction(
     },
     FunctionName: completeFunctionName,
     Role: getRole(apiName) || '',
-    Handler: 'function.handler',
+    Handler: 'function.handler', //TODO: Get file name from Config
     Runtime: 'nodejs14.x',
     //TODO: Add Layer
   }
