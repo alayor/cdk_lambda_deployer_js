@@ -1,25 +1,30 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
-import {FunctionMetadata, LibFile, LibMetadata} from './types'
+import { FunctionMetadata, LibFile, LibMetadata } from './types'
 import { getFilePaths } from 'cld_build/util'
 import { outputFolderName } from 'cld_build/constants'
+import { Config } from 'cld_build/types'
 
-export async function generateFunctionsMetadata() {
-  const customerMetadata = await generateFunctionMetadata('customer')
+export async function generateFunctionsMetadata(config: Config) {
+  const { modelNames, outputFolder } = config
+  for await (const modelName of modelNames) {
+    const customerMetadata = await generateFunctionMetadata(config, modelName)
 
-  const metadata = {
-    customer: customerMetadata,
+    const metadata = {
+      customer: customerMetadata,
+    }
+
+    fs.writeFileSync(
+      path.join(outputFolder, 'functions/metadata.json'),
+      JSON.stringify(metadata, null, 2),
+    )
   }
-
-  fs.writeFileSync(
-    path.join(outputFolderName, 'functions/metadata.json'),
-    JSON.stringify(metadata, null, 2),
-  )
 }
 
-async function generateFunctionMetadata(apiName: string) {
-  const pathPrefix = `src/functions/${apiName}/`
+async function generateFunctionMetadata(config: Config, apiName: string) {
+  const { functionsFolder } = config
+  const pathPrefix = `${functionsFolder}/${apiName}/`
   const functionPaths = await getFilePaths(pathPrefix, /\.js$/)
   return functionPaths.reduce((prev: FunctionMetadata, fullPath) => {
     const functionPath = fullPath.replace(pathPrefix, '').replace('/function.js', '')
