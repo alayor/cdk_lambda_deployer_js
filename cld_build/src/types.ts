@@ -1,5 +1,5 @@
 export type Config = {
-  functionsFolder: string
+  functionsPath: string
   modelNames: string[]
-  outputFolder: string
+  outputPath: string
 }

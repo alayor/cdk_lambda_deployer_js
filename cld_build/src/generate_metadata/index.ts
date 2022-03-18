@@ -7,7 +7,7 @@ import { outputFolderName } from 'cld_build/constants'
 import { Config } from 'cld_build/types'
 
 export async function generateFunctionsMetadata(config: Config) {
-  const { modelNames, outputFolder } = config
+  const { modelNames, outputPath } = config
   for await (const modelName of modelNames) {
     const customerMetadata = await generateFunctionMetadata(config, modelName)
 
@@ -16,15 +16,15 @@ export async function generateFunctionsMetadata(config: Config) {
     }
 
     fs.writeFileSync(
-      path.join(outputFolder, 'functions/metadata.json'),
+      path.join(outputPath, 'functions/metadata.json'),
       JSON.stringify(metadata, null, 2),
     )
   }
 }
 
 async function generateFunctionMetadata(config: Config, apiName: string) {
-  const { functionsFolder } = config
-  const pathPrefix = `${functionsFolder}/${apiName}/`
+  const { functionsPath } = config
+  const pathPrefix = `${functionsPath}/${apiName}/`
   const functionPaths = await getFilePaths(pathPrefix, /\.js$/)
   return functionPaths.reduce((prev: FunctionMetadata, fullPath) => {
     const functionPath = fullPath.replace(pathPrefix, '').replace('/function.js', '')
