@@ -8,20 +8,27 @@ import { Config } from 'cld_build/types'
 
 const configArg = JSON.parse(process.argv[2]) as Config
 const config: Config = {
-  functionsPath: configArg.functionsPath || 'src/functions',
-  functionFileName: configArg.functionsPath || 'function.js',
+  projectPath: __dirname, //TODO: Find first package.json with cld_config key (npm: find-package-json)
+  functionsRelativePath: configArg.functionsRelativePath || 'src/functions',
+  get functionsAbsolutePath() {
+    return path.join(this.projectPath, this.functionsRelativePath)
+  },
+  functionFileName: configArg.functionsRelativePath || 'function.js',
   entityNames: configArg.entityNames || [],
   libNames: configArg.libNames || [],
-  outputPath: configArg.outputPath || 'output',
+  outputRelativePath: configArg.outputRelativePath || 'output',
+  get outputAbsolutePath() {
+    return path.join(this.projectPath, this.outputRelativePath)
+  },
 }
-const { outputPath } = config
+const { outputRelativePath } = config
 
-if (fs.existsSync(outputPath)) {
-  rimraf.sync(outputPath)
+if (fs.existsSync(outputRelativePath)) {
+  rimraf.sync(outputRelativePath)
 }
-fs.mkdirSync(outputPath)
-fs.mkdirSync(path.join(outputPath, 'functions'))
-fs.mkdirSync(path.join(outputPath, 'libs'))
+fs.mkdirSync(outputRelativePath)
+fs.mkdirSync(path.join(outputRelativePath, 'functions'))
+fs.mkdirSync(path.join(outputRelativePath, 'libs'))
 
 zipFunctions(config).then((_result) => {
   console.log('\u2705 Functions zipped successfully')

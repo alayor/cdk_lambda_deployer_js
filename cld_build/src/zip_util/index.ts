@@ -7,16 +7,16 @@ import * as rimraf from 'rimraf'
 import { Config } from 'cld_build/types'
 
 export async function zipFunctions(config: Config) {
-  const { functionsPath, outputPath } = config
-  const functionPaths = await getFilePaths(functionsPath, /\.js$/)
+  const { projectPath, functionsAbsolutePath, functionFileName, outputRelativePath } = config
+  const functionPaths = await getFilePaths(functionsAbsolutePath, /\.js$/)
   const zippedFunctions: string[] = []
   functionPaths.forEach((functionPath) => {
     const archive = archiver('zip')
-    const dirPath = functionPath.replace('src', outputPath).replace('/function.js', '')
+    const dirPath = functionPath.replace(projectPath, outputRelativePath).replace(functionFileName, '')
     makeDirPath(dirPath)
     const output = fs.createWriteStream(path.join(dirPath, '/function.zip'))
     archive.pipe(output)
-    archive.append(fs.createReadStream(functionPath), { name: 'function.js' }) //TODO: Get file name from Config
+    archive.append(fs.createReadStream(functionPath), { name: functionFileName })
     archive.finalize()
     zippedFunctions.push(functionPath)
   })
@@ -30,12 +30,12 @@ export async function zipLibs(config: Config) {
 }
 
 async function zipLib(config: Config, libName: string) {
-  const { outputPath } = config
+  const { outputRelativePath } = config
   const archive = archiver('zip')
-  const dirPath = `${outputPath}/libs/${libName}`
+  const dirPath = `${outputRelativePath}/libs/${libName}`
   const output = fs.createWriteStream(path.join(dirPath, 'nodejs.zip'))
   archive.pipe(output)
-  archive.directory(`${outputPath}/libs/${libName}/nodejs/`, 'nodejs')
+  archive.directory(`${outputRelativePath}/libs/${libName}/nodejs/`, 'nodejs')
   await archive.finalize()
-  rimraf.sync(`${outputPath}/libs/${libName}/nodejs`)
+  rimraf.sync(`${outputRelativePath}/libs/${libName}/nodejs`)
 }

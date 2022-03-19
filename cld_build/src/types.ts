@@ -1,9 +1,12 @@
 export type Config = {
-  functionsPath: string
+  projectPath: string
+  functionsRelativePath: string
+  functionsAbsolutePath: string
   functionFileName: string
   entityNames: string[]
   libNames: string[]
-  outputPath: string
+  outputRelativePath: string
+  outputAbsolutePath: string
 }
 
 export type FunctionMetadataDetail = {

@@ -12,8 +12,8 @@ export async function buildLibs(config: Config) {
 }
 
 export async function buildLib(config: Config, libName: string) {
-  const { outputPath } = config
-  const rootFolder = `${outputPath}/libs/${libName}/nodejs`
+  const { outputAbsolutePath } = config
+  const rootFolder = `${outputAbsolutePath}/libs/${libName}/nodejs`
   const libFolder = `${rootFolder}/${libName}/`
   rimraf.sync(rootFolder)
   fs.mkdirSync(libFolder, { recursive: true })
