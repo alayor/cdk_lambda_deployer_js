@@ -8,7 +8,7 @@ test('it generates functions metadata.', async () => {
   const config = {
     functionsPath: path.join(__dirname, 'input', 'functions'),
     functionFileName: 'index.js',
-    modelNames: ['customer'],
+    modelNames: ['customer', 'deliverer'],
     outputPath,
   }
   //when
@@ -18,5 +18,9 @@ test('it generates functions metadata.', async () => {
   expect(_.get(metadata, 'customer.orders_place.hash')).toBeTruthy()
   expect(_.get(metadata, 'customer.orders_place.zipPath')).toEqual(
     'functions/customer/orders/place/function.zip',
+  )
+  expect(_.get(metadata, 'deliverer.auth_login.hash')).toBeTruthy()
+  expect(_.get(metadata, 'deliverer.auth_login.zipPath')).toEqual(
+      'functions/deliverer/auth/login/function.zip',
   )
 })

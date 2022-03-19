@@ -1,25 +1,27 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import * as Bluebird from 'bluebird'
 import * as crypto from 'crypto'
-import { FunctionMetadata, LibFile, LibMetadata } from './types'
+import { FunctionMetadata, LibFile, LibMetadata, ModelFunctionMetadata } from './types'
 import { getFilePaths } from 'cld_build/util'
 import { outputFolderName } from 'cld_build/constants'
 import { Config } from 'cld_build/types'
 
 export async function generateFunctionsMetadata(config: Config) {
   const { modelNames, outputPath } = config
-  for await (const modelName of modelNames) {
-    const customerMetadata = await generateFunctionMetadata(config, modelName)
+  const metadata = await Bluebird.reduce(
+    modelNames,
+    async (acc: ModelFunctionMetadata, modelName) => {
+      acc[modelName] = await generateFunctionMetadata(config, modelName)
+      return acc
+    },
+    {},
+  )
 
-    const metadata = {
-      customer: customerMetadata,
-    }
-
-    fs.writeFileSync(
-      path.join(outputPath, 'functions/metadata.json'),
-      JSON.stringify(metadata, null, 2),
-    )
-  }
+  fs.writeFileSync(
+    path.join(outputPath, 'functions/metadata.json'),
+    JSON.stringify(metadata, null, 2),
+  )
 }
 
 async function generateFunctionMetadata(config: Config, apiName: string) {

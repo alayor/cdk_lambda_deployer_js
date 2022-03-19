@@ -1,9 +1,11 @@
-type FunctionMetadataBody = {
+export type FunctionMetadataDetail = {
   hash: string
   zipPath: string
 }
 
-export type FunctionMetadata = Record<string, FunctionMetadataBody>
+export type FunctionMetadata = { [functionName: string]: FunctionMetadataDetail }
+
+export type ModelFunctionMetadata = { [modelName: string]: FunctionMetadata }
 
 export type LibFile = Record<string, { hash: string }>
 
