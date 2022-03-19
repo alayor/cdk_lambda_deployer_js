@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import * as Bluebird from 'bluebird'
 import * as archiver from 'archiver'
 import { getFilePaths } from 'cld_build/util'
 import { makeDirRecursive } from 'cld_build/util'
@@ -10,11 +11,10 @@ export async function zipFunctions(config: Config) {
   const { functionsAbsolutePath, functionFileName } = config
   const functionPaths = await getFilePaths(functionsAbsolutePath, /\.js$/)
   const zippedFunctions: string[] = []
-  functionPaths.forEach((functionPath) => {
+  await Bluebird.each(functionPaths, async (functionPath) => {
     const archive = archiver('zip')
     const dirPath = buildDirPath(config, functionPath)
-    console.log('dirPath: ', dirPath)
-    makeDirRecursive(dirPath)
+    await makeDirRecursive(dirPath)
     const output = fs.createWriteStream(path.join(dirPath, '/function.zip'))
     archive.pipe(output)
     archive.append(fs.createReadStream(functionPath), { name: functionFileName })

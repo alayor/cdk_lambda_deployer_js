@@ -2,10 +2,22 @@ import * as fs from 'fs'
 import { promises as fsp } from 'fs'
 import * as path from 'path'
 
-export function makeDirRecursive(dirPath: string) {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true })
-  }
+export function makeDirRecursive(dirPath: string): Promise<undefined> {
+  return new Promise(async (resolve) => {
+    if (!(await fileExists(dirPath))) {
+      fs.mkdirSync(dirPath, { recursive: true })
+    }
+    return resolve(void 0)
+  })
+}
+
+function fileExists(filePath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      console.log('err: ', err)
+      return resolve(!err)
+    })
+  })
 }
 
 export async function getFilePaths(directoryName: string, filter: RegExp, results: string[] = []) {
