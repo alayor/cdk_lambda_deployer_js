@@ -7,8 +7,8 @@ import * as rimraf from 'rimraf'
 import { Config } from 'cld_build/types'
 
 export async function zipFunctions(config: Config) {
-  const { outputPath } = config
-  const functionPaths = await getFilePaths('src/functions/', /\.js$/)
+  const { functionsPath, outputPath } = config
+  const functionPaths = await getFilePaths(functionsPath, /\.js$/)
   const zippedFunctions: string[] = []
   functionPaths.forEach((functionPath) => {
     const archive = archiver('zip')
