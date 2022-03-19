@@ -5,7 +5,7 @@ export type FunctionMetadataDetail = {
 
 export type FunctionMetadata = { [functionName: string]: FunctionMetadataDetail }
 
-export type ModelFunctionMetadata = { [modelName: string]: FunctionMetadata }
+export type EntityFunctionMetadata = { [entityName: string]: FunctionMetadata }
 
 export type LibFile = Record<string, { hash: string }>
 

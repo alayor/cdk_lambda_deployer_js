@@ -8,7 +8,7 @@ test('it generates functions metadata.', async () => {
   const config = {
     functionsPath: path.join(__dirname, 'input', 'functions'),
     functionFileName: 'index.js',
-    modelNames: ['customer', 'deliverer'],
+    entityNames: ['customer', 'deliverer'],
     outputPath,
   }
   //when

@@ -1,6 +1,6 @@
 export type Config = {
   functionsPath: string
   functionFileName: string
-  modelNames: string[]
+  entityNames: string[]
   outputPath: string
 }

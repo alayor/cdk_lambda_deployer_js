@@ -2,17 +2,17 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as Bluebird from 'bluebird'
 import * as crypto from 'crypto'
-import { FunctionMetadata, LibFile, LibMetadata, ModelFunctionMetadata } from './types'
+import { FunctionMetadata, LibFile, LibMetadata, EntityFunctionMetadata } from './types'
 import { getFilePaths } from 'cld_build/util'
 import { outputFolderName } from 'cld_build/constants'
 import { Config } from 'cld_build/types'
 
 export async function generateFunctionsMetadata(config: Config) {
-  const { modelNames, outputPath } = config
+  const { entityNames, outputPath } = config
   const metadata = await Bluebird.reduce(
-    modelNames,
-    async (acc: ModelFunctionMetadata, modelName) => {
-      acc[modelName] = await generateFunctionMetadata(config, modelName)
+    entityNames,
+    async (acc: EntityFunctionMetadata, entityName) => {
+      acc[entityName] = await generateFunctionMetadata(config, entityName)
       return acc
     },
     {},
@@ -24,14 +24,14 @@ export async function generateFunctionsMetadata(config: Config) {
   )
 }
 
-async function generateFunctionMetadata(config: Config, apiName: string) {
+async function generateFunctionMetadata(config: Config, entityName: string) {
   const { functionsPath, functionFileName } = config
-  const pathPrefix = `${functionsPath}/${apiName}/`
+  const pathPrefix = `${functionsPath}/${entityName}/`
   const functionPaths = await getFilePaths(pathPrefix, /\.js$/)
   return functionPaths.reduce((prev: FunctionMetadata, fullPath) => {
     const functionPath = fullPath.replace(pathPrefix, '').replace(`/${functionFileName}`, '')
     const key = functionPath.replace(/\//g, '_')
-    const zipPath = path.join('functions', apiName, functionPath, 'function.zip')
+    const zipPath = path.join('functions', entityName, functionPath, 'function.zip')
     prev[key] = {
       hash: calculateHash(fullPath),
       zipPath,

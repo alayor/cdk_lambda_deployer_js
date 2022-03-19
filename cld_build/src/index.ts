@@ -11,7 +11,7 @@ const configArg = JSON.parse(process.argv[2]) as Config
 const config: Config = {
   functionsPath: configArg.functionsPath || 'src/functions',
   functionFileName: configArg.functionsPath || 'function.js',
-  modelNames: configArg.modelNames || [],
+  entityNames: configArg.entityNames || [],
   outputPath: configArg.outputPath || 'output'
 }
 
