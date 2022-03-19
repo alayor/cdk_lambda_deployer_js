@@ -2,17 +2,18 @@ import * as fs from 'fs'
 import * as util from 'util'
 import * as child from 'child_process'
 import * as rimraf from 'rimraf'
-import { outputFolderName } from 'cld_build/constants'
+import {Config} from "cld_build/types";
 const exec = util.promisify(child.exec)
 
-export async function buildLibs() {
-  await buildLib('customer_lib')
-  await buildLib('deliverer_lib')
-  await buildLib('admin_lib')
+export async function buildLibs(config: Config) {
+  await buildLib(config, 'customer_lib')
+  await buildLib(config, 'deliverer_lib')
+  await buildLib(config, 'admin_lib')
 }
 
-export async function buildLib(libName: string) {
-  const rootFolder = `${outputFolderName}/libs/${libName}/nodejs`
+export async function buildLib(config: Config, libName: string) {
+  const { outputPath } = config
+  const rootFolder = `${outputPath}/libs/${libName}/nodejs`
   const libFolder = `${rootFolder}/${libName}/`
   rimraf.sync(rootFolder)
   fs.mkdirSync(libFolder, { recursive: true })

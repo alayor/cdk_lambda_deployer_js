@@ -2,9 +2,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as Bluebird from 'bluebird'
 import * as crypto from 'crypto'
-import { FunctionMetadata, LibFile, LibMetadata, EntityFunctionMetadata } from './types'
+import { FunctionMetadata, LibFile, LibMetadata, EntityFunctionMetadata } from 'cld_build/types'
 import { getFilePaths } from 'cld_build/util'
-import { outputFolderName } from 'cld_build/constants'
 import { Config } from 'cld_build/types'
 
 export async function generateFunctionsMetadata(config: Config) {
@@ -40,32 +39,28 @@ async function generateFunctionMetadata(config: Config, entityName: string) {
   }, {})
 }
 
-export async function generateLibsMetadata() {
-  const customerLibFilesMetadata = await generateLibFilesMetadata('customer_lib')
-  const delivererLibFilesMetadata = await generateLibFilesMetadata('deliverer_lib')
-  const adminLibFilesMetadata = await generateLibFilesMetadata('admin_lib')
+export async function generateLibsMetadata(config: Config) {
+  const { libNames, outputPath } = config
 
-  const metadata: LibMetadata = {
-    customer_lib: {
-      files: customerLibFilesMetadata,
+  const metadata = await Bluebird.reduce(
+    libNames,
+    async (acc: LibMetadata, libName) => {
+      acc[libName] = {
+        files: await generateLibFilesMetadata(config, libName),
+      }
+      return acc
     },
-    deliverer_lib: {
-      files: delivererLibFilesMetadata,
-    },
-    admin_lib: {
-      files: adminLibFilesMetadata,
-    },
-  }
-  fs.writeFileSync(
-    path.join(outputFolderName, 'libs/metadata.json'),
-    JSON.stringify(metadata, null, 2),
+    {},
   )
+
+  fs.writeFileSync(path.join(outputPath, 'libs/metadata.json'), JSON.stringify(metadata, null, 2))
 }
 
-async function generateLibFilesMetadata(libName: string) {
-  const pathPrefix = `${outputFolderName}/libs/${libName}/nodejs/`
-  const functionPaths = await getFilePaths(pathPrefix, /\.js$/)
-  return functionPaths.reduce((prev, fullPath) => {
+async function generateLibFilesMetadata(config: Config, libName: string) {
+  const { outputPath } = config
+  const pathPrefix = `${outputPath}/libs/${libName}/nodejs/`
+  const filePaths = await getFilePaths(pathPrefix, /\.js$/)
+  return filePaths.reduce((prev, fullPath) => {
     const libPath = fullPath.replace(pathPrefix, '').replace('.js', '')
     const key = libPath.replace(/\//g, '_').replace(`${libName}_`, '')
     prev[key] = {

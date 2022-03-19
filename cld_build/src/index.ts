@@ -4,7 +4,6 @@ import * as rimraf from 'rimraf'
 import { zipFunctions, zipLibs } from './zip_util'
 import { generateFunctionsMetadata, generateLibsMetadata } from './generate_metadata'
 import { buildLibs } from 'cld_build/libs'
-import { outputFolderName } from 'cld_build/constants'
 import { Config } from 'cld_build/types'
 
 const configArg = JSON.parse(process.argv[2]) as Config
@@ -12,17 +11,19 @@ const config: Config = {
   functionsPath: configArg.functionsPath || 'src/functions',
   functionFileName: configArg.functionsPath || 'function.js',
   entityNames: configArg.entityNames || [],
-  outputPath: configArg.outputPath || 'output'
+  libNames: configArg.libNames || [],
+  outputPath: configArg.outputPath || 'output',
 }
+const { outputPath } = config
 
-if (fs.existsSync(outputFolderName)) {
-  rimraf.sync(outputFolderName)
+if (fs.existsSync(outputPath)) {
+  rimraf.sync(outputPath)
 }
-fs.mkdirSync(outputFolderName)
-fs.mkdirSync(path.join(outputFolderName, 'functions'))
-fs.mkdirSync(path.join(outputFolderName, 'libs'))
+fs.mkdirSync(outputPath)
+fs.mkdirSync(path.join(outputPath, 'functions'))
+fs.mkdirSync(path.join(outputPath, 'libs'))
 
-zipFunctions().then((_result) => {
+zipFunctions(config).then((_result) => {
   console.log('\u2705 Functions zipped successfully')
 })
 
@@ -30,14 +31,14 @@ generateFunctionsMetadata(config).then((_metadata) => {
   console.log('\u2705 Functions metadata generated successfully')
 })
 
-buildLibs().then(() => {
+buildLibs(config).then(() => {
   console.log('\u2705 Libs built successfully')
 
-  generateLibsMetadata().then((_metadata) => {
+  generateLibsMetadata(config).then((_metadata) => {
     console.log('\u2705 Libs metadata generated successfully')
   })
 
-  zipLibs().then((_result) => {
+  zipLibs(config).then((_result) => {
     console.log('\u2705 Libs zipped successfully')
   })
 })
