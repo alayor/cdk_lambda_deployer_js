@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { promises as fsp } from 'fs'
 import * as path from 'path'
 
-export function makeDirPath(dirPath: string) {
+export function makeDirRecursive(dirPath: string) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true })
   }

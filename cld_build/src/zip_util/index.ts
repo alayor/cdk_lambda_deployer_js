@@ -2,18 +2,19 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as archiver from 'archiver'
 import { getFilePaths } from 'cld_build/util'
-import { makeDirPath } from 'cld_build/util'
+import { makeDirRecursive } from 'cld_build/util'
 import * as rimraf from 'rimraf'
 import { Config } from 'cld_build/types'
 
 export async function zipFunctions(config: Config) {
-  const { projectPath, functionsAbsolutePath, functionFileName, outputRelativePath } = config
+  const { functionsAbsolutePath, functionFileName } = config
   const functionPaths = await getFilePaths(functionsAbsolutePath, /\.js$/)
   const zippedFunctions: string[] = []
   functionPaths.forEach((functionPath) => {
     const archive = archiver('zip')
-    const dirPath = functionPath.replace(projectPath, outputRelativePath).replace(functionFileName, '')
-    makeDirPath(dirPath)
+    const dirPath = buildDirPath(config, functionPath)
+    console.log('dirPath: ', dirPath)
+    makeDirRecursive(dirPath)
     const output = fs.createWriteStream(path.join(dirPath, '/function.zip'))
     archive.pipe(output)
     archive.append(fs.createReadStream(functionPath), { name: functionFileName })
@@ -21,6 +22,15 @@ export async function zipFunctions(config: Config) {
     zippedFunctions.push(functionPath)
   })
   return zippedFunctions
+}
+
+function buildDirPath(config: Config, functionPath: string) {
+  const { projectPath, functionsRelativePath, functionFileName, outputRelativePath } = config
+  const relativeDirPath = functionPath
+    .replace(functionsRelativePath, '')
+    .replace(projectPath, outputRelativePath)
+    .replace(functionFileName, '')
+  return path.join(projectPath, relativeDirPath)
 }
 
 export async function zipLibs(config: Config) {
