@@ -11,7 +11,7 @@ export function makeDirRecursive(dirPath: string): Promise<undefined> {
   })
 }
 
-function fileExists(filePath: string): Promise<boolean> {
+export function fileExists(filePath: string): Promise<boolean> {
   return new Promise((resolve) => {
     fs.access(filePath, fs.constants.F_OK, (err) => {
       return resolve(!err)

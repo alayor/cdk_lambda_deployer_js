@@ -1,9 +1,8 @@
-import * as fs from 'fs'
 import * as path from 'path'
 import * as Bluebird from 'bluebird'
 import * as rimraf from 'rimraf'
 import * as zip_util from 'cld_build/zip_util'
-import { touchFile } from 'cld_build/util'
+import { fileExists, touchFile } from 'cld_build/util'
 
 let projectPath: string
 let functionsRelativePath: string
@@ -46,18 +45,11 @@ test('it generates zip files for functions.', async () => {
     ['deliverer', 'auth', 'login'],
   ]
   await Bluebird.each(expectedZipFilePaths, async (expectedZipFilePath) => {
-    expect(await fileExistsInOutput(path.join(...expectedZipFilePath, 'function.zip'))).toBeTruthy()
+    expect(
+      await fileExists(path.join(outputAbsolutePath, ...expectedZipFilePath, 'function.zip')),
+    ).toBeTruthy()
   })
 })
-
-function fileExistsInOutput(filePath: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    fs.access(path.join(outputAbsolutePath, filePath), fs.constants.F_OK, (err) => {
-      console.log('err: ', err)
-      resolve(!err)
-    })
-  })
-}
 
 test('it generates zip files for libs.', async () => {
   //given
@@ -83,6 +75,8 @@ test('it generates zip files for libs.', async () => {
     ['libs', 'util'],
   ]
   await Bluebird.each(expectedZipFilePaths, async (expectedZipFilePath) => {
-    expect(await fileExistsInOutput(path.join(...expectedZipFilePath, 'nodejs.zip'))).toBeTruthy()
+    expect(
+      await fileExists(path.join(outputAbsolutePath, ...expectedZipFilePath, 'nodejs.zip')),
+    ).toBeTruthy()
   })
 })
