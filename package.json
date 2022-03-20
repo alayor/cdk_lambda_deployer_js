@@ -1,9 +1,12 @@
 {
   "name": "@codershift/cdk_lambda_deployer_js",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Library with CDK resources and utilities that help to deploy JavaScript functions to AWS lambda.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "cld_build": "dist/cld_build/src/index.js"
+  },
   "scripts": {
     "test": "tsc && jest --silent",
     "prebuild": "rimraf dist",
