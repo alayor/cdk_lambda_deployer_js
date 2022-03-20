@@ -13,6 +13,10 @@ const config: Config = {
   get functionsAbsolutePath() {
     return path.join(this.projectPath, this.functionsRelativePath)
   },
+  libsRelativePath: configArg.libsRelativePath || 'src/libs',
+  get libsAbsolutePath() {
+    return path.join(this.projectPath, this.libsRelativePath)
+  },
   functionFileName: configArg.functionsRelativePath || 'function.js',
   entityNames: configArg.entityNames || [],
   libNames: configArg.libNames || [],

@@ -1,0 +1,10 @@
+{
+  "name": "build_libs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.test.ts",
+  "scripts": {
+  },
+  "author": "",
+  "license": "ISC"
+}

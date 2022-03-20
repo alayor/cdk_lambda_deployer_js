@@ -2,6 +2,8 @@ export type Config = {
   projectPath: string
   functionsRelativePath: string
   functionsAbsolutePath: string
+  libsRelativePath: string
+  libsAbsolutePath: string
   functionFileName: string
   entityNames: string[]
   libNames: string[]

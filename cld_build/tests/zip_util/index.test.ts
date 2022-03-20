@@ -8,6 +8,8 @@ import { touchFile } from 'cld_build/util'
 let projectPath: string
 let functionsRelativePath: string
 let functionsAbsolutePath: string
+let libsRelativePath: string
+let libsAbsolutePath: string
 let outputRelativePath: string
 let outputAbsolutePath: string
 
@@ -15,6 +17,8 @@ beforeEach(async () => {
   projectPath = __dirname
   functionsRelativePath = path.join('input', 'functions')
   functionsAbsolutePath = path.join(projectPath, functionsRelativePath)
+  libsRelativePath = path.join('input', 'libs')
+  libsAbsolutePath = path.join(projectPath, libsRelativePath)
   outputRelativePath = 'output'
   outputAbsolutePath = path.join(projectPath, outputRelativePath)
   await new Promise((resolve) => rimraf(outputAbsolutePath, resolve))
@@ -26,6 +30,8 @@ test('it generates zip files for functions.', async () => {
     projectPath,
     functionsRelativePath,
     functionsAbsolutePath,
+    libsRelativePath,
+    libsAbsolutePath,
     functionFileName: 'index.js',
     entityNames: ['customer', 'deliverer'],
     libNames: [],
@@ -59,6 +65,8 @@ test('it generates zip files for libs.', async () => {
     projectPath,
     functionsRelativePath,
     functionsAbsolutePath,
+    libsRelativePath,
+    libsAbsolutePath,
     functionFileName: 'index.js',
     entityNames: [],
     libNames: ['db', 'util'],
