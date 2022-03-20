@@ -43,10 +43,12 @@ export async function zipLibs(config: Config) {
 async function zipLib(config: Config, libName: string) {
   const { outputAbsolutePath } = config
   const archive = archiver('zip')
-  const dirPath = `${outputAbsolutePath}/libs/${libName}`
+  const dirPath = path.join(outputAbsolutePath, 'libs', libName)
   const output = fs.createWriteStream(path.join(dirPath, 'nodejs.zip'))
   archive.pipe(output)
-  archive.directory(`${outputAbsolutePath}/libs/${libName}/nodejs/`, 'nodejs')
+  archive.directory(path.join(outputAbsolutePath, 'libs', libName, 'nodejs'), 'nodejs')
   await archive.finalize()
-  rimraf.sync(`${outputAbsolutePath}/libs/${libName}/nodejs`)
+  await new Promise((resolve) =>
+    rimraf(path.join(outputAbsolutePath, 'libs', libName, 'nodejs'), resolve),
+  )
 }
