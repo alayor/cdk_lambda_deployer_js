@@ -18,7 +18,7 @@ export async function zipFunctions(config: Config) {
     const output = fs.createWriteStream(path.join(dirPath, '/function.zip'))
     archive.pipe(output)
     archive.append(fs.createReadStream(functionPath), { name: functionFileName })
-    archive.finalize()
+    await archive.finalize()
     zippedFunctions.push(functionPath)
   })
   return zippedFunctions
@@ -34,18 +34,19 @@ function buildDirPath(config: Config, functionPath: string) {
 }
 
 export async function zipLibs(config: Config) {
-  await zipLib(config, 'customer_lib')
-  await zipLib(config, 'deliverer_lib')
-  await zipLib(config, 'admin_lib')
+  const { libNames } = config
+  await Bluebird.each(libNames, async (libName) => {
+    await zipLib(config, libName)
+  })
 }
 
 async function zipLib(config: Config, libName: string) {
-  const { outputRelativePath } = config
+  const { outputAbsolutePath } = config
   const archive = archiver('zip')
-  const dirPath = `${outputRelativePath}/libs/${libName}`
+  const dirPath = `${outputAbsolutePath}/libs/${libName}`
   const output = fs.createWriteStream(path.join(dirPath, 'nodejs.zip'))
   archive.pipe(output)
-  archive.directory(`${outputRelativePath}/libs/${libName}/nodejs/`, 'nodejs')
+  archive.directory(`${outputAbsolutePath}/libs/${libName}/nodejs/`, 'nodejs')
   await archive.finalize()
-  rimraf.sync(`${outputRelativePath}/libs/${libName}/nodejs`)
+  rimraf.sync(`${outputAbsolutePath}/libs/${libName}/nodejs`)
 }

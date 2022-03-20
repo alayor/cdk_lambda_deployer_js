@@ -14,8 +14,26 @@ export function makeDirRecursive(dirPath: string): Promise<undefined> {
 function fileExists(filePath: string): Promise<boolean> {
   return new Promise((resolve) => {
     fs.access(filePath, fs.constants.F_OK, (err) => {
-      console.log('err: ', err)
       return resolve(!err)
+    })
+  })
+}
+
+export async function touchFile(filePath: string, fileName: string): Promise<undefined> {
+  await makeDirRecursive(filePath)
+  return new Promise((resolve) => {
+    const time = new Date()
+    const file = path.join(filePath, fileName)
+    fs.utimes(file, time, time, (err) => {
+      if (err) {
+        fs.open(file, 'w', (err, fd) => {
+          if (err) throw err
+          fs.close(fd, (err) => {
+            if (err) throw err
+          })
+        })
+      }
+      return resolve(void 0)
     })
   })
 }

@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as Bluebird from 'bluebird'
 import * as rimraf from 'rimraf'
 import * as zip_util from 'cld_build/zip_util'
+import { touchFile } from 'cld_build/util'
 
 let projectPath: string
 let functionsRelativePath: string
@@ -34,12 +35,12 @@ test('it generates zip files for functions.', async () => {
   //when
   await zip_util.zipFunctions(config)
   //then
-  const expectedZipFiles = [
+  const expectedZipFilePaths = [
     ['customer', 'orders', 'place'],
     ['deliverer', 'auth', 'login'],
   ]
-  await Bluebird.each(expectedZipFiles, async (expectedZipFile) => {
-    expect(await fileExistsInOutput(path.join(...expectedZipFile, 'function.zip'))).toBeTruthy()
+  await Bluebird.each(expectedZipFilePaths, async (expectedZipFilePath) => {
+    expect(await fileExistsInOutput(path.join(...expectedZipFilePath, 'function.zip'))).toBeTruthy()
   })
 })
 
@@ -51,3 +52,29 @@ function fileExistsInOutput(filePath: string): Promise<boolean> {
     })
   })
 }
+
+test('it generates zip files for libs.', async () => {
+  //given
+  const config = {
+    projectPath,
+    functionsRelativePath,
+    functionsAbsolutePath,
+    functionFileName: 'index.js',
+    entityNames: [],
+    libNames: ['db', 'util'],
+    outputRelativePath,
+    outputAbsolutePath,
+  }
+  await touchFile(path.join(outputAbsolutePath, 'libs', 'db'), 'nocommit.js')
+  await touchFile(path.join(outputAbsolutePath, 'libs', 'util'), 'nocommit.js')
+  //when
+  await zip_util.zipLibs(config)
+  //then
+  const expectedZipFilePaths = [
+    ['libs', 'db'],
+    ['libs', 'util'],
+  ]
+  await Bluebird.each(expectedZipFilePaths, async (expectedZipFilePath) => {
+    expect(await fileExistsInOutput(path.join(...expectedZipFilePath, 'nodejs.zip'))).toBeTruthy()
+  })
+})
