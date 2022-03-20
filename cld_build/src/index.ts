@@ -7,10 +7,11 @@ import { zipFunctions, zipLibs } from './zip_util'
 import { generateFunctionsMetadata, generateLibsMetadata } from './generate_metadata'
 import { buildLibs } from 'cld_build/libs'
 import { Config } from 'cld_build/types'
+import { getConfig } from 'cld_build/config'
 
-const configArg = JSON.parse(process.argv[2]) as Config
+const { config: configArg, projectPath } = getConfig()
 const config: Config = {
-  projectPath: __dirname, //TODO: Find first package.json with cld_config key (npm: find-package-json)
+  projectPath,
   functionsRelativePath: configArg.functionsRelativePath || 'src/functions',
   get functionsAbsolutePath() {
     return path.join(this.projectPath, this.functionsRelativePath)
