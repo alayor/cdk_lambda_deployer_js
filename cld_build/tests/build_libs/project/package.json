@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.test.ts",
-  "scripts": {
-  },
+  "scripts": {},
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }

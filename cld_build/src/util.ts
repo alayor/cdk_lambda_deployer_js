@@ -38,6 +38,14 @@ export async function touchFile(filePath: string, fileName: string): Promise<und
   })
 }
 
+export function copyFile(originPath: string, destPath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    fs.copyFile(originPath, destPath, (err) => {
+      return resolve(!err)
+    })
+  })
+}
+
 export async function getFilePaths(directoryName: string, filter: RegExp, results: string[] = []) {
   let files = await fsp.readdir(directoryName, { withFileTypes: true })
   for (let f of files) {

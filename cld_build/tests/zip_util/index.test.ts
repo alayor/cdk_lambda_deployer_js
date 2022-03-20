@@ -14,10 +14,10 @@ let outputRelativePath: string
 let outputAbsolutePath: string
 
 beforeEach(async () => {
-  projectPath = __dirname
-  functionsRelativePath = path.join('input', 'functions')
+  projectPath = path.join(__dirname, 'project')
+  functionsRelativePath = 'functions'
   functionsAbsolutePath = path.join(projectPath, functionsRelativePath)
-  libsRelativePath = path.join('input', 'libs')
+  libsRelativePath = 'libs'
   libsAbsolutePath = path.join(projectPath, libsRelativePath)
   outputRelativePath = 'output'
   outputAbsolutePath = path.join(projectPath, outputRelativePath)

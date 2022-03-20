@@ -5,7 +5,7 @@ import * as Bluebird from 'bluebird'
 import * as child from 'child_process'
 import * as rimraf from 'rimraf'
 import { Config } from 'cld_build/types'
-import {makeDirRecursive} from "cld_build/util";
+import { copyFile, makeDirRecursive } from 'cld_build/util'
 const exec = util.promisify(child.exec)
 
 export async function buildLibs(config: Config) {
@@ -21,7 +21,7 @@ export async function buildLib(config: Config, libName: string) {
   const libFolder = `${rootFolder}/${libName}/`
   await new Promise((resolve) => rimraf(rootFolder, resolve))
   await makeDirRecursive(libFolder)
-  fs.copyFileSync(path.join(projectPath, 'package.json'), `${rootFolder}/package.json`)
+  await copyFile(path.join(projectPath, 'package.json'), `${rootFolder}/package.json`)
   await exec(
     `rsync ${libsAbsolutePath}/${libName}/* -a --include "*/" --include="*.js" --include="*.json" --exclude="*" ${libFolder}`,
   )
