@@ -3,40 +3,21 @@ import * as Bluebird from 'bluebird'
 import * as rimraf from 'rimraf'
 import * as zip_util from 'cld_build/zip_util'
 import { fileExists, touchFile } from 'cld_build/util'
+import {initializeConfig} from "../common";
+import {Config} from "cld_build/types";
 
-let projectPath: string
-let functionsRelativePath: string
-let functionsAbsolutePath: string
-let libsRelativePath: string
-let libsAbsolutePath: string
-let outputRelativePath: string
-let outputAbsolutePath: string
+let config: Config
 
 beforeEach(async () => {
-  projectPath = path.join(__dirname, 'project')
-  functionsRelativePath = 'functions'
-  functionsAbsolutePath = path.join(projectPath, functionsRelativePath)
-  libsRelativePath = 'libs'
-  libsAbsolutePath = path.join(projectPath, libsRelativePath)
-  outputRelativePath = 'output'
-  outputAbsolutePath = path.join(projectPath, outputRelativePath)
+  config = initializeConfig(__dirname)
+  const { outputAbsolutePath } = config
+
   await new Promise((resolve) => rimraf(outputAbsolutePath, resolve))
 })
 
 test('it generates zip files for functions.', async () => {
   //given
-  const config = {
-    projectPath,
-    functionsRelativePath,
-    functionsAbsolutePath,
-    libsRelativePath,
-    libsAbsolutePath,
-    functionFileName: 'index.js',
-    entityNames: ['customer', 'deliverer'],
-    libNames: [],
-    outputRelativePath,
-    outputAbsolutePath,
-  }
+  const { outputAbsolutePath } = config
   //when
   await zip_util.zipFunctions(config)
   //then
@@ -53,18 +34,7 @@ test('it generates zip files for functions.', async () => {
 
 test('it generates zip files for libs.', async () => {
   //given
-  const config = {
-    projectPath,
-    functionsRelativePath,
-    functionsAbsolutePath,
-    libsRelativePath,
-    libsAbsolutePath,
-    functionFileName: 'index.js',
-    entityNames: [],
-    libNames: ['db', 'util'],
-    outputRelativePath,
-    outputAbsolutePath,
-  }
+  const { outputAbsolutePath } = config
   await touchFile(path.join(outputAbsolutePath, 'libs', 'db'), 'nocommit.js')
   await touchFile(path.join(outputAbsolutePath, 'libs', 'util'), 'nocommit.js')
   //when
