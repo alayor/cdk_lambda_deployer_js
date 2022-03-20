@@ -22,8 +22,8 @@ test('it generates zip files for functions.', async () => {
   await zip_util.zipFunctions(config)
   //then
   const expectedZipFilePaths = [
-    ['customer', 'orders', 'place'],
-    ['deliverer', 'auth', 'login'],
+    ['functions', 'customer', 'orders', 'place'],
+    ['functions', 'deliverer', 'auth', 'login'],
   ]
   await Bluebird.each(expectedZipFilePaths, async (expectedZipFilePath) => {
     expect(

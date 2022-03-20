@@ -28,7 +28,7 @@ function buildDirPath(config: Config, functionPath: string) {
   const { projectPath, functionsRelativePath, functionFileName, outputRelativePath } = config
   const relativeDirPath = functionPath
     .replace(functionsRelativePath, '')
-    .replace(projectPath, outputRelativePath)
+    .replace(projectPath, path.join(outputRelativePath, 'functions'))
     .replace(functionFileName, '')
   return path.join(projectPath, relativeDirPath)
 }
