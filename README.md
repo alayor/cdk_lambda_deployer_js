@@ -1,4 +1,4 @@
-# CDK Lambda Deployer JS (CDL)
+# CDK Lambda Deployer JS (CLD)
 
 Library with CDK resources and utilities that help to deploy JavaScript functions to AWS lambda.
 
