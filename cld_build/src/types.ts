@@ -1,13 +1,16 @@
-export type Config = {
-  projectPath: string
+export type UserConfig = {
   functionsRelativePath: string
-  functionsAbsolutePath: string
   libsRelativePath: string
-  libsAbsolutePath: string
   functionFileName: string
   entityNames: string[]
   libNames: string[]
   outputRelativePath: string
+}
+
+export type Config = UserConfig & {
+  projectPath: string
+  functionsAbsolutePath: string
+  libsAbsolutePath: string
   outputAbsolutePath: string
 }
 
