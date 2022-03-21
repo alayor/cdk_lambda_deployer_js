@@ -32,14 +32,18 @@ You need to add this configuration to your package.json
 ```
 
 _functionsRelativePath_: This property tells CLD where to find the functions that will be the source of the lambda functions.
+
 _functionFileName_: This property tells cld what file names inside the functionsRelativePath will be considered to be lambda functions source code.
 Note: Only one file will be deployed to the lambda function.
+
 _libsRelativePath_: This property tells CLD where the files are located for the lambda layers. You can use this for you project libraries.
+
 _entityNames_: These are the sub-folder names inside the _functionsRelativePath_ that will be scanned for files with name _functionFileName_.
 These will be used as function name prefixes as well.
+
 _libNames_: Like the _entityNames_, these are the sub-folder names inside the _libsRelativePath_ that will be scanned for the files to be the source of the layers.
 
-_outputRelativePath_: Is the folder that will be used to create the lambda functions and layers. It is recommended that you ignore 
+_outputRelativePath_: Is the folder that will be used to create the lambda functions and layers. It is recommended that you ignore
 this file in your source code control.
 
 Your _outputRelativePath_ folder will end up with two sub-folders: *functions* and *libs*.
@@ -48,46 +52,51 @@ Libs will be the source of the lambda layers.
 
 Supposing your project looks like this:
 - myProject
-  - package.json
-  - src
-    - functions
-      - customer
-        - order
-          - place
-            - util.js
-            - function.js
-      - deliverer
-        - offer
-          - publish
-            - function.js
-    - libs
-      - db
-        - connection.js
-      - util
-        - util.js
+    - package.json
+    - src
+        - functions
+            - customer
+                - order
+                    - place
+                        - util.js
+                        - function.js
+            - deliverer
+                - offer
+                    - publish
+                        - function.js
+        - libs
+            - db
+                - connection.js
+            - util
+                - util.js
 
 And
 _functionsRelativePath_ is: "src/functions"
+
 _functionFileName_ is: "function.js"
+
 _libsRelativePath_ is: "src/libs"
+
 _entityNames_ is: ["customer", "deliverer"]
+
 _libNames_ is: ["db", "util"]
 
-Your output folder will look like this:
+
+Then, your output folder will look like this:
 - functions
-  - customer
-    - order
-      - place
-        - function.zip
-  - deliverer
-    - offer
-      - publish
-        - function.zip
+    - customer
+        - order
+            - place
+                - function.zip
+    - deliverer
+        - offer
+            - publish
+                - function.zip
 - libs
-  - db
-    - nodejs.zip
-  - util
-    - nodejs.zip
+    - db
+        - nodejs.zip
+    - util
+        - nodejs.zip
 
 
 # Set up CLD_DEPLOY
