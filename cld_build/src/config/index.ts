@@ -8,7 +8,6 @@ export function getConfig(): Config {
   if (!userConfig) {
     userConfig = getConfigFromPackageJson()
   }
-  //TODO Validate user config
   return buildConfig(userConfig.config, userConfig.configPath)
 }
 
