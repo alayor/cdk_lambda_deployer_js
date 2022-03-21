@@ -54,6 +54,7 @@ Functions will be the source of the lambda functions.
 Libs will be the source of the lambda layers.
 
 Supposing your project looks like this:
+```text
 - myProject
     - package.json
     - src
@@ -72,6 +73,7 @@ Supposing your project looks like this:
                 - connection.js
             - util
                 - util.js
+```
 
 And
 
@@ -87,6 +89,7 @@ And
 
 
 Then, your output folder will look like this:
+```text
 - functions
     - customer
         - order
@@ -101,7 +104,7 @@ Then, your output folder will look like this:
         - nodejs.zip
     - util
         - nodejs.zip
-
+```
 
 ## Set up CLD_DEPLOY
 
