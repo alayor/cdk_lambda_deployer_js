@@ -15,7 +15,7 @@ export function initializeConfig(currentDir: string): Config {
     functionFileName: 'index.js',
     entityNames: ['customer', 'deliverer'],
     libNames: ['util', 'db'],
-    outputRelativePath: 'output',
+    outputRelativePath: 'cld_output',
     get outputAbsolutePath() {
       return path.join(this.projectPath, this.outputRelativePath)
     },

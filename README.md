@@ -28,7 +28,7 @@ You need to add this configuration to your package.json
       "libsRelativePath": "src/libs",
       "entityNames": ["admin", "customer", "deliverer"],
       "libNames": ["db", "util"],
-      "outputRelativePath": "output"
+      "outputRelativePath": "cld_output"
     }
   }
 }
@@ -36,7 +36,7 @@ You need to add this configuration to your package.json
 
 * _functionsRelativePath_: This property tells CLD where to find the functions that will be the source of the lambda functions.
 
-* _functionFileName_: This property tells cld what file names inside the functionsRelativePath will be considered to be lambda functions source code.
+* _functionFileName_: Default: 'function.js'. This property tells cld what file names inside the functionsRelativePath will be considered to be lambda functions source code.
 Note: Only one file will be deployed to the lambda function.
 
 * _libsRelativePath_: This property tells CLD where the files are located for the lambda layers. You can use this for you project libraries.
@@ -46,7 +46,7 @@ These will be used as function name prefixes as well.
 
 * _libNames_: Like the _entityNames_, these are the sub-folder names inside the _libsRelativePath_ that will be scanned for the files to be the source of the layers.
 
-* _outputRelativePath_: Is the folder that will be used to create the lambda functions and layers. It is recommended that you ignore
+* _outputRelativePath_: Default: 'cld_output'. This folder will be used to save the generated the lambda functions and layers source files. We recommend that you ignore
 this file in your source code control.
 
 Your _outputRelativePath_ folder will end up with two sub-folders: *functions* and *libs*.
@@ -86,9 +86,11 @@ And
 * _entityNames_ is: ["customer", "deliverer"]
 
 * _libNames_ is: ["db", "util"]
+* 
+* _outputRelativePath_ is: "cld_output"
 
 
-Then, your output folder will look like this:
+Then, a new "cld_output" folder will be created with this structure:
 ```text
 - functions
     - customer

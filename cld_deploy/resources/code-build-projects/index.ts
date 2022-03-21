@@ -32,7 +32,7 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
               'ls -la',
               'npm install',
               'npm run build',
-              `aws s3 sync --only-show-errors --delete output s3://${stageBucket.bucketName}/`,
+              `aws s3 sync --only-show-errors --delete cld_output s3://${stageBucket.bucketName}/`, //TODO get output folder name from config
               `aws lambda invoke --function-name ${updateSourceFunction.functionName} response.json`,
               `aws lambda invoke --function-name ${updateLambdaFunction.functionName} response.json`,
             ],

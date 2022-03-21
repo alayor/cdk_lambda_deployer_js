@@ -8,7 +8,7 @@ import { fileExists } from 'cld_build/util'
 
 let outputAbsolutePath: string
 beforeEach(async () => {
-  outputAbsolutePath = path.join(__dirname, 'project', 'output')
+  outputAbsolutePath = path.join(__dirname, 'project', 'cld_output')
   await new Promise((resolve) => rimraf(outputAbsolutePath, resolve))
 })
 
@@ -42,4 +42,4 @@ test('it builds the lambda functions and layer sources.', async () => {
   await Bluebird.each(expectedFilePaths, async (expectedFilePath) => {
     expect(await fileExists(path.join(outputAbsolutePath, ...expectedFilePath))).toBeTruthy()
   })
-}, 30000)
+}, 40000)

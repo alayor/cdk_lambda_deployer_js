@@ -5,6 +5,6 @@
     "functionFileName": "index.js",
     "entityNames": ["customer", "deliverer"],
     "libNames": ["db", "util"],
-    "outputRelativePath": "output"
+    "outputRelativePath": "cld_output"
   }
 }

@@ -11,7 +11,7 @@ let config: Config
 beforeEach(async () => {
   config = initializeConfig(__dirname)
   await new Promise((resolve) => rimraf(config.outputAbsolutePath, resolve))
-})
+}, 10000)
 
 test('it builds libs.', async () => {
   //given
