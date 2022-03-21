@@ -4,7 +4,7 @@ import * as find_package_json from 'find-package-json'
 import { Config, UserConfig } from 'cld_build/types'
 
 export function getConfig(): Config {
-  let userConfig = getConfigFromPath()
+  let userConfig = getConfigFromCldJson()
   if (!userConfig) {
     userConfig = getConfigFromPackageJson()
   }
@@ -12,10 +12,10 @@ export function getConfig(): Config {
   return buildConfig(userConfig.config, userConfig.configPath)
 }
 
-function getConfigFromPath(): { config: UserConfig; configPath: string } | undefined {
+function getConfigFromCldJson(): { config: UserConfig; configPath: string } | undefined {
   const argv = minimist(process.argv.slice(2))
   if (argv.config) {
-    const config = require(argv.config) as UserConfig
+    const config = require(argv.config).build as UserConfig
     const configPath = argv.config.replace('/cld.json', '')
     return { config, configPath }
   }

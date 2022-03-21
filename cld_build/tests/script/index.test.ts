@@ -3,12 +3,13 @@ import { initializeConfig } from '../common'
 import * as rimraf from 'rimraf'
 import { Config } from 'cld_build/types'
 import { exec } from 'child_process'
+import * as Bluebird from 'bluebird'
+import { fileExists } from 'cld_build/util'
 
-let config: Config
-
+let outputAbsolutePath: string
 beforeEach(async () => {
-  config = initializeConfig(__dirname)
-  await new Promise((resolve) => rimraf(config.outputAbsolutePath, resolve))
+  outputAbsolutePath = path.join(__dirname, 'project', 'output')
+  await new Promise((resolve) => rimraf(outputAbsolutePath, resolve))
 })
 
 test('it builds the lambda functions and layer sources.', async () => {
@@ -30,5 +31,15 @@ test('it builds the lambda functions and layer sources.', async () => {
     )
   })
   //then
-
+  const expectedFilePaths = [
+    ['functions', 'customer', 'orders', 'place', 'function.zip'],
+    ['functions', 'deliverer', 'auth', 'login', 'function.zip'],
+    ['functions', 'metadata.json'],
+    ['libs', 'db', 'nodejs.zip'],
+    ['libs', 'util', 'nodejs.zip'],
+    ['libs', 'metadata.json'],
+  ]
+  await Bluebird.each(expectedFilePaths, async (expectedFilePath) => {
+    expect(await fileExists(path.join(outputAbsolutePath, ...expectedFilePath))).toBeTruthy()
+  })
 }, 30000)

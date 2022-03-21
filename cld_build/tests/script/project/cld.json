@@ -1,8 +1,10 @@
 {
-  "functionsRelativePath": "functions",
-  "libsRelativePath": "libs",
-  "functionFileName": "index.js",
-  "entityNames": ["customer", "deliverer"],
-  "libNames": ["db", "util"],
-  "outputRelativePath": "output"
+  "build": {
+    "functionsRelativePath": "functions",
+    "libsRelativePath": "libs",
+    "functionFileName": "index.js",
+    "entityNames": ["customer", "deliverer"],
+    "libNames": ["db", "util"],
+    "outputRelativePath": "output"
+  }
 }
