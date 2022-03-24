@@ -17,6 +17,8 @@ a CDK infrastructure project. Those projects can be in different or the same rep
 
 ## Set up CLD_BUILD
 
+`npm i --dev cdk_lambda_deployer_js`
+
 You need to add this configuration to your package.json
 
 ```json
@@ -108,7 +110,12 @@ Then, a new "cld_output" folder will be created with this structure:
         - nodejs.zip
 ```
 
+In order to manually generate the output, you can run the command `cld_build`.
+Note: this output will be used by the CLD_DEPLOY project on its CI workflow.
+
+
 ## Set up CLD_DEPLOY
+`npm i --dev cdk_lambda_deployer_js`
 
 You have two options to add the CLD_DEPLOY resources to your CDK project.
 
