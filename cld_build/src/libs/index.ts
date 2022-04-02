@@ -21,6 +21,8 @@ export async function buildLib(config: Config, libName: string) {
   const libFolder = `${rootFolder}/${libName}/`
   await new Promise((resolve) => rimraf(rootFolder, resolve))
   await makeDirRecursive(libFolder)
+
+  //TODO: Important! Use esbuild instead of copying package.json and running npm install.
   await copyFile(path.join(projectPath, 'package.json'), `${rootFolder}/package.json`)
   await exec(
     `rsync ${libsAbsolutePath}/${libName}/* -a --include "*/" --include="*.js" --include="*.json" --exclude="*" ${libFolder}`,
