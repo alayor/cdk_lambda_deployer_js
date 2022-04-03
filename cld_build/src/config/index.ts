@@ -52,8 +52,9 @@ function buildConfig(config: UserConfig, projectPath: string): Config {
       return path.join(this.projectPath, this.libsRelativePath)
     },
     functionFileName: config.functionFileName || 'function.js',
-    entityNames: config.entityNames || [],
-    libNames: config.libNames || [],
+    functionGroups: config.functionGroups || [],
+    libs: config.libs || [],
+    functionGroupLibs: {},
     outputRelativePath: config.outputRelativePath || 'cld_output',
     get outputAbsolutePath() {
       return path.join(this.projectPath, this.outputRelativePath)

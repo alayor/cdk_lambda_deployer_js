@@ -7,11 +7,11 @@ import { getFilePaths } from 'cld_build/util'
 import { Config } from 'cld_build/types'
 
 export async function generateFunctionsMetadata(config: Config) {
-  const { entityNames, outputAbsolutePath } = config
+  const { functionGroups, outputAbsolutePath } = config
   const metadata = await Bluebird.reduce(
-    entityNames,
-    async (acc: EntityFunctionMetadata, entityName) => {
-      acc[entityName] = await generateFunctionMetadata(config, entityName)
+    functionGroups,
+    async (acc: EntityFunctionMetadata, functionGroup) => {
+      acc[functionGroup] = await generateFunctionMetadata(config, functionGroup)
       return acc
     },
     {},
@@ -23,14 +23,14 @@ export async function generateFunctionsMetadata(config: Config) {
   )
 }
 
-async function generateFunctionMetadata(config: Config, entityName: string) {
+async function generateFunctionMetadata(config: Config, functionGroup: string) {
   const { functionsAbsolutePath, functionFileName } = config
-  const pathPrefix = `${functionsAbsolutePath}/${entityName}/`
+  const pathPrefix = `${functionsAbsolutePath}/${functionGroup}/`
   const functionPaths = await getFilePaths(pathPrefix, /\.js$/)
   return functionPaths.reduce((prev: FunctionMetadata, fullPath) => {
     const functionPath = fullPath.replace(pathPrefix, '').replace(`/${functionFileName}`, '')
     const key = functionPath.replace(/\//g, '_')
-    const zipPath = path.join('functions', entityName, functionPath, 'function.zip')
+    const zipPath = path.join('functions', functionGroup, functionPath, 'function.zip')
     prev[key] = {
       hash: calculateHash(fullPath),
       zipPath,
@@ -40,13 +40,13 @@ async function generateFunctionMetadata(config: Config, entityName: string) {
 }
 
 export async function generateLibsMetadata(config: Config) {
-  const { libNames, outputAbsolutePath } = config
+  const { libs, outputAbsolutePath } = config
 
   const metadata = await Bluebird.reduce(
-    libNames,
-    async (acc: LibMetadata, libName) => {
-      acc[libName] = {
-        files: await generateLibFilesMetadata(config, libName),
+    libs,
+    async (acc: LibMetadata, lib) => {
+      acc[lib] = {
+        files: await generateLibFilesMetadata(config, lib),
       }
       return acc
     },

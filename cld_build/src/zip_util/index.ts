@@ -34,21 +34,21 @@ function buildDirPath(config: Config, functionPath: string) {
 }
 
 export async function zipLibs(config: Config) {
-  const { libNames } = config
-  await Bluebird.each(libNames, async (libName) => {
-    await zipLib(config, libName)
+  const { libs } = config
+  await Bluebird.each(libs, async (lib) => {
+    await zipLib(config, lib)
   })
 }
 
-async function zipLib(config: Config, libName: string) {
+async function zipLib(config: Config, lib: string) {
   const { outputAbsolutePath } = config
   const archive = archiver('zip')
-  const dirPath = path.join(outputAbsolutePath, 'libs', libName)
+  const dirPath = path.join(outputAbsolutePath, 'libs', lib)
   const output = fs.createWriteStream(path.join(dirPath, 'nodejs.zip'))
   archive.pipe(output)
-  archive.directory(path.join(outputAbsolutePath, 'libs', libName, 'nodejs'), 'nodejs')
+  archive.directory(path.join(outputAbsolutePath, 'libs', lib, 'nodejs'), 'nodejs')
   await archive.finalize()
   await new Promise((resolve) =>
-    rimraf(path.join(outputAbsolutePath, 'libs', libName, 'nodejs'), resolve),
+    rimraf(path.join(outputAbsolutePath, 'libs', lib, 'nodejs'), resolve),
   )
 }

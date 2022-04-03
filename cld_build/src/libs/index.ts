@@ -9,23 +9,23 @@ import { copyFile, makeDirRecursive } from 'cld_build/util'
 const exec = util.promisify(child.exec)
 
 export async function buildLibs(config: Config) {
-  const { libNames } = config
-  await Bluebird.each(libNames, async (libName) => {
-    await buildLib(config, libName)
+  const { libs } = config
+  await Bluebird.each(libs, async (lib) => {
+    await buildLib(config, lib)
   })
 }
 
-export async function buildLib(config: Config, libName: string) {
+export async function buildLib(config: Config, lib: string) {
   const { projectPath, libsAbsolutePath, outputAbsolutePath } = config
-  const rootFolder = `${outputAbsolutePath}/libs/${libName}/nodejs`
-  const libFolder = `${rootFolder}/${libName}/`
+  const rootFolder = `${outputAbsolutePath}/libs/${lib}/nodejs`
+  const libFolder = `${rootFolder}/${lib}/`
   await new Promise((resolve) => rimraf(rootFolder, resolve))
   await makeDirRecursive(libFolder)
 
   //TODO: Important! Use esbuild instead of copying package.json and running npm install.
   await copyFile(path.join(projectPath, 'package.json'), `${rootFolder}/package.json`)
   await exec(
-    `rsync ${libsAbsolutePath}/${libName}/* -a --include "*/" --include="*.js" --include="*.json" --exclude="*" ${libFolder}`,
+    `rsync ${libsAbsolutePath}/${lib}/* -a --include "*/" --include="*.js" --include="*.json" --exclude="*" ${libFolder}`,
   )
   await exec(`cd ${rootFolder} && npm install --no-save --no-optional --production`)
 }

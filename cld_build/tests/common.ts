@@ -13,8 +13,12 @@ export function initializeConfig(currentDir: string): Config {
       return path.join(this.projectPath, this.libsRelativePath)
     },
     functionFileName: 'index.js',
-    entityNames: ['customer', 'deliverer'],
-    libNames: ['util', 'db'],
+    functionGroups: ['customer', 'deliverer'],
+    libs: ['util', 'db'],
+    functionGroupLibs: {
+      customer: ['util', 'db'],
+      deliverer: ['util', 'db'],
+    },
     outputRelativePath: 'cld_output',
     get outputAbsolutePath() {
       return path.join(this.projectPath, this.outputRelativePath)

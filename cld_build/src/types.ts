@@ -2,8 +2,9 @@ export type UserConfig = {
   functionsRelativePath: string
   libsRelativePath: string
   functionFileName: string
-  entityNames: string[]
-  libNames: string[]
+  functionGroups: string[]
+  libs: string[]
+  functionGroupLibs: Record<string, Array<String>>
   outputRelativePath: string
 }
 

@@ -3,8 +3,12 @@
     "functionsRelativePath": "functions",
     "libsRelativePath": "libs",
     "functionFileName": "index.js",
-    "entityNames": ["customer", "deliverer"],
-    "libNames": ["db", "util"],
+    "functionGroups": ["customer", "deliverer"],
+    "libs": ["db", "util"],
+    "functionGroupLibs": {
+      "customer": ["util", "db"],
+      "deliverer": ["util", "db"]
+    },
     "outputRelativePath": "cld_output"
   }
 }

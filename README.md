@@ -28,34 +28,41 @@ You need to add this configuration to your package.json
       "functionsRelativePath": "src/functions",
       "functionFileName": "function.js",
       "libsRelativePath": "src/libs",
-      "entityNames": ["admin", "customer", "deliverer"],
-      "libNames": ["db", "util"],
+      "functionGroups": ["admin", "customer", "deliverer"],
+      "libs": ["db", "util"],
+      "functionGroupLibs": {
+        "customer": ["util", "db"],
+        "deliverer": ["util", "db"]
+      },
       "outputRelativePath": "cld_output"
     }
   }
 }
 ```
 
-* _functionsRelativePath_: This property tells CLD where to find the functions that will be the source of the lambda functions.
+- _functionsRelativePath_: This property tells CLD where to find the functions that will be the source of the lambda functions.
 
-* _functionFileName_: Default: 'function.js'. This property tells cld what file names inside the functionsRelativePath will be considered to be lambda functions source code.
-Note: Only one file will be deployed to the lambda function.
+- _functionFileName_: Default: 'function.js'. This property tells cld what file names inside the functionsRelativePath will be considered to be lambda functions source code.
+  Note: Only one file will be deployed to the lambda function.
 
-* _libsRelativePath_: This property tells CLD where the files are located for the lambda layers. You can use this for you project libraries.
+- _libsRelativePath_: This property tells CLD where the files are located for the lambda layers. You can use this for you project libraries.
 
-* _entityNames_: These are the sub-folder names inside the _functionsRelativePath_ that will be scanned for files with name _functionFileName_.
-These will be used as function name prefixes as well.
+- _functionGroups_: These are the sub-folder names inside the _functionsRelativePath_ that will be scanned for files with name _functionFileName_.
+  These will be used as function name prefixes as well.
 
-* _libNames_: Like the _entityNames_, these are the sub-folder names inside the _libsRelativePath_ that will be scanned for the files to be the source of the layers.
+- _libs_: Like the _entityNames_, these are the sub-folder names inside the _libsRelativePath_ that will be scanned for the files to be the source of the layers.
 
-* _outputRelativePath_: Default: 'cld_output'. This folder will be used to save the generated the lambda functions and layers source files. We recommend that you ignore
-this file in your source code control.
+- _functionGroupLibs_: It determines a function groups to libs mapping. It will help to define the layers that will get attached to the lambda functions.
 
-Your _outputRelativePath_ folder will end up with two sub-folders: *functions* and *libs*.
+- _outputRelativePath_: Default: 'cld_output'. This folder will be used to save the generated the lambda functions and layers source files. We recommend that you ignore
+  this file in your source code control.
+
+Your _outputRelativePath_ folder will end up with two sub-folders: _functions_ and _libs_.
 Functions will be the source of the lambda functions.
 Libs will be the source of the lambda layers.
 
 Supposing your project looks like this:
+
 ```text
 - myProject
     - package.json
@@ -79,20 +86,22 @@ Supposing your project looks like this:
 
 And
 
-* _functionsRelativePath_ is: "src/functions"
+- _functionsRelativePath_ is: "src/functions"
 
-* _functionFileName_ is: "function.js"
+- _functionFileName_ is: "function.js"
 
-* _libsRelativePath_ is: "src/libs"
+- _libsRelativePath_ is: "src/libs"
 
-* _entityNames_ is: ["customer", "deliverer"]
+- _functionGroups_ is: ["customer", "deliverer"]
 
-* _libNames_ is: ["db", "util"]
-* 
-* _outputRelativePath_ is: "cld_output"
+- _libs_ is: ["db", "util"]
 
+- _functionGroupLibs_: {"customer": ["util", "db"], "deliverer": ["util", "db"]}
+
+- _outputRelativePath_ is: "cld_output"
 
 Then, a new "cld_output" folder will be created with this structure:
+
 ```text
 - functions
     - customer
@@ -113,8 +122,8 @@ Then, a new "cld_output" folder will be created with this structure:
 In order to manually generate the output, you can run the command `cld_build`.
 Note: this output will be used by the CLD_DEPLOY project on its CI workflow.
 
-
 ## Set up CLD_DEPLOY
+
 `npm i --dev cdk_lambda_deployer_js`
 
 You have two options to add the CLD_DEPLOY resources to your CDK project.
