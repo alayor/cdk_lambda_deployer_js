@@ -9,7 +9,7 @@ export async function createFunctionSource(
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
 ) {
-  const stageFunctionsMetadata = stageMetadata.functions
+  const stageFunctionsMetadata = stageMetadata.functions || {}
   const apiNames = Object.keys(stageFunctionsMetadata)
   for await (const apiName of apiNames) {
     const functionNames = Object.keys(stageFunctionsMetadata[apiName])

@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import { FunctionsMetadata, Metadata } from '../types'
-import { LOCK_FILE, METADATA_FILE_NAME, PROD_BUCKET } from "../constants";
+import { LOCK_FILE, METADATA_FILE_NAME, PROD_BUCKET } from '../constants'
 import ChangesSummary from '../changes_summary'
 
 export async function saveNewMetadata(
@@ -9,8 +9,8 @@ export async function saveNewMetadata(
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
 ) {
-  const stageFunctionsMetadata = stageMetadata.functions
-  const prodFunctionsMetadata = prodMetadata.functions
+  const stageFunctionsMetadata = stageMetadata.functions || {}
+  const prodFunctionsMetadata = prodMetadata.functions || {}
   const newProdMetadata = Object.keys(stageFunctionsMetadata).reduce((acc, apiName) => {
     const functionNames = Object.keys(stageFunctionsMetadata[apiName])
     functionNames.forEach((functionName) => {
@@ -25,6 +25,7 @@ export async function saveNewMetadata(
     return acc
   }, stageFunctionsMetadata)
   console.log('newProdMetadata: ', newProdMetadata)
+  console.log('stageFunctionsMetadata: ', stageFunctionsMetadata)
   assertEquals(stageFunctionsMetadata, newProdMetadata)
 
   await s3
@@ -52,13 +53,15 @@ export async function saveNewMetadata(
 
 function assertEquals(stageMetadata: FunctionsMetadata, prodMetadata: FunctionsMetadata) {
   const prodKeys = Object.keys(prodMetadata)
-  const stageKeys = Object.keys(prodMetadata)
+  const stageKeys = Object.keys(stageMetadata)
   if (prodKeys.length !== stageKeys.length) {
     throw new Error('Stage Metadata and new Prod Metadata are not equal!')
   }
   prodKeys.forEach((prodKey) => {
-    if (stageMetadata.functions[prodKey].hash !== prodMetadata.functions[prodKey].hash) {
-      throw new Error('Stage Metadata and new Prod Metadata are not equal!')
-    }
+    Object.keys(prodMetadata[prodKey]).forEach((functionName) => {
+      if (stageMetadata[prodKey][functionName].hash !== prodMetadata[prodKey][functionName].hash) {
+        throw new Error('Stage Metadata and new Prod Metadata are not equal!')
+      }
+    })
   })
 }
