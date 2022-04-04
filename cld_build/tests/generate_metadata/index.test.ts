@@ -1,5 +1,6 @@
-import * as _ from 'lodash'
+import * as fs from 'fs'
 import * as path from 'path'
+import * as _ from 'lodash'
 import * as generate_metadata from 'cld_build/generate_metadata'
 import { makeDirRecursive, touchFile } from 'cld_build/util'
 import * as rimraf from 'rimraf'
@@ -27,13 +28,13 @@ test('it generates functions metadata.', async () => {
   //when
   await generate_metadata.generateFunctionsMetadata(config)
   //then
-  const metadata = require(path.join(outputAbsolutePath, 'functions', 'metadata.json'))
-  expect(_.get(metadata, 'customer.orders_place.hash')).toBeTruthy()
-  expect(_.get(metadata, 'customer.orders_place.zipPath')).toEqual(
+  const metadata = JSON.parse(fs.readFileSync(path.join(outputAbsolutePath, 'metadata.json')).toString())
+  expect(_.get(metadata, 'functions.customer.orders_place.hash')).toBeTruthy()
+  expect(_.get(metadata, 'functions.customer.orders_place.zipPath')).toEqual(
     'functions/customer/orders/place/function.zip',
   )
-  expect(_.get(metadata, 'deliverer.auth_login.hash')).toBeTruthy()
-  expect(_.get(metadata, 'deliverer.auth_login.zipPath')).toEqual(
+  expect(_.get(metadata, 'functions.deliverer.auth_login.hash')).toBeTruthy()
+  expect(_.get(metadata, 'functions.deliverer.auth_login.zipPath')).toEqual(
     'functions/deliverer/auth/login/function.zip',
   )
 })
@@ -46,7 +47,8 @@ test('it generates libs metadata.', async () => {
   //when
   await generate_metadata.generateLibsMetadata(config)
   //then
-  const metadata = require(path.join(outputAbsolutePath, 'libs', 'metadata.json'))
-  expect(_.get(metadata, 'db.files.connection.hash')).toBeTruthy()
-  expect(_.get(metadata, 'util.files.util.hash')).toBeTruthy()
+  const metadata = JSON.parse(fs.readFileSync(path.join(outputAbsolutePath, 'metadata.json')).toString())
+  console.log({metadata})
+  expect(_.get(metadata, 'libs.db.files.connection.hash')).toBeTruthy()
+  expect(_.get(metadata, 'libs.util.files.util.hash')).toBeTruthy()
 })

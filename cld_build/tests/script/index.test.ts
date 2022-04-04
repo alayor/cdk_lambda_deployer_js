@@ -34,10 +34,9 @@ test('it builds the lambda functions and layer sources.', async () => {
   const expectedFilePaths = [
     ['functions', 'customer', 'orders', 'place', 'function.zip'],
     ['functions', 'deliverer', 'auth', 'login', 'function.zip'],
-    ['functions', 'metadata.json'],
     ['libs', 'db', 'nodejs.zip'],
     ['libs', 'util', 'nodejs.zip'],
-    ['libs', 'metadata.json'],
+    ['metadata.json'],
   ]
   await Bluebird.each(expectedFilePaths, async (expectedFilePath) => {
     expect(await fileExists(path.join(outputAbsolutePath, ...expectedFilePath))).toBeTruthy()

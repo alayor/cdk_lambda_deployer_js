@@ -2,32 +2,36 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as Bluebird from 'bluebird'
 import * as crypto from 'crypto'
-import { FunctionMetadata, LibFile, LibMetadata, EntityFunctionMetadata } from 'cld_build/types'
-import { getFilePaths } from 'cld_build/util'
+import {
+  FunctionMetadata,
+  LibFile,
+  LibMetadata,
+  EntityFunctionMetadata,
+  Metadata, MetadataKey
+} from "cld_build/types";
+import { fileExists, getFilePaths } from 'cld_build/util'
 import { Config } from 'cld_build/types'
+
+const METADATA_FILE_NAME = 'metadata.json'
 
 export async function generateFunctionsMetadata(config: Config) {
   const { functionGroups, outputAbsolutePath } = config
-  const metadata = await Bluebird.reduce(
+  const functionsMetadata = await Bluebird.reduce(
     functionGroups,
-    async (acc: EntityFunctionMetadata, functionGroup) => {
+    async (acc: FunctionMetadata, functionGroup) => {
       acc[functionGroup] = await generateFunctionMetadata(config, functionGroup)
       return acc
     },
     {},
   )
-
-  fs.writeFileSync(
-    path.join(outputAbsolutePath, 'functions/metadata.json'),
-    JSON.stringify(metadata, null, 2),
-  )
+  await updateMetadata(outputAbsolutePath, 'functions', functionsMetadata)
 }
 
 async function generateFunctionMetadata(config: Config, functionGroup: string) {
   const { functionsAbsolutePath, functionFileName } = config
   const pathPrefix = `${functionsAbsolutePath}/${functionGroup}/`
   const functionPaths = await getFilePaths(pathPrefix, /\.js$/)
-  return functionPaths.reduce((prev: FunctionMetadata, fullPath) => {
+  return functionPaths.reduce((prev: EntityFunctionMetadata, fullPath) => {
     const functionPath = fullPath.replace(pathPrefix, '').replace(`/${functionFileName}`, '')
     const key = functionPath.replace(/\//g, '_')
     const zipPath = path.join('functions', functionGroup, functionPath, 'function.zip')
@@ -42,7 +46,7 @@ async function generateFunctionMetadata(config: Config, functionGroup: string) {
 export async function generateLibsMetadata(config: Config) {
   const { libs, outputAbsolutePath } = config
 
-  const metadata = await Bluebird.reduce(
+  const libsMetadata = await Bluebird.reduce(
     libs,
     async (acc: LibMetadata, lib) => {
       acc[lib] = {
@@ -52,8 +56,7 @@ export async function generateLibsMetadata(config: Config) {
     },
     {},
   )
-
-  fs.writeFileSync(path.join(outputAbsolutePath, 'libs/metadata.json'), JSON.stringify(metadata, null, 2))
+  await updateMetadata(outputAbsolutePath, 'libs', libsMetadata)
 }
 
 async function generateLibFilesMetadata(config: Config, libName: string) {
@@ -75,4 +78,59 @@ function calculateHash(filePath: string) {
   const hashSum = crypto.createHash('sha256')
   hashSum.update(fileBuffer)
   return hashSum.digest('hex')
+}
+
+async function updateMetadata(
+  outputAbsolutePath: string,
+  key: MetadataKey,
+  metadata: FunctionMetadata | LibMetadata,
+) {
+  const currentMetadata = await readMetadata(outputAbsolutePath)
+  const newMetadata = buildNewMetadata(currentMetadata, key, metadata)
+  await writeMetadata(outputAbsolutePath, newMetadata as Metadata)
+}
+
+function buildNewMetadata(
+  currentMetadata: Metadata | null,
+  key: MetadataKey,
+  metadata: FunctionMetadata | LibMetadata,
+) {
+  return currentMetadata
+    ? {
+        ...currentMetadata,
+        [key]: metadata,
+      }
+    : { [key]: metadata }
+}
+
+async function readMetadata(outputAbsolutePath: string): Promise<Metadata | null> {
+  const metadataFilePath = path.join(outputAbsolutePath, METADATA_FILE_NAME)
+  if (!(await fileExists(metadataFilePath))) {
+    return Promise.resolve(null)
+  }
+  return new Promise((resolve, reject) => {
+    fs.readFile(metadataFilePath, function (err, data) {
+      if (err) {
+        console.log({ err })
+        return reject(err)
+      }
+      return resolve(JSON.parse(data.toString()))
+    })
+  })
+}
+
+async function writeMetadata(outputAbsolutePath: string, metadata: Metadata) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(
+      path.join(outputAbsolutePath, METADATA_FILE_NAME),
+      JSON.stringify(metadata, null, 2),
+      function (err) {
+        if (err) {
+          console.log({ err })
+          return reject(err)
+        }
+        return resolve(null)
+      },
+    )
+  })
 }

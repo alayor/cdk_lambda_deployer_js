@@ -20,9 +20,9 @@ export type FunctionMetadataDetail = {
   zipPath: string
 }
 
-export type FunctionMetadata = { [functionName: string]: FunctionMetadataDetail }
+export type EntityFunctionMetadata = { [functionName: string]: FunctionMetadataDetail }
 
-export type EntityFunctionMetadata = { [entityName: string]: FunctionMetadata }
+export type FunctionMetadata = { [entityName: string]: EntityFunctionMetadata }
 
 export type LibFile = Record<string, { hash: string }>
 
@@ -31,3 +31,10 @@ type LibFiles = {
 }
 
 export type LibMetadata = Record<string, LibFiles>
+
+export type Metadata = {
+  functions: FunctionMetadata
+  libs: LibMetadata
+}
+
+export type MetadataKey = 'functions' | 'libs'
