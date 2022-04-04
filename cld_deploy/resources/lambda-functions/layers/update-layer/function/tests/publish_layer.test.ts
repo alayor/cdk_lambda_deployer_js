@@ -7,9 +7,8 @@ import {
 import { LibMetadata } from '../src/types'
 import { whenS3GetObjectReturnsBody } from 'cld_deploy/_util/tests/mocking/s3'
 import {
-  FUNCTIONS_METADATA_FILE_NAME,
+  METADATA_FILE_NAME,
   LIBS_CHANGES_SUMMARY_FILE_NAME,
-  LIBS_METADATA_FILE_NAME,
   PROD_BUCKET,
 } from '../src/constants'
 import { handler } from '../src/index'
@@ -30,18 +29,13 @@ test('Publish Layer Versions For Lib Changes', async () => {
     { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
     JSON.stringify(changesSummary),
   )
-  const libsMetadata = require('./data/metadata/libs1.json') as LibMetadata
+  const metadata = require('./data/metadata/libs_and_functions1.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: LIBS_METADATA_FILE_NAME },
-    JSON.stringify(libsMetadata),
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    JSON.stringify(metadata),
   )
   when(lambda.getLayerVersion).mockImplementation(
     returnPromiseObjectWithError({ code: 'ResourceNotFoundException' }),
-  )
-  const functionsMetadata = require('./data/metadata/functions1.json') as LibMetadata
-  whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
-    JSON.stringify(functionsMetadata),
   )
   //when
   await handler({})
@@ -65,18 +59,13 @@ test('Update Lambda Functions Configuration With New Layer Version', async () =>
     { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
     JSON.stringify(changesSummary),
   )
-  const libsMetadata = require('./data/metadata/libs1.json') as LibMetadata
+  const metadata = require('./data/metadata/libs_and_functions1.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: LIBS_METADATA_FILE_NAME },
-    JSON.stringify(libsMetadata),
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    JSON.stringify(metadata),
   )
   when(lambda.getLayerVersion).mockImplementation(
     returnPromiseObjectWithError({ code: 'ResourceNotFoundException' }),
-  )
-  const functionsMetadata = require('./data/metadata/functions1.json') as LibMetadata
-  whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
-    JSON.stringify(functionsMetadata),
   )
   when(lambda.publishLayerVersion).mockImplementation(returnPromiseObject({ Version: 4 }))
   //when

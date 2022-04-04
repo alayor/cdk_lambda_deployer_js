@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import { Metadata } from '../types'
-import {FUNCTIONS_METADATA_FILE_NAME, STAGE_BUCKET} from '../constants'
+import { METADATA_FILE_NAME, STAGE_BUCKET } from '../constants'
 
 export async function getFunctionsMetadata(s3: aws.S3): Promise<{
   stageMetadata: Metadata
@@ -10,7 +10,7 @@ export async function getFunctionsMetadata(s3: aws.S3): Promise<{
   if (!stageMetadata) {
     throw new Error('The stage metadata was not found!')
   }
-  const prodMetadata = (await getMetadata(s3, 'minisuper-api-functions')) || {}
+  const prodMetadata = (await getMetadata(s3, 'minisuper-api-functions')) || { functions: {} }
   console.log('stageMetadata: ', JSON.stringify(stageMetadata, null, 2))
   console.log('prodMetadata: ', JSON.stringify(prodMetadata, null, 2))
   return { stageMetadata, prodMetadata }
@@ -19,7 +19,7 @@ export async function getFunctionsMetadata(s3: aws.S3): Promise<{
 async function getMetadata(s3: aws.S3, bucket: string): Promise<Metadata | null> {
   try {
     const metadataFile = await s3
-      .getObject({ Bucket: bucket, Key: 'functions/metadata.json' })
+      .getObject({ Bucket: bucket, Key: METADATA_FILE_NAME })
       .promise()
     return JSON.parse(metadataFile.Body?.toString() ?? '{}')
   } catch (err: any) {

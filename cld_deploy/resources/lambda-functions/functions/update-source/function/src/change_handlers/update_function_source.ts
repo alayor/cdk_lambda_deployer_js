@@ -9,13 +9,15 @@ export async function updateFunctionSource(
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
 ) {
-  const apiNames = Object.keys(stageMetadata)
+  const stageFunctionsMetadata = stageMetadata.functions
+  const prodFunctionsMetadata = prodMetadata.functions
+  const apiNames = Object.keys(stageFunctionsMetadata)
   for await (const apiName of apiNames) {
-    const functionNames = Object.keys(stageMetadata[apiName])
+    const functionNames = Object.keys(stageFunctionsMetadata[apiName])
     const functionsToUpdate = functionNames.filter(
       (functionName) =>
-        !!prodMetadata?.[apiName]?.[functionName] &&
-        prodMetadata[apiName][functionName].hash !== stageMetadata[apiName][functionName].hash,
+        !!prodFunctionsMetadata?.[apiName]?.[functionName] &&
+        prodFunctionsMetadata[apiName][functionName].hash !== stageFunctionsMetadata[apiName][functionName].hash,
     )
     const changedVersions = await copyFunctions(s3, stageMetadata, apiName, functionsToUpdate)
     Object.keys(changedVersions).forEach((functionName) => {

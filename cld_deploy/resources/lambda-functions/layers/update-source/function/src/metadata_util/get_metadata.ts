@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
-import { Metadata } from '../types'
-import { STAGE_BUCKET, LIBS_METADATA_FILE_NAME } from '../constants'
+import { LibsMetadata, Metadata } from '../types'
+import { LIBS_METADATA_FILE_NAME, STAGE_BUCKET } from '../constants'
 
 export async function getLibsMetadata(s3: aws.S3): Promise<{
   stageMetadata: Metadata
@@ -10,7 +10,7 @@ export async function getLibsMetadata(s3: aws.S3): Promise<{
   if (!stageMetadata) {
     throw new Error('The stage metadata was not found!')
   }
-  const prodMetadata = (await getMetadata(s3, 'minisuper-api-functions')) || {}
+  const prodMetadata = (await getMetadata(s3, 'minisuper-api-functions')) || { libs: {} }
   return { stageMetadata, prodMetadata }
 }
 
@@ -30,7 +30,7 @@ async function getMetadata(s3: aws.S3, bucket: string): Promise<Metadata | null>
 
 export function getLibsToUpdate(stageMetadata: Metadata, prodMetadata: Metadata) {
   const libsToUpdate = []
-  const apiLibs = Object.keys(stageMetadata)
+  const apiLibs = Object.keys(stageMetadata.libs)
   for (const apiLib of apiLibs) {
     if (shouldUpdateLib(stageMetadata, prodMetadata, apiLib)) {
       libsToUpdate.push(apiLib)
@@ -39,12 +39,16 @@ export function getLibsToUpdate(stageMetadata: Metadata, prodMetadata: Metadata)
   return libsToUpdate
 }
 
-function shouldUpdateLib(stageMetadata: Metadata, prodMetadata: Metadata, apiLib: string): boolean {
-  if (!prodMetadata[apiLib]) {
+function shouldUpdateLib(
+  stageMetadata: Metadata,
+  prodMetadata: Metadata,
+  apiLib: string,
+): boolean {
+  if (!prodMetadata.libs[apiLib]) {
     return true
   }
-  const stageFiles = stageMetadata[apiLib].files
-  const prodFiles = prodMetadata[apiLib].files
+  const stageFiles = stageMetadata.libs[apiLib].files
+  const prodFiles = prodMetadata.libs[apiLib].files
   const stageFileKeys = Object.keys(stageFiles)
   for (const fileKey of stageFileKeys) {
     if (!prodFiles[fileKey]) {

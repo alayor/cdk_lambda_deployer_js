@@ -8,6 +8,8 @@ type LibMetadataBody = {
 
 export type LibMetadata = { [libName: string]: LibMetadataBody }
 
+export type Metadata = { libs: LibMetadata, functions: FunctionMetadata }
+
 export type ChangesSummary = string[]
 
 export type LayerVersions = { [libName: string]: number }

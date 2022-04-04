@@ -1,26 +1,28 @@
 {
-  "customer_lib": {
-    "files": {
-      "knexfile": {
-        "hash": "f81903695eb6123e58272496fd7774f073fe8bab97d8843d1b57f57913e1c70e"
-      }
+  "libs": {
+    "customer_lib": {
+      "files": {
+        "knexfile": {
+          "hash": "f81903695eb6123e58272496fd7774f073fe8bab97d8843d1b57f57913e1c70e"
+        }
+      },
+      "s3Version": "1"
     },
-    "s3Version": "1"
-  },
-  "deliverer_lib": {
-    "files": {
-      "knexfile": {
-        "hash": "33333333333333333333333333333333333333333333333333333356619f7715"
-      }
+    "deliverer_lib": {
+      "files": {
+        "knexfile": {
+          "hash": "33333333333333333333333333333333333333333333333333333356619f7715"
+        }
+      },
+      "s3Version": "1"
     },
-    "s3Version": "1"
-  },
-  "admin_lib": {
-    "files": {
-      "knexfile": {
-        "hash": "529c6a3eb3935c892a269ab85bc73f07c0eb62633dfadbb6870f59c365e3e910"
-      }
-    },
-    "s3Version": "1"
+    "admin_lib": {
+      "files": {
+        "knexfile": {
+          "hash": "529c6a3eb3935c892a269ab85bc73f07c0eb62633dfadbb6870f59c365e3e910"
+        }
+      },
+      "s3Version": "1"
+    }
   }
 }

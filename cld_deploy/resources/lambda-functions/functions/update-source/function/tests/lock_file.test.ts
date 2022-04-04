@@ -1,7 +1,7 @@
 import { s3 } from 'cld_deploy/_util/tests/mocking/aws_sdk' // this must be at the top
 import { Metadata } from '../src/types'
 import {
-  FUNCTIONS_METADATA_FILE_NAME,
+  METADATA_FILE_NAME,
   LOCK_FILE,
   PROD_BUCKET,
   STAGE_BUCKET,
@@ -30,7 +30,7 @@ test('Do Not Get Metadata When Lock File Exists', async () => {
   //then
   expect(s3.getObject).not.toBeCalledWith({
     Bucket: STAGE_BUCKET,
-    Key: FUNCTIONS_METADATA_FILE_NAME,
+    Key: METADATA_FILE_NAME,
   })
 })
 
@@ -42,7 +42,7 @@ test('Get Metadata When Lock File Does Not Exist', async () => {
   //then
   expect(s3.getObject).toBeCalledWith({
     Bucket: STAGE_BUCKET,
-    Key: FUNCTIONS_METADATA_FILE_NAME,
+    Key: METADATA_FILE_NAME,
   })
 })
 
@@ -50,11 +50,11 @@ test('Create lock file.', async () => {
   //given
   const metadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(metadata),
   )
   whenS3GetObjectThrowsError(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
     { code: 'NoSuchKey' },
   )
   //when

@@ -10,7 +10,7 @@ export async function copyFunctions(
 ): Promise<Record<string, string>> {
   const versions: Record<string, string> = {}
   for await (const functionName of functionsToCreate) {
-    const func = stageMetadata[apiName][functionName]
+    const func = stageMetadata.functions[apiName][functionName]
     const s3Response = await s3
       .copyObject({
         Bucket: PROD_BUCKET,

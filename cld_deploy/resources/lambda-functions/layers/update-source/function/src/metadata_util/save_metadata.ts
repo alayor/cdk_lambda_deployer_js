@@ -1,5 +1,5 @@
 import * as aws from 'aws-sdk'
-import { Metadata, NewVersions } from '../types'
+import { LibsMetadata, Metadata, NewVersions } from '../types'
 import { LIBS_CHANGES_SUMMARY_FILE_NAME, LIBS_METADATA_FILE_NAME, PROD_BUCKET } from '../constants'
 import { LOCK_FILE } from '../constants'
 
@@ -9,14 +9,20 @@ export async function saveNewMetadata(
   prodMetadata: Metadata,
   newVersions: NewVersions,
 ) {
-  const libNames = Object.keys(stageMetadata)
-  const newProdMetadata = libNames.reduce((acc, libName) => {
+  const stageLibsMetadata = stageMetadata.libs
+  const libNames = Object.keys(stageLibsMetadata)
+  console.log('newVersions: ', JSON.stringify(newVersions, null, 2))
+  const newProdLibsMetadata = libNames.reduce((acc, libName) => {
     acc[libName] = {
-      ...stageMetadata[libName],
-      s3Version: newVersions[libName] || prodMetadata[libName].s3Version,
+      ...stageLibsMetadata[libName],
+      s3Version: newVersions[libName] || prodMetadata.libs[libName].s3Version,
     }
     return acc
-  }, stageMetadata)
+  }, stageLibsMetadata)
+  const newProdMetadata = {
+    ...prodMetadata,
+    libs: newProdLibsMetadata,
+  }
   console.log('newProdMetadata: ', JSON.stringify(newProdMetadata, null, 2))
   await s3
     .putObject({

@@ -9,11 +9,12 @@ export async function createFunctionSource(
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
 ) {
-  const apiNames = Object.keys(stageMetadata)
+  const stageFunctionsMetadata = stageMetadata.functions
+  const apiNames = Object.keys(stageFunctionsMetadata)
   for await (const apiName of apiNames) {
-    const functionNames = Object.keys(stageMetadata[apiName])
+    const functionNames = Object.keys(stageFunctionsMetadata[apiName])
     const functionsToCreate = functionNames.filter(
-      (functionName) => !prodMetadata?.[apiName]?.[functionName],
+      (functionName) => !prodMetadata.functions?.[apiName]?.[functionName],
     )
     const changedVersions = await copyFunctions(s3, stageMetadata, apiName, functionsToCreate)
     Object.keys(changedVersions).forEach((functionName) => {

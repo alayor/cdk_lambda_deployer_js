@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
-import { Metadata } from '../types'
-import { LOCK_FILE, PROD_BUCKET } from '../constants'
+import { FunctionsMetadata, Metadata } from '../types'
+import { LOCK_FILE, METADATA_FILE_NAME, PROD_BUCKET } from "../constants";
 import ChangesSummary from '../changes_summary'
 
 export async function saveNewMetadata(
@@ -9,26 +9,28 @@ export async function saveNewMetadata(
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
 ) {
-  const newProdMetadata = Object.keys(stageMetadata).reduce((acc, apiName) => {
-    const functionNames = Object.keys(stageMetadata[apiName])
+  const stageFunctionsMetadata = stageMetadata.functions
+  const prodFunctionsMetadata = prodMetadata.functions
+  const newProdMetadata = Object.keys(stageFunctionsMetadata).reduce((acc, apiName) => {
+    const functionNames = Object.keys(stageFunctionsMetadata[apiName])
     functionNames.forEach((functionName) => {
-      const metadata = stageMetadata[apiName][functionName]
+      const metadata = stageFunctionsMetadata[apiName][functionName]
       acc[apiName][functionName] = {
         ...metadata,
         version:
           changesSummary.getNewVersion(apiName, functionName) ||
-          prodMetadata[apiName]?.[functionName]?.version,
+          prodFunctionsMetadata[apiName]?.[functionName]?.version,
       }
     })
     return acc
-  }, stageMetadata)
+  }, stageFunctionsMetadata)
   console.log('newProdMetadata: ', newProdMetadata)
-  assertEquals(stageMetadata, newProdMetadata)
+  assertEquals(stageFunctionsMetadata, newProdMetadata)
 
   await s3
     .putObject({
       Bucket: PROD_BUCKET,
-      Key: 'functions/metadata.json',
+      Key: METADATA_FILE_NAME,
       Body: JSON.stringify(newProdMetadata),
     })
     .promise()
@@ -48,14 +50,14 @@ export async function saveNewMetadata(
     .promise()
 }
 
-function assertEquals(stageMetadata: Metadata, prodMetadata: Metadata) {
+function assertEquals(stageMetadata: FunctionsMetadata, prodMetadata: FunctionsMetadata) {
   const prodKeys = Object.keys(prodMetadata)
   const stageKeys = Object.keys(prodMetadata)
   if (prodKeys.length !== stageKeys.length) {
     throw new Error('Stage Metadata and new Prod Metadata are not equal!')
   }
   prodKeys.forEach((prodKey) => {
-    if (stageMetadata[prodKey].hash !== prodMetadata[prodKey].hash) {
+    if (stageMetadata.functions[prodKey].hash !== prodMetadata.functions[prodKey].hash) {
       throw new Error('Stage Metadata and new Prod Metadata are not equal!')
     }
   })

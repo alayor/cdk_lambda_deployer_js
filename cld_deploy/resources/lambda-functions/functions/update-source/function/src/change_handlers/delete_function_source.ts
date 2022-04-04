@@ -9,11 +9,13 @@ export async function deleteFunctionSource(
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
 ) {
+  const stageFunctionsMetadata = stageMetadata.functions
+  const prodFunctionsMetadata = prodMetadata.functions
   const apiNames = Object.keys(stageMetadata)
   for await (const apiName of apiNames) {
-    const functionNames = prodMetadata[apiName] || []
+    const functionNames = prodFunctionsMetadata[apiName] || []
     const functionsToDelete = Object.keys(functionNames).filter(
-      (functionName) => !stageMetadata?.[apiName]?.[functionName],
+      (functionName) => !stageFunctionsMetadata?.[apiName]?.[functionName],
     )
     const changedVersions = await deleteFunctions(s3, prodMetadata, apiName, functionsToDelete)
     Object.keys(changedVersions).forEach((functionName) => {
@@ -35,7 +37,7 @@ async function deleteFunctions(
 ): Promise<Record<string, string>> {
   const versions: Record<string, string> = {}
   for await (const functionName of functionsToDelete) {
-    const func = prodMetadata[apiName][functionName]
+    const func = prodMetadata.functions[apiName][functionName]
     const s3Response = await s3
       .deleteObject({
         Bucket: PROD_BUCKET,

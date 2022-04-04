@@ -1,13 +1,13 @@
 import * as aws from 'aws-sdk'
 import {
-  FUNCTIONS_METADATA_FILE_NAME,
+  METADATA_FILE_NAME,
   LIBS_CHANGES_SUMMARY_FILE_NAME,
-  LIBS_METADATA_FILE_NAME,
   PROD_BUCKET,
 } from './constants'
 import { hasLayerVersionsChanges, hasSummaryChanges } from './preconditions_util'
 import { publishLayerVersions, updateFunctionsLayers } from './layer_updater'
 import { saveLayerVersions } from './metadata_util/save_metadata'
+import { Metadata } from './types'
 
 let s3: aws.S3
 let lambda: aws.Lambda
@@ -24,19 +24,18 @@ export async function handler(event: any) {
     console.log('No changes detected in summary.')
     return
   }
-  const libsMetadata = await getS3File(LIBS_METADATA_FILE_NAME)
-  const hasLayerVersionChanges = await hasLayerVersionsChanges(libsMetadata)
+  const metadata = await getS3File(METADATA_FILE_NAME) as Metadata
+  const hasLayerVersionChanges = await hasLayerVersionsChanges(metadata.libs)
   if (!hasLayerVersionChanges && !event.forceUpdate) {
     console.log('No new layer versions detected.')
     return
   }
-  const functionsMetadata = await getS3File(FUNCTIONS_METADATA_FILE_NAME)
   console.log('changesSummary: ', JSON.stringify(changesSummary, null, 2))
-  console.log('libsMetadata: ', JSON.stringify(libsMetadata, null, 2))
-  console.log('functionsMetadata: ', JSON.stringify(functionsMetadata, null, 2))
-  const layerVersions = await publishLayerVersions(lambda, changesSummary, libsMetadata)
-  await saveLayerVersions(s3, libsMetadata, layerVersions)
-  await updateFunctionsLayers(lambda, changesSummary, libsMetadata, functionsMetadata)
+  console.log('libsMetadata: ', JSON.stringify(metadata, null, 2))
+  console.log('functionsMetadata: ', JSON.stringify(metadata.functions, null, 2))
+  const layerVersions = await publishLayerVersions(lambda, changesSummary, metadata.libs)
+  await saveLayerVersions(s3, metadata.libs, layerVersions)
+  await updateFunctionsLayers(lambda, changesSummary, metadata.libs, metadata.functions)
 
   console.log('layerVersions: ', JSON.stringify(layerVersions, null, 2))
   console.log('Done.')

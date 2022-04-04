@@ -1,14 +1,16 @@
 {
-  "customer": {
-    "orders_place": {
-      "hash": "ecb8f4171574c9de0a1a3f4deeba87884f028108461f23fdae6d818f17ee9db4",
-      "zipPath": "functions/customer/orders/place/function.zip",
-      "version": "1"
-    },
-    "products_get_all": {
-      "hash": "17157460fbeae50a1a3f895e5e5c587884fc7a5b3f3caefd4fdae6dc741f3bb1",
-      "zipPath": "functions/customer/products/get_all/function.zip",
-      "version": "1"
+  "functions": {
+    "customer": {
+      "orders_place": {
+        "hash": "ecb8f4171574c9de0a1a3f4deeba87884f028108461f23fdae6d818f17ee9db4",
+        "zipPath": "functions/customer/orders/place/function.zip",
+        "version": "1"
+      },
+      "products_get_all": {
+        "hash": "17157460fbeae50a1a3f895e5e5c587884fc7a5b3f3caefd4fdae6dc741f3bb1",
+        "zipPath": "functions/customer/products/get_all/function.zip",
+        "version": "1"
+      }
     }
   }
 }

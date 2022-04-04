@@ -1,12 +1,7 @@
 import { s3 } from 'cld_deploy/_util/tests/mocking/aws_sdk' // this must be at the top
 import * as _ from 'lodash'
 import { when } from 'jest-when'
-import {
-  FUNCTIONS_METADATA_FILE_NAME,
-  LOCK_FILE,
-  PROD_BUCKET,
-  STAGE_BUCKET,
-} from '../src/constants'
+import { METADATA_FILE_NAME, LOCK_FILE, PROD_BUCKET, STAGE_BUCKET } from '../src/constants'
 import { handler } from '../src/index'
 import {
   whenS3GetObjectReturnsBody,
@@ -28,11 +23,11 @@ test('Create functions from stage metadata when prod metadata is not existing.',
   //given
   const metadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(metadata),
   )
   whenS3GetObjectThrowsError(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
     { code: 'NoSuchKey' },
   )
   //when
@@ -54,24 +49,24 @@ test('Create functions from stage metadata for functions not existing in prod me
   //given
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
   const prodMetadata = require('./data/metadata/prod1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(prodMetadata),
   )
   //when
   await handler(null)
   //then
-  const newFunctionZipPath = stageMetadata?.customer?.products_get_all?.zipPath
+  const newFunctionZipPath = stageMetadata.functions?.customer?.products_get_all?.zipPath
   expect(s3.copyObject).toBeCalledWith({
     Bucket: PROD_BUCKET,
     Key: newFunctionZipPath,
     CopySource: STAGE_BUCKET + '/' + newFunctionZipPath,
   })
-  const existingFunctionZipPath = stageMetadata?.customer?.orders_place?.zipPath
+  const existingFunctionZipPath = stageMetadata.functions?.customer?.orders_place?.zipPath
   expect(s3.copyObject).not.toBeCalledWith({
     Bucket: PROD_BUCKET,
     Key: existingFunctionZipPath,
@@ -83,24 +78,24 @@ test('Updated functions are copied from stage to prod bucket', async () => {
   //given
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
   const prodMetadata = require('./data/metadata/prod2.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(prodMetadata),
   )
   //when
   await handler(null)
   //then
-  const updatedZipPath = stageMetadata?.customer?.products_get_all?.zipPath
+  const updatedZipPath = stageMetadata.functions?.customer?.products_get_all?.zipPath
   expect(s3.copyObject).toBeCalledWith({
     Bucket: PROD_BUCKET,
     Key: updatedZipPath,
     CopySource: STAGE_BUCKET + '/' + updatedZipPath,
   })
-  const existingFunctionZipPath = stageMetadata?.customer?.orders_place?.zipPath
+  const existingFunctionZipPath = stageMetadata.functions?.customer?.orders_place?.zipPath
   expect(s3.copyObject).not.toBeCalledWith({
     Bucket: PROD_BUCKET,
     Key: existingFunctionZipPath,
@@ -112,18 +107,18 @@ test('Functions in prod metadata but not in stage metadata are deleted from prod
   //given
   const stageMetadata = require('./data/metadata/stage2.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
   const prodMetadata = require('./data/metadata/prod2.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(prodMetadata),
   )
   //when
   await handler(null)
   //then
-  const deletedZipPath = prodMetadata?.customer?.products_get_all?.zipPath
+  const deletedZipPath = prodMetadata.functions?.customer?.products_get_all?.zipPath
   expect(s3.deleteObject).toBeCalledWith({
     Bucket: PROD_BUCKET,
     Key: deletedZipPath,
