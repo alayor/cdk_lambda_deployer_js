@@ -1,7 +1,7 @@
 import * as aws from 'aws-sdk'
 import {
   FUNCTIONS_CHANGES_SUMMARY_FILE_NAME,
-  FUNCTIONS_METADATA_FILE_NAME,
+  METADATA_FILE_NAME,
   LOCK_FILE,
   PROD_BUCKET,
 } from './constants'
@@ -26,7 +26,7 @@ export async function handler(_event: any) {
     console.log('No changes detected.')
     return
   }
-  const metadata = await getS3File(FUNCTIONS_METADATA_FILE_NAME)
+  const metadata = await getS3File(METADATA_FILE_NAME)
   console.log({
     changesSummary: JSON.stringify(changesSummary),
     metadata: JSON.stringify(metadata),

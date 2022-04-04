@@ -2,7 +2,7 @@ import { lambda, s3 } from 'cld_deploy/_util/tests/mocking/aws_sdk' // this must
 import { when } from 'jest-when'
 import {
   FUNCTIONS_CHANGES_SUMMARY_FILE_NAME,
-  FUNCTIONS_METADATA_FILE_NAME,
+  METADATA_FILE_NAME,
   LOCK_FILE,
   PROD_BUCKET,
 } from '../src/constants'
@@ -45,7 +45,7 @@ test('Delete lock file  if changes summary has no changes.', async () => {
   )
   const metadata = require('./data/metadata1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(metadata),
   )
   //when

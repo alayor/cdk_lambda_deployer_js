@@ -2,7 +2,7 @@ import { s3, lambda } from 'cld_deploy/_util/tests/mocking/aws_sdk' // this must
 import { when } from 'jest-when'
 import {
   FUNCTIONS_CHANGES_SUMMARY_FILE_NAME,
-  FUNCTIONS_METADATA_FILE_NAME,
+  METADATA_FILE_NAME,
   PROD_BUCKET,
 } from '../src/constants'
 import { handler } from '../src/index'
@@ -31,7 +31,7 @@ test('Do not get metadata if changes summary has no changes.', async () => {
   //then
   expect(s3.getObject).not.toBeCalledWith({
     Bucket: PROD_BUCKET,
-    Key: FUNCTIONS_METADATA_FILE_NAME,
+    Key: METADATA_FILE_NAME,
   })
 })
 
@@ -74,7 +74,7 @@ function summaryAndMetadataAreRetrieved() {
   )
   const metadata = require('./data/metadata1.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: PROD_BUCKET, Key: FUNCTIONS_METADATA_FILE_NAME },
+      { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
       JSON.stringify(metadata),
   )
 }
