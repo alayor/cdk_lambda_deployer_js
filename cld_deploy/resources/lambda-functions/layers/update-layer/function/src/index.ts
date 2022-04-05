@@ -34,7 +34,7 @@ export async function handler(event: any) {
   console.log('libsMetadata: ', JSON.stringify(metadata, null, 2))
   console.log('functionsMetadata: ', JSON.stringify(metadata.functions, null, 2))
   const layerVersions = await publishLayerVersions(lambda, changesSummary, metadata.libs)
-  await saveLayerVersions(s3, metadata.libs, layerVersions)
+  await saveLayerVersions(s3, metadata, layerVersions)
   await updateFunctionsLayers(lambda, changesSummary, metadata.libs, metadata.functions)
 
   console.log('layerVersions: ', JSON.stringify(layerVersions, null, 2))

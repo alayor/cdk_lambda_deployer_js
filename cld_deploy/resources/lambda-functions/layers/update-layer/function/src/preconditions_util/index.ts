@@ -8,7 +8,7 @@ export function hasSummaryChanges(changesSummary: ChangesSummary): boolean {
 }
 
 export async function hasLayerVersionsChanges(libsMetadata: LibMetadata): Promise<boolean> {
-  const libNames = Object.keys(libsMetadata)
+  const libNames = Object.keys(libsMetadata || {})
   for await (const libName of libNames) {
     const { layerVersion } = libsMetadata[libName]
     let isPublished = await isLayerVersionPublished(`api_${libName}`, layerVersion)

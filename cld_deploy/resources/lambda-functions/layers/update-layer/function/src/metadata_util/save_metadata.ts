@@ -1,8 +1,13 @@
 import * as aws from 'aws-sdk'
-import { PROD_BUCKET } from '../constants'
-import { LibMetadata, LayerVersions } from '../types'
+import { METADATA_FILE_NAME, PROD_BUCKET } from '../constants'
+import { LayerVersions, Metadata } from '../types'
 
-export async function saveLayerVersions(s3: aws.S3, libsMetadata: LibMetadata, layerVersions: LayerVersions) {
+export async function saveLayerVersions(
+  s3: aws.S3,
+  metadata: Metadata,
+  layerVersions: LayerVersions,
+) {
+  const libsMetadata = metadata.libs
   const newLibsMetadata = Object.keys(libsMetadata).reduce((acc, libName) => {
     acc[libName] = {
       ...libsMetadata[libName],
@@ -10,13 +15,17 @@ export async function saveLayerVersions(s3: aws.S3, libsMetadata: LibMetadata, l
     }
     return acc
   }, libsMetadata)
-  console.log('newLibsMetadata: ', newLibsMetadata)
+  const newMetadata = {
+    ...metadata,
+    libs: newLibsMetadata
+  }
+  console.log('newMetadata: ', newMetadata)
 
   await s3
     .putObject({
       Bucket: PROD_BUCKET,
-      Key: 'libs/metadata.json',
-      Body: JSON.stringify(newLibsMetadata),
+      Key: METADATA_FILE_NAME,
+      Body: JSON.stringify(newMetadata),
     })
     .promise()
 }

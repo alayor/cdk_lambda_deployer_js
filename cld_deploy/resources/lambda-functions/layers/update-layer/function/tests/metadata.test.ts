@@ -52,7 +52,7 @@ test('Get Libs Metadata If Changes Summary Has Changes', async () => {
 
 test('Do Not Get Metadata If Layer Versions Have Not Changed', async () => {
   //given
-  const changesSummary = require('./data/changes_summary/single_change.json') as ChangesSummary
+  const changesSummary = require('./data/changes_summary/no_changes.json') as ChangesSummary
   whenS3GetObjectReturnsBody(
     { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
     JSON.stringify(changesSummary),
