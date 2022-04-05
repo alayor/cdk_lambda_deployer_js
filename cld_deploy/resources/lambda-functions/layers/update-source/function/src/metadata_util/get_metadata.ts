@@ -30,7 +30,7 @@ async function getMetadata(s3: aws.S3, bucket: string): Promise<Metadata | null>
 
 export function getLibsToUpdate(stageMetadata: Metadata, prodMetadata: Metadata) {
   const libsToUpdate = []
-  const apiLibs = Object.keys(stageMetadata.libs)
+  const apiLibs = Object.keys(stageMetadata.libs || {})
   for (const apiLib of apiLibs) {
     if (shouldUpdateLib(stageMetadata, prodMetadata, apiLib)) {
       libsToUpdate.push(apiLib)
