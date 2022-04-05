@@ -3,7 +3,9 @@ export type MetadataBody = {
     zipPath: string
     version: string
 }
-export type Metadata = Record<string, Record<string, MetadataBody>>
+export type FunctionsMetadata = Record<string, Record<string, MetadataBody>>
+
+export type Metadata = { functions: FunctionsMetadata }
 
 
 enum CHANGE_TYPE {

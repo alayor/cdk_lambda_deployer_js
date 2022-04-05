@@ -5,7 +5,7 @@ import {
   LOCK_FILE,
   PROD_BUCKET,
 } from './constants'
-import { ChangesSummary } from './types'
+import { ChangesSummary, Metadata } from "./types";
 import { createFunctions } from './change_handlers/create_function'
 import { updateFunctions } from './change_handlers/update_function'
 import { deleteFunctions } from './change_handlers/delete_function'
@@ -26,14 +26,14 @@ export async function handler(_event: any) {
     console.log('No changes detected.')
     return
   }
-  const metadata = await getS3File(METADATA_FILE_NAME)
+  const metadata = await getS3File(METADATA_FILE_NAME) as Metadata
   console.log({
     changesSummary: JSON.stringify(changesSummary),
     metadata: JSON.stringify(metadata),
   })
-  await createFunctions(lambda, metadata, changesSummary)
-  await updateFunctions(lambda, metadata, changesSummary)
-  await deleteFunctions(lambda, metadata, changesSummary)
+  await createFunctions(lambda, metadata.functions, changesSummary)
+  await updateFunctions(lambda, metadata.functions, changesSummary)
+  await deleteFunctions(lambda, metadata.functions, changesSummary)
   await deleteLock()
   console.log('Done.')
 }

@@ -1,10 +1,10 @@
 import * as aws from 'aws-sdk'
-import { MetadataBody, ChangesSummary, Metadata } from '../types'
+import { MetadataBody, ChangesSummary, FunctionsMetadata } from '../types'
 import { PROD_BUCKET } from '../constants'
 
 export async function createFunctions(
   lambda: aws.Lambda,
-  metadata: Metadata,
+  metadata: FunctionsMetadata,
   changesSummary: ChangesSummary,
 ) {
   const changes = changesSummary.changes?.create ?? []

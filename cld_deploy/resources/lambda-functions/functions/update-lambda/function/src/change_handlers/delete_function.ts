@@ -1,9 +1,9 @@
 import * as aws from 'aws-sdk'
-import { ChangesSummary, Metadata } from '../types'
+import { ChangesSummary, FunctionsMetadata } from '../types'
 
 export async function deleteFunctions(
   lambda: aws.Lambda,
-  metadata: Metadata,
+  metadata: FunctionsMetadata,
   changesSummary: ChangesSummary,
 ) {
   const changes = changesSummary.changes?.delete ?? []
