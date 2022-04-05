@@ -34,7 +34,7 @@ test('Create functions from stage metadata when prod metadata is not existing.',
   await handler(null)
   //then
   const zipPaths = _.flatten(
-    Object.values(metadata).map((func) => Object.values(func).map((obj) => obj.zipPath)),
+    Object.values(metadata.functions).map((func) => Object.values(func).map((obj) => obj.zipPath)),
   )
   zipPaths.forEach((zipPath) => {
     expect(s3.copyObject).toBeCalledWith({
