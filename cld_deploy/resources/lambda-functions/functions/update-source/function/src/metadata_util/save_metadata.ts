@@ -11,7 +11,7 @@ export async function saveNewMetadata(
 ) {
   const stageFunctionsMetadata = stageMetadata.functions || {}
   const prodFunctionsMetadata = prodMetadata.functions || {}
-  const newProdMetadata = Object.keys(stageFunctionsMetadata).reduce((acc, apiName) => {
+  const newProdFunctionsMetadata = Object.keys(stageFunctionsMetadata).reduce((acc, apiName) => {
     const functionNames = Object.keys(stageFunctionsMetadata[apiName])
     functionNames.forEach((functionName) => {
       const metadata = stageFunctionsMetadata[apiName][functionName]
@@ -24,9 +24,13 @@ export async function saveNewMetadata(
     })
     return acc
   }, stageFunctionsMetadata)
+  const newProdMetadata = {
+    ...prodMetadata,
+    functions: newProdFunctionsMetadata,
+  }
   console.log('newProdMetadata: ', newProdMetadata)
   console.log('stageFunctionsMetadata: ', stageFunctionsMetadata)
-  assertEquals(stageFunctionsMetadata, newProdMetadata)
+  assertEquals(stageFunctionsMetadata, newProdMetadata.functions)
 
   await s3
     .putObject({

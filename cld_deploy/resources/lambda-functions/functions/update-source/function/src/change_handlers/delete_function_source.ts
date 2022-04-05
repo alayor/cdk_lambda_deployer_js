@@ -11,7 +11,7 @@ export async function deleteFunctionSource(
 ) {
   const stageFunctionsMetadata = stageMetadata.functions
   const prodFunctionsMetadata = prodMetadata.functions
-  const apiNames = Object.keys(stageMetadata)
+  const apiNames = Object.keys(stageFunctionsMetadata)
   for await (const apiName of apiNames) {
     const functionNames = prodFunctionsMetadata[apiName] || []
     const functionsToDelete = Object.keys(functionNames).filter(
