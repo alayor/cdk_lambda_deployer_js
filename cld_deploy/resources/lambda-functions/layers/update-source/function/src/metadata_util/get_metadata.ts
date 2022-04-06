@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
-import { LibsMetadata, Metadata } from '../types'
-import { LIBS_METADATA_FILE_NAME, STAGE_BUCKET } from '../constants'
+import { Metadata } from '../types'
+import { LIBS_METADATA_FILE_NAME, PROD_BUCKET, STAGE_BUCKET } from "../constants";
 
 export async function getLibsMetadata(s3: aws.S3): Promise<{
   stageMetadata: Metadata
@@ -10,7 +10,7 @@ export async function getLibsMetadata(s3: aws.S3): Promise<{
   if (!stageMetadata) {
     throw new Error('The stage metadata was not found!')
   }
-  const prodMetadata = (await getMetadata(s3, 'minisuper-api-functions')) || { libs: {} }
+  const prodMetadata = (await getMetadata(s3, PROD_BUCKET)) || { libs: {} }
   return { stageMetadata, prodMetadata }
 }
 
