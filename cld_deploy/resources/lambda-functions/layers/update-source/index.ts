@@ -39,7 +39,7 @@ export class UpdateLayerSourceConstruct extends MainConstruct {
       {
         Effect: 'Allow',
         Action: ['s3:GetObject'],
-        Resource: [prodBucketArn + '/metadata.json'],
+        Resource: [stageBucketArn + '/metadata.json'],
       },
       {
         Effect: 'Allow',
