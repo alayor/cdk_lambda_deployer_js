@@ -4,9 +4,10 @@ import Context from './context/index'
 import { AppName } from './context/app'
 import { S3BucketsConstruct } from './resources/s3-buckets/index'
 import { LambdaFunctionsConstruct } from './resources/lambda-functions'
-import {Stack, StackProps} from 'aws-cdk-lib'
+import { Stack, StackProps } from 'aws-cdk-lib'
 import { CodeBuildProjectsConstruct } from 'cld_deploy/resources/code-build-projects'
 import { CodePipelinesConstruct } from 'cld_deploy/resources/code-pipelines'
+import { VpcEndpointsConstruct } from 'cld_deploy/resources/vpc-endpoints'
 
 export type CDKLambdaDeployerProps = {
   vpc?: ec2.Vpc
@@ -47,5 +48,6 @@ export class CDKLambdaDeployerConstruct extends Construct {
       githubRepoBranch,
       githubTokenSecretId,
     })
+    new VpcEndpointsConstruct(this, 'VpcEndpoints', { context })
   }
 }
