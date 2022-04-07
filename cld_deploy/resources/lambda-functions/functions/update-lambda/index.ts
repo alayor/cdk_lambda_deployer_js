@@ -26,7 +26,6 @@ export class UpdateLambdaConstruct extends MainConstruct {
             handler: 'handler',
             functionName: 'CdkLambdaDeployer_UpdateLambda',
             timeout: cdk.Duration.minutes(10),
-            vpc: context.getVpc(),
             allowPublicSubnet: true,
             environment: {
                 CUSTOMER_API_ROLE: customerApiRole.roleArn,

@@ -13,15 +13,17 @@ export class S3BucketsConstruct extends MainConstruct {
       bucketName: 'cdk-lambda-deployer-stage',
       versioned: true,
       removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
       lifecycleRules: [{
         noncurrentVersionExpiration: Duration.days(15)
-      }]
+      }],
     })
 
     const prodBucket = new s3.Bucket(this, 'Bucket', {
       bucketName: 'cdk-lambda-deployer-prod',
       versioned: true,
       removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
       lifecycleRules: [{
         noncurrentVersionExpiration: Duration.days(15)
       }]

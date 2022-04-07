@@ -19,7 +19,6 @@ export class UpdateFunctionsSourceConstruct extends MainConstruct {
       handler: 'handler',
       functionName: 'CdkLambdaDeployer_UpdateFunctionsSource',
       timeout: cdk.Duration.minutes(10),
-      vpc: context.getVpc(),
       allowPublicSubnet: true,
     })
 

@@ -14,8 +14,6 @@ export enum AppName {
 }
 
 export interface IApp {
-  setVpc(vpc: ec2.Vpc): void
-  getVpc(): ec2.Vpc
   setS3Bucket(type: S3BucketType, s3Bucket: s3.Bucket): void
   getS3Bucket(type: S3BucketType): s3.Bucket
   setCodeBuildProject(type: CodeBuildProjectType, project: codebuild.PipelineProject): void
@@ -25,7 +23,6 @@ export interface IApp {
 }
 
 export class AppModel implements IApp {
-  private _vpc: ec2.Vpc
   private _s3Buckets: Map<S3BucketType, s3.Bucket>
   private _codeBuildProjects: Map<CodeBuildProjectType, codebuild.PipelineProject>
   private _lambdaFunctions: Map<LambdaFunctionType, lambdaNodeJs.NodejsFunction>
@@ -34,20 +31,6 @@ export class AppModel implements IApp {
     this._s3Buckets = new Map<S3BucketType, s3.Bucket>()
     this._codeBuildProjects = new Map<CodeBuildProjectType, codebuild.PipelineProject>()
     this._lambdaFunctions = new Map<LambdaFunctionType, lambdaNodeJs.NodejsFunction>()
-  }
-
-  setVpc(vpc: ec2.Vpc): void {
-    if (this._vpc) {
-      throw new AppResourceAlreadySetError('VPC')
-    }
-    this._vpc = vpc
-  }
-
-  getVpc(): ec2.Vpc {
-    if (!this._vpc) {
-      throw new AppResourceNotSetError('VPC')
-    }
-    return this._vpc
   }
 
   setS3Bucket(type: S3BucketType, s3Bucket: s3.Bucket): void {

@@ -135,7 +135,6 @@ new CDKLambdaDeployerConstruct(
       this,
       'CDKLambdaDeployer',
       {
-        vpc: myVpc,
         githubRepoOwner: 'repo_owner',
         githubRepoName: 'repo_name',
         githubRepoBranch: 'master',
@@ -149,7 +148,6 @@ new CDKLambdaDeployerConstruct(
 ```
 new cld_deploy.CDKLambdaDeployerStack(app, 'CDKLambdaDeployer', {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-    vpcId: 'vpc-xxxx',
     githubRepoOwner: 'repo_owner',
     githubRepoName: 'repo_name',
     githubRepoBranch: 'master',

@@ -1,8 +1,11 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as lambdaNodeJs from 'aws-cdk-lib/aws-lambda-nodejs'
 import * as codebuild from 'aws-cdk-lib/aws-codebuild'
-import {CodeBuildProjectType, LambdaFunctionType, S3BucketType} from 'cld_deploy/context/resource-types'
+import {
+  CodeBuildProjectType,
+  LambdaFunctionType,
+  S3BucketType,
+} from 'cld_deploy/context/resource-types'
 import { AppModel, AppName, IApp } from 'cld_deploy/context/app'
 import { AppResourceNotSetError } from 'cld_deploy/context/errors'
 
@@ -26,14 +29,6 @@ export default class Context implements IApp {
       throw new AppResourceNotSetError('App')
     }
     return app
-  }
-
-  setVpc(vpc: ec2.Vpc) {
-    this.getApp(this._defaultApp).setVpc(vpc)
-  }
-
-  getVpc() {
-    return this.getApp(this._defaultApp).getVpc()
   }
 
   setS3Bucket(type: S3BucketType, s3Bucket: s3.Bucket): void {

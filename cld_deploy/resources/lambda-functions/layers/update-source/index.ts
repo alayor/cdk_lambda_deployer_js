@@ -18,7 +18,6 @@ export class UpdateLayerSourceConstruct extends MainConstruct {
       handler: 'handler',
       functionName: 'CdkLambdaDeployer_UpdateLayerSource',
       timeout: cdk.Duration.minutes(10),
-      vpc: context.getVpc(),
       allowPublicSubnet: true,
     })
 
