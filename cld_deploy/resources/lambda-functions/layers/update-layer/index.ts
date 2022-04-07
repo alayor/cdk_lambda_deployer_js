@@ -33,18 +33,18 @@ export class UpdateLayerConstruct extends MainConstruct {
             },
             {
                 Effect: 'Allow',
+                Action: ['s3:GetObject'],
+                Resource: [prodBucketArn + '/metadata.json'],
+            },
+            {
+                Effect: 'Allow',
                 Action: ['s3:GetObject', 's3:GetObjectVersion'],
                 Resource: [prodBucketArn + '/libs/*'],
             },
             {
                 Effect: 'Allow',
                 Action: ['s3:PutObject'],
-                Resource: [prodBucketArn + '/libs/metadata.json'],
-            },
-            {
-                Effect: 'Allow',
-                Action: ['s3:GetObject'],
-                Resource: [prodBucketArn + '/functions/metadata.json'],
+                Resource: [prodBucketArn + '/metadata.json'],
             },
             {
                 Effect: 'Allow',

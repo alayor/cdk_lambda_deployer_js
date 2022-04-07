@@ -35,6 +35,11 @@ export class UpdateFunctionsSourceConstruct extends MainConstruct {
       {
         Effect: 'Allow',
         Action: ['s3:GetObject'],
+        Resource: [prodBucketArn + '/metadata.json'],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['s3:GetObject'],
         Resource: [prodBucketArn + '/updating_functions.lock'],
       },
       {
