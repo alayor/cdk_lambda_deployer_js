@@ -28,4 +28,4 @@ test('it builds libs.', async () => {
   await Bluebird.each(expectedLibFilePaths, async (expectedLibFilePath) => {
     expect(await fileExists(path.join(outputAbsolutePath, ...expectedLibFilePath))).toBeTruthy()
   })
-}, 20000)
+}, 60000)

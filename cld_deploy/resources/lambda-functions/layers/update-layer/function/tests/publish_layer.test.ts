@@ -6,11 +6,7 @@ import {
 } from 'cld_deploy/_util/tests/mocking/promises'
 import { LibMetadata } from '../src/types'
 import { whenS3GetObjectReturnsBody } from 'cld_deploy/_util/tests/mocking/s3'
-import {
-  METADATA_FILE_NAME,
-  LIBS_CHANGES_SUMMARY_FILE_NAME,
-  PROD_BUCKET,
-} from '../src/constants'
+import { METADATA_FILE_NAME, LIBS_CHANGES_SUMMARY_FILE_NAME, PROD_BUCKET } from '../src/constants'
 import { handler } from '../src/index'
 
 beforeEach(() => {
@@ -68,7 +64,7 @@ test('Publish Layer Versions For Lib Metadata Has No Layer Versions', async () =
   })
 })
 
-test('Publish Layer Versions For Lib Changes', async () => {
+test('Publish Layer Versions For A Single Lib Change', async () => {
   //given
   const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
   whenS3GetObjectReturnsBody(
@@ -86,20 +82,46 @@ test('Publish Layer Versions For Lib Changes', async () => {
   //when
   await handler({})
   //then
+  expectPublishLayerVersionToBeCalledForLib('customer_lib', '2')
+})
+
+function expectPublishLayerVersionToBeCalledForLib(libName: string, version: string) {
   expect(lambda.publishLayerVersion).toBeCalledWith({
-    LayerName: 'api_customer_lib',
+    LayerName: `api_${libName}`,
     Content: {
       S3Bucket: PROD_BUCKET,
-      S3Key: 'libs/customer_lib/nodejs.zip',
-      S3ObjectVersion: '2',
+      S3Key: `libs/${libName}/nodejs.zip`,
+      S3ObjectVersion: version,
     },
     CompatibleRuntimes: ['nodejs14.x'],
   })
+}
+
+test('Publish Layer Versions For Multiple Lib Changes', async () => {
+  //given
+  const changesSummary = require('./data/changes_summary/multiple_changes.json') as LibMetadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
+    JSON.stringify(changesSummary),
+  )
+  const metadata = require('./data/metadata/libs_and_functions1.json') as LibMetadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    JSON.stringify(metadata),
+  )
+  when(lambda.getLayerVersion).mockImplementation(
+    returnPromiseObjectWithError({ code: 'ResourceNotFoundException' }),
+  )
+  //when
+  await handler({})
+  //then
+  expectPublishLayerVersionToBeCalledForLib('customer_lib', '2')
+  expectPublishLayerVersionToBeCalledForLib('deliverer_lib', '1')
 })
 
 test('Update Lambda Functions Configuration With New Layer Version', async () => {
   //given
-  process.env.AWS_ACCOUNT = '1234'
+  process.env.CDK_DEFAULT_ACCOUNT = '1234'
   const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
   whenS3GetObjectReturnsBody(
     { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },

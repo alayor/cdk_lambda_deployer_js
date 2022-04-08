@@ -49,7 +49,6 @@ export async function updateFunctionsLayers(
   }
 }
 
-//TODO Get this mapping from metadata
 function buildLayerVersionArn(libName: string, layerVersion: number) {
   const account = process.env.CDK_DEFAULT_ACCOUNT
   return `arn:aws:lambda:us-west-1:${account}:layer:api_${libName}:${layerVersion}`
