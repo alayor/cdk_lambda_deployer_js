@@ -4,7 +4,7 @@ export type UserConfig = {
   functionFileName: string
   functionGroups: string[]
   libs: string[]
-  functionGroupLibs: Record<string, Array<String>>
+  functionGroupLibs: FunctionGroupLibs
   outputRelativePath: string
 }
 
@@ -32,9 +32,12 @@ type LibFiles = {
 
 export type LibMetadata = Record<string, LibFiles>
 
+export type FunctionGroupLibs = { [functionGroup: string]: string[] }
+
 export type Metadata = {
   functions: FunctionMetadata
   libs: LibMetadata
+  functionGroupLibs: FunctionGroupLibs
 }
 
-export type MetadataKey = 'functions' | 'libs'
+export type MetadataKey = 'functions' | 'libs' | 'functionGroupLibs'

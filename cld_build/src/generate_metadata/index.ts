@@ -7,7 +7,8 @@ import {
   LibFile,
   LibMetadata,
   EntityFunctionMetadata,
-  Metadata, MetadataKey
+  Metadata,
+  MetadataKey, FunctionGroupLibs
 } from "cld_build/types";
 import { fileExists, getFilePaths } from 'cld_build/util'
 import { Config } from 'cld_build/types'
@@ -83,7 +84,7 @@ function calculateHash(filePath: string) {
 async function updateMetadata(
   outputAbsolutePath: string,
   key: MetadataKey,
-  metadata: FunctionMetadata | LibMetadata,
+  metadata: FunctionMetadata | LibMetadata | FunctionGroupLibs,
 ) {
   const currentMetadata = await readMetadata(outputAbsolutePath)
   const newMetadata = buildNewMetadata(currentMetadata, key, metadata)
@@ -93,7 +94,7 @@ async function updateMetadata(
 function buildNewMetadata(
   currentMetadata: Metadata | null,
   key: MetadataKey,
-  metadata: FunctionMetadata | LibMetadata,
+  metadata: FunctionMetadata | LibMetadata | FunctionGroupLibs,
 ) {
   return currentMetadata
     ? {
@@ -133,4 +134,9 @@ async function writeMetadata(outputAbsolutePath: string, metadata: Metadata) {
       },
     )
   })
+}
+
+export async function generateFunctionGroupLibsMetadata(config: Config) {
+  const { outputAbsolutePath } = config
+  await updateMetadata(outputAbsolutePath, 'functionGroupLibs', config.functionGroupLibs)
 }
