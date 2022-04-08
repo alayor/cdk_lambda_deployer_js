@@ -35,6 +35,25 @@ test('New Prod metadata is created from stage metadata.', async () => {
   expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/new_prod_from_stage1.json')))
 })
 
+test('New Prod metadata is created from stage metadata when prod metadata has only functions.', async () => {
+  //given
+  when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '2' }))
+  const stageMetadata = require('./data/metadata/stage1.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
+    JSON.stringify(stageMetadata),
+  )
+  const prodMetadata = require('./data/metadata/prod4.json') as Metadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    JSON.stringify(prodMetadata),
+  )
+  //when
+  await handler(null)
+  //then
+  expectNewProdMetadataToBe(JSON.stringify(require('./data/metadata/new_prod_from_stage2.json')))
+})
+
 function expectNewProdMetadataToBe(body: string) {
   expect(s3.putObject).toBeCalledWith({
     Bucket: PROD_BUCKET,

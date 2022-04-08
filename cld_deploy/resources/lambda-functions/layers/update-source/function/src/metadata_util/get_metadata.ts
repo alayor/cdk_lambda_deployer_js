@@ -44,7 +44,7 @@ function shouldUpdateLib(
   prodMetadata: Metadata,
   apiLib: string,
 ): boolean {
-  if (!prodMetadata.libs[apiLib]) {
+  if (!prodMetadata?.libs?.[apiLib]) {
     return true
   }
   const stageFiles = stageMetadata.libs[apiLib].files
