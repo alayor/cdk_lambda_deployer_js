@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as rimraf from 'rimraf'
 import { zipFunctions, zipLibs } from './zip_util'
-import { generateFunctionsMetadata, generateLibsMetadata } from './generate_metadata'
+import { generateFunctionGroupLibsMetadata, generateFunctionsMetadata, generateLibsMetadata } from "./generate_metadata";
 import { buildLibs } from 'cld_build/libs'
 import { getConfig } from 'cld_build/config'
 
@@ -37,6 +37,10 @@ buildLibs(config).then(() => {
   zipLibs(config).then((_result) => {
     console.log('\u2705 Libs zipped successfully')
   })
+})
+
+generateFunctionGroupLibsMetadata(config).then((_metadata) => {
+  console.log('\u2705 FunctionGroupLibs metadata generated successfully')
 })
 
 process.on('unhandledRejection', (error) => {
