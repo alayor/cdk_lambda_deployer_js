@@ -1,5 +1,5 @@
 import { s3 } from 'cld_deploy/_util/tests/mocking/aws_sdk'
-import { LIBS_METADATA_FILE_NAME, LOCK_FILE, PROD_BUCKET, STAGE_BUCKET } from '../src/constants'
+import { METADATA_FILE_NAME, LOCK_FILE, PROD_BUCKET, STAGE_BUCKET } from '../src/constants'
 import { handler } from '../src'
 import {
   whenS3GetObjectReturnsBody,
@@ -25,7 +25,7 @@ test('Do Not Get Metadata When Lock File Exists', async () => {
   //then
   expect(s3.getObject).not.toBeCalledWith({
     Bucket: STAGE_BUCKET,
-    Key: LIBS_METADATA_FILE_NAME,
+    Key: METADATA_FILE_NAME,
   })
 })
 
@@ -37,7 +37,7 @@ test('Get Metadata When Lock File Does Not Exists', async () => {
   //then
   expect(s3.getObject).toBeCalledWith({
     Bucket: STAGE_BUCKET,
-    Key: LIBS_METADATA_FILE_NAME,
+    Key: METADATA_FILE_NAME,
   })
 })
 
@@ -46,11 +46,11 @@ test('Create lock file.', async () => {
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '2' }))
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: LIBS_METADATA_FILE_NAME },
+    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
   whenS3GetObjectThrowsError(
-    { Bucket: PROD_BUCKET, Key: LIBS_METADATA_FILE_NAME },
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
     { code: 'NoSuchKey' },
   )
   //when

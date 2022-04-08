@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
-import { LibsMetadata, Metadata, NewVersions } from '../types'
-import { LIBS_CHANGES_SUMMARY_FILE_NAME, LIBS_METADATA_FILE_NAME, PROD_BUCKET } from '../constants'
+import { Metadata, NewVersions } from '../types'
+import { LIBS_CHANGES_SUMMARY_FILE_NAME, METADATA_FILE_NAME, PROD_BUCKET } from '../constants'
 import { LOCK_FILE } from '../constants'
 
 export async function saveNewMetadata(
@@ -27,7 +27,7 @@ export async function saveNewMetadata(
   await s3
     .putObject({
       Bucket: PROD_BUCKET,
-      Key: LIBS_METADATA_FILE_NAME,
+      Key: METADATA_FILE_NAME,
       Body: JSON.stringify(newProdMetadata),
     })
     .promise()

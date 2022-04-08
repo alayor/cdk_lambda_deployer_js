@@ -1,6 +1,6 @@
 import { s3 } from 'cld_deploy/_util/tests/mocking/aws_sdk' // this must be at the top
 import { when } from 'jest-when'
-import { LIBS_METADATA_FILE_NAME, LOCK_FILE, PROD_BUCKET, STAGE_BUCKET } from '../src/constants'
+import { METADATA_FILE_NAME, LOCK_FILE, PROD_BUCKET, STAGE_BUCKET } from '../src/constants'
 import { handler } from '../src/index'
 import {
   whenS3GetObjectReturnsBody,
@@ -22,11 +22,11 @@ test('New Prod metadata is created from stage metadata.', async () => {
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '2' }))
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: LIBS_METADATA_FILE_NAME },
+    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
   whenS3GetObjectThrowsError(
-    { Bucket: PROD_BUCKET, Key: LIBS_METADATA_FILE_NAME },
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
     { code: 'NoSuchKey' },
   )
   //when
@@ -38,7 +38,7 @@ test('New Prod metadata is created from stage metadata.', async () => {
 function expectNewProdMetadataToBe(body: string) {
   expect(s3.putObject).toBeCalledWith({
     Bucket: PROD_BUCKET,
-    Key: LIBS_METADATA_FILE_NAME,
+    Key: METADATA_FILE_NAME,
     Body: body,
   })
 }
@@ -48,12 +48,12 @@ test('Metadata versions are updated in prod metadata.', async () => {
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '2' }))
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: STAGE_BUCKET, Key: LIBS_METADATA_FILE_NAME },
+      { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
       JSON.stringify(stageMetadata),
   )
   const prodMetadata = require('./data/metadata/prod3.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: PROD_BUCKET, Key: LIBS_METADATA_FILE_NAME },
+      { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
       JSON.stringify(prodMetadata),
   )
   //when
