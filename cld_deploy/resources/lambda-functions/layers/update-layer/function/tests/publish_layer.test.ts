@@ -22,6 +22,52 @@ beforeEach(() => {
   when(lambda.updateFunctionConfiguration).mockImplementation(returnPromiseObject({}))
 })
 
+test('Do Not Publish Layer Versions For Lib Changes If Version is Already Published', async () => {
+  //given
+  const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
+    JSON.stringify(changesSummary),
+  )
+  const metadata = require('./data/metadata/libs_and_functions1.json') as LibMetadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    JSON.stringify(metadata),
+  )
+  when(lambda.getLayerVersion).mockImplementation(returnPromiseObject({}))
+  //when
+  await handler({})
+  //then
+  expect(lambda.publishLayerVersion).not.toBeCalled()
+})
+
+test('Publish Layer Versions For Lib Metadata Has No Layer Versions', async () => {
+  //given
+  const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
+    JSON.stringify(changesSummary),
+  )
+  const metadata = require('./data/metadata/libs_with_no_layer_versions.json') as LibMetadata
+  whenS3GetObjectReturnsBody(
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    JSON.stringify(metadata),
+  )
+  when(lambda.getLayerVersion).mockImplementation(returnPromiseObject({}))
+  //when
+  await handler({})
+  //then
+  expect(lambda.publishLayerVersion).toBeCalledWith({
+    LayerName: 'api_customer_lib',
+    Content: {
+      S3Bucket: PROD_BUCKET,
+      S3Key: 'libs/customer_lib/nodejs.zip',
+      S3ObjectVersion: '2',
+    },
+    CompatibleRuntimes: ['nodejs14.x'],
+  })
+})
+
 test('Publish Layer Versions For Lib Changes', async () => {
   //given
   const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
