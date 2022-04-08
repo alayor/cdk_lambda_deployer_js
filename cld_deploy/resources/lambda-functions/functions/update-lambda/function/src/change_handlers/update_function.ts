@@ -22,7 +22,7 @@ async function updateFunction(
   functionName: string,
   apiFunction: MetadataBody,
 ) {
-  const completeFunctionName = `api_${apiName}_${functionName}`
+  const completeFunctionName = `${apiName}_${functionName}`
   const params = {
     FunctionName: completeFunctionName,
     S3Bucket: PROD_BUCKET,

@@ -54,7 +54,7 @@ test('Publish Layer Versions For Lib Metadata Has No Layer Versions', async () =
   await handler({})
   //then
   expect(lambda.publishLayerVersion).toBeCalledWith({
-    LayerName: 'api_customer_lib',
+    LayerName: 'customer_lib',
     Content: {
       S3Bucket: PROD_BUCKET,
       S3Key: 'libs/customer_lib/nodejs.zip',
@@ -87,7 +87,7 @@ test('Publish Layer Versions For A Single Lib Change', async () => {
 
 function expectPublishLayerVersionToBeCalledForLib(libName: string, version: string) {
   expect(lambda.publishLayerVersion).toBeCalledWith({
-    LayerName: `api_${libName}`,
+    LayerName: `${libName}`,
     Content: {
       S3Bucket: PROD_BUCKET,
       S3Key: `libs/${libName}/nodejs.zip`,
@@ -140,14 +140,14 @@ test('Update Lambda Functions Configuration With New Layer Version', async () =>
   await handler({})
   //then
   const functionNames = [
-    'api_customer_orders_place',
-    'api_customer_products_get_all',
-    'api_customer_products_get_one',
+    'customer_orders_place',
+    'customer_products_get_all',
+    'customer_products_get_one',
   ]
   functionNames.forEach((functionName) => {
     expect(lambda.updateFunctionConfiguration).toBeCalledWith({
       FunctionName: functionName,
-      Layers: ['arn:aws:lambda:us-west-1:1234:layer:api_customer_lib:4'],
+      Layers: ['arn:aws:lambda:us-west-1:1234:layer:customer_lib:4'],
     })
   })
 })

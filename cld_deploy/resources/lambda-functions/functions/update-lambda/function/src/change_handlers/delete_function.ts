@@ -15,7 +15,7 @@ export async function deleteFunctions(
 }
 
 async function deleteFunction(lambda: aws.Lambda, apiName: string, functionName: string) {
-  const completeFunctionName = `api_${apiName}_${functionName}`
+  const completeFunctionName = `${apiName}_${functionName}`
   const params = {
     FunctionName: completeFunctionName,
   }

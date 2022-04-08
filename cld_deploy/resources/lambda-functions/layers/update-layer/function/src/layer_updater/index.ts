@@ -12,7 +12,7 @@ export async function publishLayerVersions(
   for await (const libName of changesSummary) {
     const s3Version = libsMetadata[libName].s3Version
     const params = {
-      LayerName: `api_${libName}`,
+      LayerName: libName,
       Content: {
         S3Bucket: PROD_BUCKET,
         S3Key: `libs/${libName}/nodejs.zip`,
@@ -23,7 +23,7 @@ export async function publishLayerVersions(
     console.log('publish layer version params: ', params)
     const { Version } = await lambda.publishLayerVersion(params).promise()
     if (!Version) {
-      throw new Error('Missing layer version for layer: api_' + libName)
+      throw new Error('Missing layer version for layer: ' + libName)
     }
     layerVersions[libName] = Version
   }
@@ -42,7 +42,7 @@ export async function updateFunctionsLayers(
   for await (const functionGroup of Object.keys(functionGroupLibs || {})) {
     const functionNames = functionsMetadata[functionGroup]
     for await (const partialFunctionName of Object.keys(functionNames)) {
-      const functionName = `api_${functionGroup}_${partialFunctionName}`
+      const functionName = `${functionGroup}_${partialFunctionName}`
       const libNames = functionGroupLibs[functionGroup].filter((libName) =>
         changesSummary.includes(libName),
       )
@@ -59,5 +59,5 @@ export async function updateFunctionsLayers(
 
 function buildLayerVersionArn(libName: string, layerVersion: number) {
   const account = process.env.CDK_DEFAULT_ACCOUNT
-  return `arn:aws:lambda:us-west-1:${account}:layer:api_${libName}:${layerVersion}`
+  return `arn:aws:lambda:us-west-1:${account}:layer:${libName}:${layerVersion}`
 }

@@ -14,7 +14,7 @@ export async function hasLayerVersionsChanges(libsMetadata: LibMetadata): Promis
     if (!layerVersion) {
       return true
     }
-    let isPublished = await isLayerVersionPublished(`api_${libName}`, layerVersion)
+    let isPublished = await isLayerVersionPublished(libName, layerVersion)
     console.log('isPublished: ', isPublished)
     if (!isPublished) {
       return true

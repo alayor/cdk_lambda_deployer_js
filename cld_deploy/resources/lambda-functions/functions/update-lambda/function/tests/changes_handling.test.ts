@@ -44,11 +44,11 @@ test('Create lambda function for each -create- action in the changes summary.', 
   const expectedKeysAndFunctionNames: Array<{ S3Key: string; FunctionName: string }> = [
     {
       S3Key: 'functions/customer/orders/place/function.zip',
-      FunctionName: 'api_customer_orders_place',
+      FunctionName: 'customer_orders_place',
     },
     {
       S3Key: 'functions/customer/products/get_all/function.zip',
-      FunctionName: 'api_customer_products_get_all',
+      FunctionName: 'customer_products_get_all',
     },
   ]
   expectedKeysAndFunctionNames.forEach(({ S3Key, FunctionName }) => {
@@ -92,12 +92,12 @@ test('Update lambda function code for each -update- action in the changes summar
   }> = [
     {
       S3Key: 'functions/customer/products/get_one/function.zip',
-      FunctionName: 'api_customer_products_get_one',
+      FunctionName: 'customer_products_get_one',
       S3ObjectVersion: '2',
     },
     {
       S3Key: 'functions/deliverer/auth/login/function.zip',
-      FunctionName: 'api_deliverer_auth_login',
+      FunctionName: 'deliverer_auth_login',
       S3ObjectVersion: '3',
     },
   ]
@@ -118,6 +118,6 @@ test('Delete lambda function -delete- action in the changes summary.', async () 
   await handler(null)
   //then
   expect(lambda.deleteFunction).toBeCalledWith({
-    FunctionName: 'api_deliverer_auth_register',
+    FunctionName: 'deliverer_auth_register',
   })
 })
