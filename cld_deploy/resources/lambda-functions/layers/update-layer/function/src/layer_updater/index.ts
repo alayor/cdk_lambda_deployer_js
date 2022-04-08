@@ -1,13 +1,14 @@
 import * as aws from 'aws-sdk'
 import { PROD_BUCKET } from '../constants'
-import { ChangesSummary, LayerVersions, LibMetadata, FunctionMetadata } from '../types'
+import { ChangesSummary, LayerVersions, Metadata, FunctionMetadata } from '../types'
 
 export async function publishLayerVersions(
   lambda: aws.Lambda,
   changesSummary: ChangesSummary,
-  libsMetadata: LibMetadata,
+  metadata: Metadata,
 ): Promise<LayerVersions> {
   const layerVersions: LayerVersions = {}
+  const libsMetadata = metadata.libs
   for await (const libName of changesSummary) {
     const s3Version = libsMetadata[libName].s3Version
     const params = {
@@ -32,19 +33,26 @@ export async function publishLayerVersions(
 export async function updateFunctionsLayers(
   lambda: aws.Lambda,
   changesSummary: ChangesSummary,
-  libMetadata: LibMetadata,
-  functionsMetadata: FunctionMetadata,
+  metadata: Metadata,
 ) {
-  for await (const libName of changesSummary) {
-    const apiName = libName.replace('_lib', '')
-    const functions = functionsMetadata[apiName]
-    for await (const partialFunctionName of Object.keys(functions || {})) {
-      const functionName = `api_${apiName}_${partialFunctionName}`
-      const layerVersion = libMetadata[libName].layerVersion
-      const layerVersionArn = buildLayerVersionArn(libName, layerVersion)
-      const updateLayerVersionParams = { FunctionName: functionName, Layers: [layerVersionArn] }
-      console.log('updateLayerVersionParams: ', JSON.stringify(updateLayerVersionParams, null, 2))
-      await lambda.updateFunctionConfiguration(updateLayerVersionParams).promise()
+  const libsMetadata = metadata.libs
+  const functionsMetadata = metadata.functions
+  const functionGroupLibs = metadata.functionGroupLibs
+
+  for await (const functionGroup of Object.keys(functionGroupLibs || {})) {
+    const functionNames = functionsMetadata[functionGroup]
+    for await (const partialFunctionName of Object.keys(functionNames)) {
+      const functionName = `api_${functionGroup}_${partialFunctionName}`
+      const libNames = functionGroupLibs[functionGroup].filter((libName) =>
+        changesSummary.includes(libName),
+      )
+      for await (const libName of libNames) {
+        const layerVersion = libsMetadata[libName].layerVersion
+        const layerVersionArn = buildLayerVersionArn(libName, layerVersion)
+        const updateLayerVersionParams = { FunctionName: functionName, Layers: [layerVersionArn] }
+        console.log('updateLayerVersionParams: ', JSON.stringify(updateLayerVersionParams, null, 2))
+        await lambda.updateFunctionConfiguration(updateLayerVersionParams).promise()
+      }
     }
   }
 }

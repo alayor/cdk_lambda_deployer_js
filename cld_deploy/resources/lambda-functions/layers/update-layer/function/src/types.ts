@@ -8,7 +8,9 @@ type LibMetadataBody = {
 
 export type LibMetadata = { [libName: string]: LibMetadataBody }
 
-export type Metadata = { libs: LibMetadata, functions: FunctionMetadata }
+export type FunctionGroupLibs = { [functionGroup: string]: string[] }
+
+export type Metadata = { libs: LibMetadata, functions: FunctionMetadata, functionGroupLibs: FunctionGroupLibs }
 
 export type ChangesSummary = string[]
 
