@@ -48,12 +48,12 @@ export class UpdateLayerConstruct extends MainConstruct {
             {
                 Effect: 'Allow',
                 Action: ['lambda:PublishLayerVersion', 'lambda:GetLayerVersion'],
-                Resource: [`arn:aws:lambda:us-west-1:${accountId}:layer:api*`],
+                Resource: [`arn:aws:lambda:us-west-1:${accountId}:layer:*`], //TODO use function prefix from config
             },
             {
                 Effect: 'Allow',
                 Action: ['lambda:UpdateFunctionConfiguration'],
-                Resource: [`arn:aws:lambda:us-west-1:${accountId}:function:api*`],
+                Resource: [`arn:aws:lambda:us-west-1:${accountId}:function:*`], //TODO use function prefix from config
             },
         ]
 
