@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import { LOCK_FILE, PROD_BUCKET } from './constants'
-import { getFunctionsMetadata } from './metadata_util/get_metadata'
+import { getMetadata } from './metadata_util/get_metadata'
 import { saveNewMetadata } from './metadata_util/save_metadata'
 import { createFunctionSource } from './change_handlers/create_function_source'
 import { updateFunctionSource } from './change_handlers/update_function_source'
@@ -20,7 +20,7 @@ export async function handler(_event: any) {
     )
     return
   }
-  const { stageMetadata, prodMetadata } = await getFunctionsMetadata(s3)
+  const { stageMetadata, prodMetadata } = await getMetadata(s3)
   const changesSummary = new ChangesSummary()
   await createFunctionSource(s3, stageMetadata, prodMetadata, changesSummary)
   await updateFunctionSource(s3, stageMetadata, prodMetadata, changesSummary)
