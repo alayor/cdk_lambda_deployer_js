@@ -25,7 +25,7 @@ export async function saveNewMetadata(
     return acc
   }, stageFunctionsMetadata)
   const newProdMetadata = {
-    ...prodMetadata,
+    ...stageMetadata,
     functions: newProdFunctionsMetadata,
   }
   console.log('newProdMetadata: ', newProdMetadata)
