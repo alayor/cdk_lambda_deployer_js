@@ -11,7 +11,15 @@ export async function createFunctions(
   for await (const apiName of Object.keys(changes)) {
     for await (const functionName of changes[apiName]) {
       const apiFunction = metadata[apiName][functionName]
-      await createFunction(lambda, apiName, functionName, apiFunction)
+      try {
+        await createFunction(lambda, apiName, functionName, apiFunction)
+      } catch (err: any) {
+        if (err.code === 'ResourceConflictException') {
+          console.log(err.errorMessage)
+        } else {
+          throw err
+        }
+      }
     }
   }
 }

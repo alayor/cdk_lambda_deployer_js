@@ -63,6 +63,8 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
     })
     updateSourceFunction.grantInvoke(codeBuildProject)
     updateLambdaFunction.grantInvoke(codeBuildProject)
+    updateSourceLayer.grantInvoke(codeBuildProject)
+    updateLayer.grantInvoke(codeBuildProject)
 
     context.setCodeBuildProject(CodeBuildProjectType.DEPLOY, codeBuildProject)
   }
