@@ -16,6 +16,8 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
       LambdaFunctionType.UPDATE_FUNCTIONS_SOURCE,
     )
     const updateLambdaFunction = context.getLambdaFunction(LambdaFunctionType.UPDATE_LAMBDA)
+    const updateSourceLayer = context.getLambdaFunction(LambdaFunctionType.UPDATE_LIBS_SOURCE)
+    const updateLayer = context.getLambdaFunction(LambdaFunctionType.UPDATE_LAYER)
     const stageBucket = context.getS3Bucket(S3BucketType.STAGE)
 
     const codeBuildProject = new codebuild.PipelineProject(this, 'Project', {
@@ -35,6 +37,8 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
               `aws s3 sync --only-show-errors --delete cld_output s3://${stageBucket.bucketName}/`, //TODO get output folder name from config
               `aws lambda invoke --function-name ${updateSourceFunction.functionName} response.json`,
               `aws lambda invoke --function-name ${updateLambdaFunction.functionName} response.json`,
+              `aws lambda invoke --function-name ${updateSourceLayer.functionName} response.json`,
+              `aws lambda invoke --function-name ${updateLayer.functionName} response.json`,
             ],
           },
         },

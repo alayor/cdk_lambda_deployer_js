@@ -49,4 +49,4 @@ test('it builds the lambda functions and layer sources.', async () => {
   expect(Object.keys(_.get(metadata, 'functions')).length).toEqual(2)
   expect(Object.keys(_.get(metadata, 'libs')).length).toEqual(2)
   expect(Object.keys(_.get(metadata, 'functionGroupLibs')).length).toEqual(2)
-}, 60000)
+}, 120000)

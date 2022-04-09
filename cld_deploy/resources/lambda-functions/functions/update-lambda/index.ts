@@ -53,7 +53,7 @@ export class UpdateLambdaConstruct extends MainConstruct {
             {
                 Effect: 'Allow',
                 Action: ['lambda:CreateFunction', 'lambda:UpdateFunctionCode', 'lambda:DeleteFunction'],
-                Resource: [`arn:aws:lambda:us-west-1:${accountId}:function:api*`],
+                Resource: [`arn:aws:lambda:us-west-1:${accountId}:function:*`], //TODO use function prefix from config
             },
             {
                 Effect: 'Allow',
