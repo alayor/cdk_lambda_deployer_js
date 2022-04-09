@@ -1,7 +1,7 @@
+import * as fs from 'fs'
 import * as path from 'path'
-import { initializeConfig } from '../common'
+import * as _ from 'lodash'
 import * as rimraf from 'rimraf'
-import { Config } from 'cld_build/types'
 import { exec } from 'child_process'
 import * as Bluebird from 'bluebird'
 import { fileExists } from 'cld_build/util'
@@ -41,4 +41,12 @@ test('it builds the lambda functions and layer sources.', async () => {
   await Bluebird.each(expectedFilePaths, async (expectedFilePath) => {
     expect(await fileExists(path.join(outputAbsolutePath, ...expectedFilePath))).toBeTruthy()
   })
+  // and then
+  const metadata = JSON.parse(
+    fs.readFileSync(path.join(outputAbsolutePath, 'metadata.json')).toString(),
+  )
+  console.log({ metadata })
+  expect(Object.keys(_.get(metadata, 'functions')).length).toEqual(2)
+  expect(Object.keys(_.get(metadata, 'libs')).length).toEqual(2)
+  expect(Object.keys(_.get(metadata, 'functionGroupLibs')).length).toEqual(2)
 }, 60000)
