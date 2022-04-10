@@ -12,7 +12,7 @@ import { Metadata } from './types'
 let s3: aws.S3
 let lambda: aws.Lambda
 
-export async function handler(event: any) {
+export async function handler(event: any, context?: any) {
   if (!s3) {
     s3 = new aws.S3({ apiVersion: '2006-03-01' })
   }
@@ -35,7 +35,8 @@ export async function handler(event: any) {
   console.log('functionsMetadata: ', JSON.stringify(metadata.functions, null, 2))
   const layerVersions = await publishLayerVersions(lambda, changesSummary, metadata)
   await saveLayerVersions(s3, metadata, layerVersions)
-  await updateFunctionsLayers(lambda, changesSummary, metadata)
+  const awsAccountId = (context?.invokedFunctionArn ?? '').split(':')[4]
+  await updateFunctionsLayers(lambda, changesSummary, metadata, awsAccountId)
 
   console.log('layerVersions: ', JSON.stringify(layerVersions, null, 2))
   console.log('Done.')

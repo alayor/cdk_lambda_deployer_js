@@ -121,7 +121,9 @@ test('Publish Layer Versions For Multiple Lib Changes', async () => {
 
 test('Update Lambda Functions Configuration With New Layer Version', async () => {
   //given
-  process.env.CDK_DEFAULT_ACCOUNT = '1234'
+  const context = {
+    invokedFunctionArn: 'arn:aws:lambda:us-west-1:123456789012:function:CdkLambdaDeployer_UpdateLayer\n'
+  }
   const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
   whenS3GetObjectReturnsBody(
     { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
@@ -137,7 +139,7 @@ test('Update Lambda Functions Configuration With New Layer Version', async () =>
   )
   when(lambda.publishLayerVersion).mockImplementation(returnPromiseObject({ Version: 4 }))
   //when
-  await handler({})
+  await handler({}, context)
   //then
   const functionNames = [
     'customer_orders_place',
@@ -147,7 +149,7 @@ test('Update Lambda Functions Configuration With New Layer Version', async () =>
   functionNames.forEach((functionName) => {
     expect(lambda.updateFunctionConfiguration).toBeCalledWith({
       FunctionName: functionName,
-      Layers: ['arn:aws:lambda:us-west-1:1234:layer:customer_lib:4'],
+      Layers: ['arn:aws:lambda:us-west-1:123456789012:layer:customer_lib:4'],
     })
   })
 })

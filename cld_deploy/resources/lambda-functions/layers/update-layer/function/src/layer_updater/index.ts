@@ -34,6 +34,7 @@ export async function updateFunctionsLayers(
   lambda: aws.Lambda,
   changesSummary: ChangesSummary,
   metadata: Metadata,
+  awsAccountId: string,
 ) {
   const libsMetadata = metadata.libs
   const functionsMetadata = metadata.functions
@@ -48,7 +49,7 @@ export async function updateFunctionsLayers(
       )
       for await (const libName of libNames) {
         const layerVersion = libsMetadata[libName].layerVersion
-        const layerVersionArn = buildLayerVersionArn(libName, layerVersion)
+        const layerVersionArn = buildLayerVersionArn(libName, layerVersion, awsAccountId)
         const updateLayerVersionParams = { FunctionName: functionName, Layers: [layerVersionArn] }
         console.log('updateLayerVersionParams: ', JSON.stringify(updateLayerVersionParams, null, 2))
         await lambda.updateFunctionConfiguration(updateLayerVersionParams).promise()
@@ -57,7 +58,6 @@ export async function updateFunctionsLayers(
   }
 }
 
-function buildLayerVersionArn(libName: string, layerVersion: number) {
-  const account = process.env.CDK_DEFAULT_ACCOUNT
-  return `arn:aws:lambda:us-west-1:${account}:layer:${libName}:${layerVersion}`
+function buildLayerVersionArn(libName: string, layerVersion: number, awsAccountId: string) {
+  return `arn:aws:lambda:us-west-1:${awsAccountId}:layer:${libName}:${layerVersion}`
 }
