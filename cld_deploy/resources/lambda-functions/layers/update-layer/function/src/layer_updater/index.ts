@@ -47,13 +47,14 @@ export async function updateFunctionsLayers(
       const libNames = functionGroupLibs[functionGroup].filter((libName) =>
         changesSummary.includes(libName),
       )
-      for await (const libName of libNames) {
+      const layerVersionArns = []
+      for (const libName of libNames) {
         const layerVersion = libsMetadata[libName].layerVersion
-        const layerVersionArn = buildLayerVersionArn(libName, layerVersion, awsAccountId)
-        const updateLayerVersionParams = { FunctionName: functionName, Layers: [layerVersionArn] }
-        console.log('updateLayerVersionParams: ', JSON.stringify(updateLayerVersionParams, null, 2))
-        await lambda.updateFunctionConfiguration(updateLayerVersionParams).promise()
+        layerVersionArns.push(buildLayerVersionArn(libName, layerVersion, awsAccountId))
       }
+      const updateLayerVersionParams = { FunctionName: functionName, Layers: layerVersionArns }
+      console.log('updateLayerVersionParams: ', JSON.stringify(updateLayerVersionParams, null, 2))
+      await lambda.updateFunctionConfiguration(updateLayerVersionParams).promise()
     }
   }
 }
