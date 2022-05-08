@@ -6,7 +6,6 @@ import { makeDirRecursive, touchFile } from 'cld_build/util'
 import * as rimraf from 'rimraf'
 import { initializeConfig } from '../common'
 import { Config } from 'cld_build/types'
-import { generateFunctionGroupLibsMetadata } from 'cld_build/generate_metadata'
 
 let config: Config
 
@@ -40,6 +39,7 @@ test('it generates functions metadata.', async () => {
   expect(_.get(metadata, 'functions.deliverer.auth_login.zipPath')).toEqual(
     'functions/deliverer/auth/login/function.zip',
   )
+  expect(_.get(metadata, ['functions', 'customer', 'orders_place_util.js', 'hash'])).toBeFalsy()
 })
 
 test('it generates libs metadata.', async () => {

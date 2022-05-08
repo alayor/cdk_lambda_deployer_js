@@ -8,8 +8,9 @@ import {
   LibMetadata,
   EntityFunctionMetadata,
   Metadata,
-  MetadataKey, FunctionGroupLibs
-} from "cld_build/types";
+  MetadataKey,
+  FunctionGroupLibs,
+} from 'cld_build/types'
 import { fileExists, getFilePaths } from 'cld_build/util'
 import { Config } from 'cld_build/types'
 
@@ -31,7 +32,7 @@ export async function generateFunctionsMetadata(config: Config) {
 async function generateFunctionMetadata(config: Config, functionGroup: string) {
   const { functionsAbsolutePath, functionFileName } = config
   const pathPrefix = `${functionsAbsolutePath}/${functionGroup}/`
-  const functionPaths = await getFilePaths(pathPrefix, /\.js$/)
+  const functionPaths = await getFilePaths(pathPrefix, new RegExp(functionFileName, 'gi'))
   return functionPaths.reduce((prev: EntityFunctionMetadata, fullPath) => {
     const functionPath = fullPath.replace(pathPrefix, '').replace(`/${functionFileName}`, '')
     const key = functionPath.replace(/\//g, '_')
