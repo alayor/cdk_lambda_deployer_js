@@ -21,5 +21,9 @@
         }
       }
     }
+  },
+  "functionGroupLibs": {
+    "customer": ["customer_lib"],
+    "deliverer": ["deliverer_lib"]
   }
 }

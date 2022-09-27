@@ -25,5 +25,9 @@
       },
       "s3Version": "2"
     }
+  },
+  "functionGroupLibs": {
+    "customer": ["customer_lib"],
+    "deliverer": ["deliverer_lib"]
   }
 }

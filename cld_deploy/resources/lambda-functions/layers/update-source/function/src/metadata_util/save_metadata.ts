@@ -22,6 +22,7 @@ export async function saveNewMetadata(
   const newProdMetadata = {
     ...prodMetadata,
     libs: newProdLibsMetadata,
+    functionGroupLibs: stageMetadata.functionGroupLibs,
   }
   console.log('newProdMetadata: ', JSON.stringify(newProdMetadata, null, 2))
   await s3

@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import { Metadata } from '../types'
-import { METADATA_FILE_NAME, PROD_BUCKET, STAGE_BUCKET } from "../constants";
+import { METADATA_FILE_NAME, PROD_BUCKET, STAGE_BUCKET } from '../constants'
 
 export async function getLibsMetadata(s3: aws.S3): Promise<{
   stageMetadata: Metadata
@@ -10,15 +10,13 @@ export async function getLibsMetadata(s3: aws.S3): Promise<{
   if (!stageMetadata) {
     throw new Error('The stage metadata was not found!')
   }
-  const prodMetadata = (await getMetadata(s3, PROD_BUCKET)) || { libs: {} }
+  const prodMetadata = (await getMetadata(s3, PROD_BUCKET)) || { libs: {}, functionGroupLibs: {} }
   return { stageMetadata, prodMetadata }
 }
 
 async function getMetadata(s3: aws.S3, bucket: string): Promise<Metadata | null> {
   try {
-    const metadataFile = await s3
-      .getObject({ Bucket: bucket, Key: METADATA_FILE_NAME })
-      .promise()
+    const metadataFile = await s3.getObject({ Bucket: bucket, Key: METADATA_FILE_NAME }).promise()
     return JSON.parse(metadataFile.Body?.toString() ?? '{}')
   } catch (err: any) {
     if (err.code === 'NoSuchKey') {
@@ -39,11 +37,7 @@ export function getLibsToUpdate(stageMetadata: Metadata, prodMetadata: Metadata)
   return libsToUpdate
 }
 
-function shouldUpdateLib(
-  stageMetadata: Metadata,
-  prodMetadata: Metadata,
-  apiLib: string,
-): boolean {
+function shouldUpdateLib(stageMetadata: Metadata, prodMetadata: Metadata, apiLib: string): boolean {
   if (!prodMetadata?.libs?.[apiLib]) {
     return true
   }
