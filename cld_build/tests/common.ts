@@ -19,7 +19,7 @@ export function initializeConfig(currentDir: string): Config {
       customer: ['util', 'db'],
       deliverer: ['util', 'db'],
     },
-    outputRelativePath: 'cld_output',
+    outputRelativePath: 'build/cld',
     get outputAbsolutePath() {
       return path.join(this.projectPath, this.outputRelativePath)
     },

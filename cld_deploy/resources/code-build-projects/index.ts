@@ -8,10 +8,14 @@ import {
 } from 'cld_deploy/context/resource-types'
 import * as iam from 'aws-cdk-lib/aws-iam'
 
+export type CodeBuildProjectsConstructProps = MainConstructProps & {
+  githubRepoCldOutputFolder: string
+}
+
 export class CodeBuildProjectsConstruct extends MainConstruct {
-  constructor(scope: Construct, id: string, props: MainConstructProps) {
+  constructor(scope: Construct, id: string, props: CodeBuildProjectsConstructProps) {
     super(scope, id, props)
-    const { context } = props
+    const { context, githubRepoCldOutputFolder } = props
     const updateSourceFunction = context.getLambdaFunction(
       LambdaFunctionType.UPDATE_FUNCTIONS_SOURCE,
     )
@@ -34,7 +38,7 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
               'ls -la',
               'npm install',
               'npm run cld_build',
-              `aws s3 sync --only-show-errors --delete cld_output s3://${stageBucket.bucketName}/`, //TODO get output folder name from config
+              `aws s3 sync --only-show-errors --delete ${githubRepoCldOutputFolder} s3://${stageBucket.bucketName}/`,
               `aws lambda invoke --function-name ${updateSourceFunction.functionName} response.json`,
               `aws lambda invoke --function-name ${updateLambdaFunction.functionName} response.json`,
               `aws lambda invoke --function-name ${updateSourceLayer.functionName} response.json`,

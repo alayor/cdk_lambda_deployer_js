@@ -55,7 +55,7 @@ function buildConfig(config: UserConfig, projectPath: string): Config {
     functionGroups: config.functionGroups || [],
     libs: config.libs || [],
     functionGroupLibs: config.functionGroupLibs || {},
-    outputRelativePath: config.outputRelativePath || 'cld_output',
+    outputRelativePath: config.outputRelativePath || 'build/cld',
     get outputAbsolutePath() {
       return path.join(this.projectPath, this.outputRelativePath)
     },

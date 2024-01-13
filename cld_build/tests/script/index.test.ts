@@ -8,7 +8,7 @@ import { fileExists } from 'cld_build/util'
 
 let outputAbsolutePath: string
 beforeEach(async () => {
-  outputAbsolutePath = path.join(__dirname, 'project', 'cld_output')
+  outputAbsolutePath = path.join(__dirname, 'project', 'build/cld')
   await new Promise((resolve) => rimraf(outputAbsolutePath, resolve))
 })
 

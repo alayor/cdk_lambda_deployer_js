@@ -34,7 +34,7 @@ You need to add this configuration to your package.json
         "customer": ["util", "db"],
         "deliverer": ["util", "db"]
       },
-      "outputRelativePath": "cld_output"
+      "outputRelativePath": "build/cld"
     }
   }
 }
@@ -54,7 +54,7 @@ You need to add this configuration to your package.json
 
 - _functionGroupLibs_: It determines a function groups to libs mapping. It will help to define the layers that will get attached to the lambda functions.
 
-- _outputRelativePath_: Default: 'cld_output'. This folder will be used to save the generated the lambda functions and layers source files. We recommend that you ignore
+- _outputRelativePath_: Default: 'build/cld'. This folder will be used to save the generated the lambda functions and layers source files. We recommend that you ignore
   this file in your source code control.
 
 Your _outputRelativePath_ folder will end up with two sub-folders: _functions_ and _libs_.
@@ -98,9 +98,9 @@ And
 
 - _functionGroupLibs_: {"customer": ["util", "db"], "deliverer": ["util", "db"]}
 
-- _outputRelativePath_ is: "cld_output"
+- _outputRelativePath_ is: "build/cld"
 
-Then, a new "cld_output" folder will be created with this structure:
+Then, a new "build/cld" folder will be created with this structure:
 
 ```text
 - functions
@@ -137,6 +137,7 @@ new CDKLambdaDeployerConstruct(
       {
         githubRepoOwner: 'repo_owner',
         githubRepoName: 'repo_name',
+        githubRepoCldOutputFolder: 'build/cld',
         githubRepoBranch: 'master',
         githubTokenSecretId: 'github_token_secret_id'
       },
@@ -150,6 +151,7 @@ new cld_deploy.CDKLambdaDeployerStack(app, 'CDKLambdaDeployer', {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
     githubRepoOwner: 'repo_owner',
     githubRepoName: 'repo_name',
+    githubRepoCldOutputFolder: 'build/cld',
     githubRepoBranch: 'master',
     githubTokenSecretId: 'github_token_secret_id'
 })

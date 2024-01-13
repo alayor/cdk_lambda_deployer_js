@@ -9,6 +9,6 @@
       "customer": ["util", "db"],
       "deliverer": ["util", "db"]
     },
-    "outputRelativePath": "cld_output"
+    "outputRelativePath": "build/cld"
   }
 }

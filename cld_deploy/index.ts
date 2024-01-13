@@ -1,4 +1,3 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { Construct } from 'constructs'
 import Context from './context/index'
 import { AppName } from './context/app'
@@ -11,6 +10,7 @@ import { CodePipelinesConstruct } from 'cld_deploy/resources/code-pipelines'
 export type CDKLambdaDeployerProps = {
   githubRepoOwner: string
   githubRepoName: string
+  githubRepoCldOutputFolder: string
   githubRepoBranch?: string
   githubTokenSecretId: string
 }
@@ -27,12 +27,20 @@ export class CDKLambdaDeployerStack extends Stack {
 export class CDKLambdaDeployerConstruct extends Construct {
   constructor(scope: Construct, id: string, props: CDKLambdaDeployerProps) {
     super(scope, id)
-    const { githubRepoOwner, githubRepoName, githubRepoBranch, githubTokenSecretId } =
-      props
+    const {
+      githubRepoOwner,
+      githubRepoName,
+      githubRepoCldOutputFolder,
+      githubRepoBranch,
+      githubTokenSecretId,
+    } = props
     const context = new Context(AppName.DEFAULT)
     new S3BucketsConstruct(this, 'S3Buckets', { context })
     new LambdaFunctionsConstruct(this, 'LambdaFunctions', { context })
-    new CodeBuildProjectsConstruct(this, 'CodeBuildProjects', { context })
+    new CodeBuildProjectsConstruct(this, 'CodeBuildProjects', {
+      context,
+      githubRepoCldOutputFolder,
+    })
     new CodePipelinesConstruct(this, 'CodePipelines', {
       context,
       githubRepoOwner,
