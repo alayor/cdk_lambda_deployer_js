@@ -39,6 +39,8 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
               'ls -la',
               `cd ${githubRepoSubFolder ? githubRepoSubFolder : '.'}`,
               'npm install',
+              'npm install -g typescript',
+              'tsc',
               'node ./node_modules/.bin/cld_build',
               `aws s3 sync --only-show-errors --delete ${cldOutputFolder} s3://${stageBucket.bucketName}/`,
               `aws lambda invoke --function-name ${updateSourceFunction.functionName} response.json`,
