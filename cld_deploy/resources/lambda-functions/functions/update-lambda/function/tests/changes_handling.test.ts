@@ -60,7 +60,7 @@ test('Create lambda function for each -create- action in the changes summary.', 
       FunctionName,
       Role: '',
       Handler: 'function.handler',
-      Runtime: 'nodejs14.x',
+      Runtime: 'nodejs20.x',
       //TODO: Add Layer
     })
   })

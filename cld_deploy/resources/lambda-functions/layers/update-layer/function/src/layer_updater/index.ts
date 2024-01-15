@@ -18,7 +18,7 @@ export async function publishLayerVersions(
         S3Key: `libs/${libName}/nodejs.zip`,
         S3ObjectVersion: s3Version,
       },
-      CompatibleRuntimes: ['nodejs14.x'],
+      CompatibleRuntimes: ['nodejs20.x'],
     }
     console.log('publish layer version params: ', params)
     const { Version } = await lambda.publishLayerVersion(params).promise()

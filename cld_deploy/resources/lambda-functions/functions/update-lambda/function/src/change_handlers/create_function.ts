@@ -39,7 +39,7 @@ async function createFunction(
     FunctionName: completeFunctionName,
     Role: getRole(apiName) || '',
     Handler: 'function.handler', //TODO: Get file name from Config
-    Runtime: 'nodejs14.x',
+    Runtime: 'nodejs20.x',
     //TODO: Add Layer
   }
   console.log('function create params: ', params)
@@ -47,14 +47,5 @@ async function createFunction(
 }
 
 function getRole(apiName: string): string | undefined {
-  if (apiName.startsWith('customer')) {
-    return process.env.CUSTOMER_API_ROLE
-  }
-  if (apiName.startsWith('deliverer')) {
-    return process.env.DELIVERER_API_ROLE
-  }
-  if (apiName.startsWith('admin')) {
-    return process.env.ADMIN_API_ROLE
-  }
-  return void 0
+    return process.env.LAMBDA_FUNCTION_ROLE
 }

@@ -60,7 +60,7 @@ test('Publish Layer Versions For Lib Metadata Has No Layer Versions', async () =
       S3Key: 'libs/customer_lib/nodejs.zip',
       S3ObjectVersion: '2',
     },
-    CompatibleRuntimes: ['nodejs14.x'],
+    CompatibleRuntimes: ['nodejs20.x'],
   })
 })
 
@@ -93,7 +93,7 @@ function expectPublishLayerVersionToBeCalledForLib(libName: string, version: str
       S3Key: `libs/${libName}/nodejs.zip`,
       S3ObjectVersion: version,
     },
-    CompatibleRuntimes: ['nodejs14.x'],
+    CompatibleRuntimes: ['nodejs20.x'],
   })
 }
 
