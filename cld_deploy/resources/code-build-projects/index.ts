@@ -9,13 +9,14 @@ import {
 import * as iam from 'aws-cdk-lib/aws-iam'
 
 export type CodeBuildProjectsConstructProps = MainConstructProps & {
-  githubRepoCldOutputFolder: string
+  githubRepoSubFolder?: string
+  cldOutputFolder: string
 }
 
 export class CodeBuildProjectsConstruct extends MainConstruct {
   constructor(scope: Construct, id: string, props: CodeBuildProjectsConstructProps) {
     super(scope, id, props)
-    const { context, githubRepoCldOutputFolder } = props
+    const { context, cldOutputFolder, githubRepoSubFolder } = props
     const updateSourceFunction = context.getLambdaFunction(
       LambdaFunctionType.UPDATE_FUNCTIONS_SOURCE,
     )
@@ -36,9 +37,10 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
           build: {
             commands: [
               'ls -la',
+              `cd ${githubRepoSubFolder ? githubRepoSubFolder : '.'}`,
               'npm install',
               'node ./node_modules/.bin/cld_build',
-              `aws s3 sync --only-show-errors --delete ${githubRepoCldOutputFolder} s3://${stageBucket.bucketName}/`,
+              `aws s3 sync --only-show-errors --delete ${cldOutputFolder} s3://${stageBucket.bucketName}/`,
               `aws lambda invoke --function-name ${updateSourceFunction.functionName} response.json`,
               `aws lambda invoke --function-name ${updateLambdaFunction.functionName} response.json`,
               `aws lambda invoke --function-name ${updateSourceLayer.functionName} response.json`,

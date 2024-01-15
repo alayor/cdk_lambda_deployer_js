@@ -10,7 +10,8 @@ import { CodePipelinesConstruct } from 'cld_deploy/resources/code-pipelines'
 export type CDKLambdaDeployerProps = {
   githubRepoOwner: string
   githubRepoName: string
-  githubRepoCldOutputFolder: string
+  githubRepoSubFolder?: string
+  cldOutputFolder: string
   githubRepoBranch?: string
   githubTokenSecretId: string
 }
@@ -30,7 +31,8 @@ export class CDKLambdaDeployerConstruct extends Construct {
     const {
       githubRepoOwner,
       githubRepoName,
-      githubRepoCldOutputFolder,
+      githubRepoSubFolder,
+      cldOutputFolder,
       githubRepoBranch,
       githubTokenSecretId,
     } = props
@@ -39,7 +41,8 @@ export class CDKLambdaDeployerConstruct extends Construct {
     new LambdaFunctionsConstruct(this, 'LambdaFunctions', { context })
     new CodeBuildProjectsConstruct(this, 'CodeBuildProjects', {
       context,
-      githubRepoCldOutputFolder,
+      cldOutputFolder,
+      githubRepoSubFolder,
     })
     new CodePipelinesConstruct(this, 'CodePipelines', {
       context,
