@@ -13,7 +13,7 @@ export class UpdateLayerSourceConstruct extends MainConstruct {
     const { context } = props
 
     const func = new lambdaNodeJs.NodejsFunction(this, 'Function', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       entry: path.join(__dirname, 'function/src/index.js'),
       handler: 'handler',
       functionName: 'CdkLambdaDeployer_UpdateLayerSource',
