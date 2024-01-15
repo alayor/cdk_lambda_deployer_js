@@ -26,16 +26,20 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
     const stageBucket = context.getS3Bucket(S3BucketType.STAGE)
 
     const codeBuildProject = new codebuild.PipelineProject(this, 'Project', {
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+      },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {
           install: {
             ['runtime-versions']: {
-              nodejs: 14,
+              nodejs: 20,
             },
           },
           build: {
             commands: [
+              'node --version',
               'ls -la',
               `cd ${githubRepoSubFolder ? githubRepoSubFolder : '.'}`,
               'npm install',
