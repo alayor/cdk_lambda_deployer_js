@@ -4,7 +4,11 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as rimraf from 'rimraf'
 import { zipFunctions, zipLibs } from './zip_util'
-import { generateFunctionGroupLibsMetadata, generateFunctionsMetadata, generateLibsMetadata } from "./generate_metadata";
+import {
+  generateFunctionGroupLibsMetadata,
+  generateFunctionsMetadata,
+  generateLibsMetadata,
+} from './generate_metadata'
 import { buildLibs } from 'cld_build/libs'
 import { getConfig } from 'cld_build/config'
 
@@ -15,7 +19,7 @@ const { outputAbsolutePath } = config
 if (fs.existsSync(outputAbsolutePath)) {
   rimraf.sync(outputAbsolutePath)
 }
-fs.mkdirSync(outputAbsolutePath)
+fs.mkdirSync(outputAbsolutePath, { recursive: true })
 fs.mkdirSync(path.join(outputAbsolutePath, 'functions'))
 fs.mkdirSync(path.join(outputAbsolutePath, 'libs'))
 
