@@ -37,7 +37,7 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
             commands: [
               'ls -la',
               'npm install',
-              'npm run cld_build',
+              'node ./node_modules/.bin/cld_build',
               `aws s3 sync --only-show-errors --delete ${githubRepoCldOutputFolder} s3://${stageBucket.bucketName}/`,
               `aws lambda invoke --function-name ${updateSourceFunction.functionName} response.json`,
               `aws lambda invoke --function-name ${updateLambdaFunction.functionName} response.json`,
