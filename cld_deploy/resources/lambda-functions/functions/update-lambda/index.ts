@@ -15,7 +15,7 @@ export class UpdateLambdaConstruct extends MainConstruct {
 
     const prodBucketArn = context.getS3Bucket(S3BucketType.PROD).bucketArn
 
-    const lambdaFunctionRole = createRoleForApi(this, 'LambdaFunctionRole')
+    const lambdaFunctionRole = createRoleForApi(this, 'UpdateLambdaFunctionRole')
 
     const func = new lambdaNodeJs.NodejsFunction(this, 'Function', {
       runtime: lambda.Runtime.NODEJS_20_X,

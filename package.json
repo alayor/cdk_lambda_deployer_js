@@ -1,6 +1,6 @@
 {
   "name": "cdk_lambda_deployer_js",
-  "version": "1.15.4",
+  "version": "1.15.5",
   "description": "Library with CDK resources and utilities that help to deploy JavaScript functions to AWS lambda.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/codershift/cdk_lambda_deployer_js#readme",
   "dependencies": {
+    "@aws-sdk/client-lambda": "^3.490.0",
     "archiver": "^5.3.0",
     "bluebird": "^3.7.2",
     "find-package-json": "^1.2.0",

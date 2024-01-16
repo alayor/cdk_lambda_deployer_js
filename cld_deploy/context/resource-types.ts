@@ -12,4 +12,5 @@ export enum LambdaFunctionType {
     UPDATE_LAMBDA,
     UPDATE_LIBS_SOURCE,
     UPDATE_LAYER,
+    INVOKE_FUNCTION,
 }
