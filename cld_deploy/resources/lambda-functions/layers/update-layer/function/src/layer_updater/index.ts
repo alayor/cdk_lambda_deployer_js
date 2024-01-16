@@ -42,6 +42,9 @@ export async function updateFunctionsLayers(
 
   for await (const functionGroup of Object.keys(functionGroupLibs || {})) {
     const functionNames = functionsMetadata[functionGroup]
+    if (!functionNames) {
+      throw new Error(`Function group not found: ${functionGroup}`)
+    }
     for await (const partialFunctionName of Object.keys(functionNames)) {
       const functionName = `${functionGroup}_${partialFunctionName}`
       const libNames = functionGroupLibs[functionGroup].filter((libName) =>
