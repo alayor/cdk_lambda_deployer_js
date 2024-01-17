@@ -6,6 +6,7 @@ import { LambdaFunctionsConstruct } from './resources/lambda-functions'
 import { Stack, StackProps } from 'aws-cdk-lib'
 import { CodeBuildProjectsConstruct } from 'cld_deploy/resources/code-build-projects'
 import { CodePipelinesConstruct } from 'cld_deploy/resources/code-pipelines'
+import { ApiGatewaysConstruct } from 'cld_deploy/resources/api-gateways'
 
 export type CDKLambdaDeployerProps = {
   githubRepoOwner: string
@@ -51,5 +52,6 @@ export class CDKLambdaDeployerConstruct extends Construct {
       githubRepoBranch,
       githubTokenSecretId,
     })
+    new ApiGatewaysConstruct(this, 'ApiGateways', { context })
   }
 }
