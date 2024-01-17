@@ -19,6 +19,7 @@ export async function handler(event: any) {
     const input = {
       // InvocationRequest
       FunctionName: functionName,
+      Payload: JSON.stringify(event.body),
     }
     const command = new InvokeCommand(input)
     const result = await client.send(command)
