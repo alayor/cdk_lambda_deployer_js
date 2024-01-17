@@ -26,7 +26,7 @@ export async function handler(event: any) {
     const command = new InvokeCommand(input)
     const { Payload } = await client.send(command)
 
-    return Buffer.from(Payload ?? []).toString()
+    return JSON.parse(Buffer.from(Payload ?? []).toString())
   } catch (error) {
     console.error('Error:', error)
     return {
