@@ -19,12 +19,14 @@ export async function handler(event: any) {
     const input = {
       // InvocationRequest
       FunctionName: functionName,
-      Payload: JSON.stringify(event.body),
+      Payload: JSON.stringify({
+        body: event.body,
+      }),
     }
     const command = new InvokeCommand(input)
-    const result = await client.send(command)
+    const { Payload } = await client.send(command)
 
-    return JSON.parse(new TextDecoder().decode(result.Payload))
+    return Buffer.from(Payload ?? []).toString()
   } catch (error) {
     console.error('Error:', error)
     return {
