@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as lambdaNodeJs from 'aws-cdk-lib/aws-lambda-nodejs'
 import MainConstruct, { MainConstructProps } from 'cld_deploy/context/main-construct'
-import { LambdaFunctionType, S3BucketType } from 'cld_deploy/context/resource-types'
+import { IamRoleType, LambdaFunctionType } from 'cld_deploy/context/resource-types'
 import * as iam from 'aws-cdk-lib/aws-iam'
 
 export class InvokeLambdaConstruct extends MainConstruct {
@@ -21,11 +21,18 @@ export class InvokeLambdaConstruct extends MainConstruct {
       timeout: cdk.Duration.minutes(1),
     })
 
+    const lambdaFunctionRole = context.getIamRole(IamRoleType.LAMBDA_FUNCTION_ROLE)
+
     const rolePolicies = [
       {
         Effect: 'Allow',
-        Action: ['lambda:InvokeFunction'], // Required to call listObjects
+        Action: ['lambda:InvokeFunction'],
         Resource: '*',
+      },
+      {
+        Effect: 'Allow',
+        Action: ['iam:AssumeRole'],
+        Resource: lambdaFunctionRole.roleArn,
       },
     ]
     rolePolicies.forEach((policy) => {

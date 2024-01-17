@@ -3,11 +3,13 @@ import * as lambdaNodeJs from 'aws-cdk-lib/aws-lambda-nodejs'
 import * as codebuild from 'aws-cdk-lib/aws-codebuild'
 import {
   CodeBuildProjectType,
+  IamRoleType,
   LambdaFunctionType,
   S3BucketType,
 } from 'cld_deploy/context/resource-types'
 import { AppModel, AppName, IApp } from 'cld_deploy/context/app'
 import { AppResourceNotSetError } from 'cld_deploy/context/errors'
+import { Role } from 'aws-cdk-lib/aws-iam'
 
 export default class Context implements IApp {
   private _defaultApp: AppName
@@ -53,5 +55,13 @@ export default class Context implements IApp {
 
   getLambdaFunction(type: LambdaFunctionType): lambdaNodeJs.NodejsFunction {
     return this.getApp(this._defaultApp).getLambdaFunction(type)
+  }
+
+  setIamRole(type: IamRoleType, role: Role): void {
+    this.getApp(this._defaultApp).setIamRole(type, role)
+  }
+
+  getIamRole(type: IamRoleType): Role {
+    return this.getApp(this._defaultApp).getIamRole(type)
   }
 }

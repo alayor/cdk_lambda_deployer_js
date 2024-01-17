@@ -14,3 +14,7 @@ export enum LambdaFunctionType {
     UPDATE_LAYER,
     INVOKE_FUNCTION,
 }
+
+export enum IamRoleType {
+    LAMBDA_FUNCTION_ROLE
+}

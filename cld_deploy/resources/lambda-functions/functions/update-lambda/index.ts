@@ -5,7 +5,7 @@ import * as lambdaNodeJs from 'aws-cdk-lib/aws-lambda-nodejs'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as cdk from 'aws-cdk-lib'
-import { LambdaFunctionType, S3BucketType } from 'cld_deploy/context/resource-types'
+import { IamRoleType, LambdaFunctionType, S3BucketType } from 'cld_deploy/context/resource-types'
 
 export class UpdateLambdaConstruct extends MainConstruct {
   constructor(scope: Construct, id: string, props: MainConstructProps) {
@@ -61,6 +61,7 @@ export class UpdateLambdaConstruct extends MainConstruct {
     })
 
     context.setLambdaFunction(LambdaFunctionType.UPDATE_LAMBDA, func)
+    context.setIamRole(IamRoleType.LAMBDA_FUNCTION_ROLE, lambdaFunctionRole)
   }
 }
 
