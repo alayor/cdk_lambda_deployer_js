@@ -29,8 +29,10 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
     const stageBucket = context.getS3Bucket(S3BucketType.STAGE)
 
     const updateLambdaFunctionPayload = JSON.stringify({
-      subnetIds: [subnetIds.join(',')],
-      securityGroupIds: [securityGroupIds.join(',')],
+      body: {
+        subnetIds: [subnetIds.join(',')],
+        securityGroupIds: [securityGroupIds.join(',')],
+      },
     })
 
     const codeBuildProject = new codebuild.PipelineProject(this, 'Project', {
