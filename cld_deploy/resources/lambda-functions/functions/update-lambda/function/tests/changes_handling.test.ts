@@ -61,6 +61,10 @@ test('Create lambda function for each -create- action in the changes summary.', 
       Role: '',
       Handler: 'function.handler',
       Runtime: 'nodejs20.x',
+      VpcConfig: {
+        SecurityGroupIds: [],
+        SubnetIds: [],
+      },
       //TODO: Add Layer
     })
   })
@@ -69,13 +73,13 @@ test('Create lambda function for each -create- action in the changes summary.', 
 function summaryAndMetadataAreRetrieved() {
   const summaryChanges = require('./data/summary_changes.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: PROD_BUCKET, Key: FUNCTIONS_CHANGES_SUMMARY_FILE_NAME },
-      JSON.stringify(summaryChanges),
+    { Bucket: PROD_BUCKET, Key: FUNCTIONS_CHANGES_SUMMARY_FILE_NAME },
+    JSON.stringify(summaryChanges),
   )
   const metadata = require('./data/metadata1.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
-      JSON.stringify(metadata),
+    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    JSON.stringify(metadata),
   )
 }
 

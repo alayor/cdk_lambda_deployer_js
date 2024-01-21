@@ -1,3 +1,4 @@
+import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { Construct } from 'constructs'
 import Context from './context/index'
 import { AppName } from './context/app'
@@ -15,6 +16,8 @@ export type CDKLambdaDeployerProps = {
   cldOutputFolder: string
   githubRepoBranch?: string
   githubTokenSecretId: string
+  lambdaSubnetIds?: ec2.ISubnet[]
+  lambdaSecurityGroups?: ec2.SecurityGroup[]
 }
 
 export type CDKLambdaDeployerStackProps = StackProps & CDKLambdaDeployerProps
@@ -36,6 +39,8 @@ export class CDKLambdaDeployerConstruct extends Construct {
       cldOutputFolder,
       githubRepoBranch,
       githubTokenSecretId,
+      lambdaSubnetIds,
+      lambdaSecurityGroups,
     } = props
     const context = new Context(AppName.DEFAULT)
     new S3BucketsConstruct(this, 'S3Buckets', { context })
@@ -44,6 +49,8 @@ export class CDKLambdaDeployerConstruct extends Construct {
       context,
       cldOutputFolder,
       githubRepoSubFolder,
+      subnetIds: lambdaSubnetIds ?? [],
+      securityGroupIds: lambdaSecurityGroups?.map((group) => group.securityGroupId) ?? [],
     })
     new CodePipelinesConstruct(this, 'CodePipelines', {
       context,

@@ -1,18 +1,28 @@
 import * as aws from 'aws-sdk'
 import { MetadataBody, ChangesSummary, FunctionsMetadata } from '../types'
 import { PROD_BUCKET } from '../constants'
+import { Lambda } from 'aws-sdk'
 
 export async function createFunctions(
   lambda: aws.Lambda,
   metadata: FunctionsMetadata,
   changesSummary: ChangesSummary,
+  subnetIds: string[],
+  securityGroupIds: string[],
 ) {
   const changes = changesSummary.changes?.create ?? []
   for await (const apiName of Object.keys(changes)) {
     for await (const functionName of changes[apiName]) {
       const apiFunction = metadata[apiName][functionName]
       try {
-        await createFunction(lambda, apiName, functionName, apiFunction)
+        await createFunction(
+          lambda,
+          apiName,
+          functionName,
+          apiFunction,
+          subnetIds,
+          securityGroupIds,
+        )
       } catch (err: any) {
         if (err.code === 'ResourceConflictException') {
           console.log(err.errorMessage)
@@ -29,9 +39,11 @@ async function createFunction(
   apiName: string,
   functionName: string,
   apiFunction: MetadataBody,
+  subnetIds: string[],
+  securityGroupIds: string[],
 ) {
   const completeFunctionName = `${apiName}_${functionName}`
-  const params = {
+  const params: Lambda.Types.CreateFunctionRequest = {
     Code: {
       S3Bucket: PROD_BUCKET,
       S3Key: apiFunction.zipPath,
@@ -40,12 +52,15 @@ async function createFunction(
     Role: getRole(apiName) || '',
     Handler: 'function.handler', //TODO: Get file name from Config
     Runtime: 'nodejs20.x',
-    //TODO: Add Layer
+    VpcConfig: {
+      SubnetIds: [],
+      SecurityGroupIds: [],
+    },
   }
   console.log('function create params: ', params)
   await lambda.createFunction(params).promise()
 }
 
 function getRole(apiName: string): string | undefined {
-    return process.env.LAMBDA_FUNCTION_ROLE
+  return process.env.LAMBDA_FUNCTION_ROLE
 }

@@ -5,7 +5,7 @@ import {
   LOCK_FILE,
   PROD_BUCKET,
 } from './constants'
-import { ChangesSummary, Metadata } from "./types";
+import { ChangesSummary, Metadata } from './types'
 import { createFunctions } from './change_handlers/create_function'
 import { updateFunctions } from './change_handlers/update_function'
 import { deleteFunctions } from './change_handlers/delete_function'
@@ -13,25 +13,25 @@ import { deleteFunctions } from './change_handlers/delete_function'
 let s3: aws.S3
 let lambda: aws.Lambda
 
-export async function handler(_event: any) {
+export async function handler(event: any) {
   if (!s3) {
     s3 = new aws.S3({ apiVersion: '2006-03-01' })
   }
   if (!lambda) {
     lambda = new aws.Lambda({ apiVersion: '2015-03-31' })
   }
-
+  const { subnetIds, securityGroupIds } = event?.body ?? {}
   const changesSummary = await getS3File(FUNCTIONS_CHANGES_SUMMARY_FILE_NAME)
   if (!hasChanges(changesSummary)) {
     console.log('No changes detected.')
     return
   }
-  const metadata = await getS3File(METADATA_FILE_NAME) as Metadata
+  const metadata = (await getS3File(METADATA_FILE_NAME)) as Metadata
   console.log({
     changesSummary: JSON.stringify(changesSummary),
     metadata: JSON.stringify(metadata),
   })
-  await createFunctions(lambda, metadata.functions, changesSummary)
+  await createFunctions(lambda, metadata.functions, changesSummary, subnetIds, securityGroupIds)
   await updateFunctions(lambda, metadata.functions, changesSummary)
   await deleteFunctions(lambda, metadata.functions, changesSummary)
   await deleteLock()
