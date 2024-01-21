@@ -144,7 +144,9 @@ new CDKLambdaDeployerConstruct(
         githubRepoSubFolder: '.',
         cldOutputFolder: 'build/cld',
         githubRepoBranch: 'master',
-        githubTokenSecretId: 'github_token_secret_id'
+        githubTokenSecretId: 'github_token_secret_id',
+        lambdaSubnetIds: [],
+        lambdaSecurityGroups: []
       },
     )
 ```
@@ -159,7 +161,9 @@ new cld_deploy.CDKLambdaDeployerStack(app, 'CDKLambdaDeployer', {
     githubRepoSubFolder: '.',
     cldOutputFolder: 'build/cld',
     githubRepoBranch: 'master',
-    githubTokenSecretId: 'github_token_secret_id'
+    githubTokenSecretId: 'github_token_secret_id',
+    lambdaSubnetIds: [],
+    lambdaSecurityGroups: []
 })
 ```
 

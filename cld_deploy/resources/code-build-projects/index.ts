@@ -28,6 +28,11 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
     const updateLayer = context.getLambdaFunction(LambdaFunctionType.UPDATE_LAYER)
     const stageBucket = context.getS3Bucket(S3BucketType.STAGE)
 
+    const updateLambdaFunctionPayload = JSON.stringify({
+      subnetIds: [subnetIds.join(',')],
+      securityGroupIds: [securityGroupIds.join(',')],
+    })
+
     const codeBuildProject = new codebuild.PipelineProject(this, 'Project', {
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
@@ -51,11 +56,7 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
               'node ./node_modules/.bin/cld_build',
               `aws s3 sync --only-show-errors --delete ${cldOutputFolder} s3://${stageBucket.bucketName}/`,
               `aws lambda invoke --function-name ${updateSourceFunction.functionName} response.json`,
-              `aws lambda invoke --function-name ${updateLambdaFunction.functionName} 
-                  --payload '{ "subnetIds": [${subnetIds.join(
-                    ',',
-                  )}], "securityGroupIds": [${securityGroupIds.join(',')}] }' 
-                  response.json`,
+              `aws lambda invoke --function-name ${updateLambdaFunction.functionName} --payload ${updateLambdaFunctionPayload} response.json`,
               `aws lambda invoke --function-name ${updateSourceLayer.functionName} response.json`,
               `aws lambda invoke --function-name ${updateLayer.functionName} response.json`,
             ],

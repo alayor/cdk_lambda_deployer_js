@@ -39,7 +39,12 @@ test('Create lambda function for each -create- action in the changes summary.', 
   //given
   summaryAndMetadataAreRetrieved()
   //when
-  await handler(null)
+  await handler({
+    body: {
+      securityGroupIds: [],
+      subnetIds: [],
+    },
+  })
   //then
   const expectedKeysAndFunctionNames: Array<{ S3Key: string; FunctionName: string }> = [
     {

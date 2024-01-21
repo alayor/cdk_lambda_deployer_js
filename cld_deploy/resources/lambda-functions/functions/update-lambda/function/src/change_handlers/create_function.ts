@@ -2,6 +2,7 @@ import * as aws from 'aws-sdk'
 import { MetadataBody, ChangesSummary, FunctionsMetadata } from '../types'
 import { PROD_BUCKET } from '../constants'
 import { Lambda } from 'aws-sdk'
+import { SecurityGroupId, SubnetId } from 'aws-sdk/clients/lambda'
 
 export async function createFunctions(
   lambda: aws.Lambda,
@@ -39,8 +40,8 @@ async function createFunction(
   apiName: string,
   functionName: string,
   apiFunction: MetadataBody,
-  subnetIds: string[],
-  securityGroupIds: string[],
+  subnetIds: SubnetId[],
+  securityGroupIds: SecurityGroupId[],
 ) {
   const completeFunctionName = `${apiName}_${functionName}`
   const params: Lambda.Types.CreateFunctionRequest = {
@@ -53,8 +54,8 @@ async function createFunction(
     Handler: 'function.handler', //TODO: Get file name from Config
     Runtime: 'nodejs20.x',
     VpcConfig: {
-      SubnetIds: [],
-      SecurityGroupIds: [],
+      SubnetIds: subnetIds,
+      SecurityGroupIds: securityGroupIds,
     },
   }
   console.log('function create params: ', params)
