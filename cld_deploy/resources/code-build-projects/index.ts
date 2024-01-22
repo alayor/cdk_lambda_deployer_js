@@ -30,7 +30,7 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
 
     const updateLambdaFunctionPayload = JSON.stringify({
       body: {
-        subnetIds: [subnets.map((s) => s.subnetId).join(',')],
+        subnetIds: subnets.map((s) => s.subnetId).join(','),
         securityGroupIds: [securityGroupIds.join(',')],
       },
     })
