@@ -16,7 +16,7 @@ export type CDKLambdaDeployerProps = {
   cldOutputFolder: string
   githubRepoBranch?: string
   githubTokenSecretId: string
-  lambdaSubnetIds?: ec2.ISubnet[]
+  lambdaSubnets?: ec2.ISubnet[]
   lambdaSecurityGroups?: ec2.SecurityGroup[]
 }
 
@@ -39,7 +39,7 @@ export class CDKLambdaDeployerConstruct extends Construct {
       cldOutputFolder,
       githubRepoBranch,
       githubTokenSecretId,
-      lambdaSubnetIds,
+      lambdaSubnets,
       lambdaSecurityGroups,
     } = props
     const context = new Context(AppName.DEFAULT)
@@ -49,7 +49,7 @@ export class CDKLambdaDeployerConstruct extends Construct {
       context,
       cldOutputFolder,
       githubRepoSubFolder,
-      subnetIds: lambdaSubnetIds ?? [],
+      subnets: lambdaSubnets ?? [],
       securityGroupIds: lambdaSecurityGroups?.map((group) => group.securityGroupId) ?? [],
     })
     new CodePipelinesConstruct(this, 'CodePipelines', {

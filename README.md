@@ -3,6 +3,7 @@
 Library with CDK resources and utilities that help to deploy JavaScript functions to AWS lambda.
 
 ### Pre-requisites
+
 You will need a Personal Access Token for your GitHub Repository.
 You can find more info about Personal Access Tokens [here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
 
@@ -145,7 +146,7 @@ new CDKLambdaDeployerConstruct(
         cldOutputFolder: 'build/cld',
         githubRepoBranch: 'master',
         githubTokenSecretId: 'github_token_secret_id',
-        lambdaSubnetIds: [],
+        lambdaSubnets: [],
         lambdaSecurityGroups: []
       },
     )
@@ -162,7 +163,7 @@ new cld_deploy.CDKLambdaDeployerStack(app, 'CDKLambdaDeployer', {
     cldOutputFolder: 'build/cld',
     githubRepoBranch: 'master',
     githubTokenSecretId: 'github_token_secret_id',
-    lambdaSubnetIds: [],
+    lambdaSubnets: [],
     lambdaSecurityGroups: []
 })
 ```

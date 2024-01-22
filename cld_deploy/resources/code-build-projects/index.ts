@@ -12,14 +12,14 @@ import { ISubnet } from 'aws-cdk-lib/aws-ec2'
 export type CodeBuildProjectsConstructProps = MainConstructProps & {
   githubRepoSubFolder?: string
   cldOutputFolder: string
-  subnetIds: ISubnet[]
+  subnets: ISubnet[]
   securityGroupIds: string[]
 }
 
 export class CodeBuildProjectsConstruct extends MainConstruct {
   constructor(scope: Construct, id: string, props: CodeBuildProjectsConstructProps) {
     super(scope, id, props)
-    const { context, cldOutputFolder, githubRepoSubFolder, subnetIds, securityGroupIds } = props
+    const { context, cldOutputFolder, githubRepoSubFolder, subnets, securityGroupIds } = props
     const updateSourceFunction = context.getLambdaFunction(
       LambdaFunctionType.UPDATE_FUNCTIONS_SOURCE,
     )
@@ -30,7 +30,7 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
 
     const updateLambdaFunctionPayload = JSON.stringify({
       body: {
-        subnetIds: [subnetIds.join(',')],
+        subnetIds: [subnets.map((s) => s.subnetId).join(',')],
         securityGroupIds: [securityGroupIds.join(',')],
       },
     })
@@ -58,7 +58,7 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
               'node ./node_modules/.bin/cld_build',
               `aws s3 sync --only-show-errors --delete ${cldOutputFolder} s3://${stageBucket.bucketName}/`,
               `aws lambda invoke --function-name ${updateSourceFunction.functionName} response.json`,
-              `aws lambda invoke --function-name ${updateLambdaFunction.functionName} --payload ${updateLambdaFunctionPayload} response.json`,
+              `aws lambda invoke --function-name ${updateLambdaFunction.functionName} --payload '${updateLambdaFunctionPayload}' response.json`,
               `aws lambda invoke --function-name ${updateSourceLayer.functionName} response.json`,
               `aws lambda invoke --function-name ${updateLayer.functionName} response.json`,
             ],
