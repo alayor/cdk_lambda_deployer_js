@@ -48,12 +48,27 @@ export class UpdateLambdaConstruct extends MainConstruct {
       {
         Effect: 'Allow',
         Action: ['lambda:CreateFunction', 'lambda:UpdateFunctionCode', 'lambda:DeleteFunction'],
-        Resource: [`arn:aws:lambda:us-west-1:${accountId}:function:*`], //TODO use function prefix from config
+        Resource: [`arn:aws:lambda:us-west-1:${accountId}:function:*`], //TODO use function prefix from config. Region??
       },
       {
         Effect: 'Allow',
         Action: ['iam:PassRole'],
         Resource: [lambdaFunctionRole.roleArn],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['ec2:DescribeSecurityGroups'],
+        Resource: ['*'],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['ec2:DescribeSubnets'],
+        Resource: ['*'],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['ec2:DescribeVpcs'],
+        Resource: ['*'],
       },
     ]
     rolePolicies.forEach((policy) => {

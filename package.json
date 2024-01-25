@@ -1,6 +1,6 @@
 {
   "name": "cdk_lambda_deployer_js",
-  "version": "1.16.6",
+  "version": "1.16.10",
   "description": "Library with CDK resources and utilities that help to deploy JavaScript functions to AWS lambda.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
