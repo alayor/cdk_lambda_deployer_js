@@ -85,8 +85,10 @@ Supposing your project looks like this:
         - libs
             - db
                 - connection.js
+                - package.json
             - util
                 - util.js
+                - package.json
 ```
 
 And
@@ -126,6 +128,8 @@ Then, a new "build/cld" folder will be created with this structure:
 
 In order to manually generate the output, you can run the command `cld_build`.
 Note: this output will be used by the CLD_DEPLOY project on its CI workflow.
+
+**Notice you must have a package.json file inside every lib folder.**
 
 ## Set up CLD_DEPLOY
 
