@@ -20,7 +20,7 @@ export async function buildLib(config: Config, lib: string) {
   const libFolder = `${rootFolder}/${lib}/`
   await new Promise((resolve) => rimraf(rootFolder, resolve))
   await makeDirRecursive(libFolder)
-  console.log(`rsync ${libsAbsolutePath}/${lib}/* -a --include "*/" --include="*.js" --include="*.json" --exclude="*" ${libFolder}`)
+
   await exec(
     `rsync ${libsAbsolutePath}/${lib}/* -a --include "*/" --include="*.js" --include="*.json" --exclude="*" ${libFolder}`,
   )
