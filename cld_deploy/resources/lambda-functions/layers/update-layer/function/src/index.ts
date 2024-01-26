@@ -3,6 +3,7 @@ import {
   METADATA_FILE_NAME,
   LIBS_CHANGES_SUMMARY_FILE_NAME,
   PROD_BUCKET,
+  LOCK_FILE,
 } from './constants'
 import { hasLayerVersionsChanges, hasSummaryChanges } from './preconditions_util'
 import { publishLayerVersions, updateFunctionsLayers } from './layer_updater'
@@ -24,7 +25,7 @@ export async function handler(event: any, context?: any) {
     console.log('No changes detected in summary.')
     return
   }
-  const metadata = await getS3File(METADATA_FILE_NAME) as Metadata
+  const metadata = (await getS3File(METADATA_FILE_NAME)) as Metadata
   const hasLayerVersionChanges = await hasLayerVersionsChanges(metadata.libs)
   if (!hasLayerVersionChanges && !event.forceUpdate) {
     console.log('No new layer versions detected.')
@@ -39,10 +40,27 @@ export async function handler(event: any, context?: any) {
   await updateFunctionsLayers(lambda, changesSummary, metadata, awsAccountId)
 
   console.log('layerVersions: ', JSON.stringify(layerVersions, null, 2))
+  await deleteLock()
   console.log('Done.')
 }
 
 async function getS3File(key: string) {
   const file = await s3.getObject({ Bucket: PROD_BUCKET, Key: key }).promise()
   return JSON.parse(file.Body?.toString() ?? '{}')
+}
+
+async function deleteLock() {
+  try {
+    await s3
+      .deleteObject({
+        Bucket: PROD_BUCKET,
+        Key: LOCK_FILE,
+      })
+      .promise()
+  } catch (err: any) {
+    if (err.code === 'NoSuchKey') {
+      console.log(`File not found: ${LOCK_FILE}`)
+    }
+    throw err
+  }
 }

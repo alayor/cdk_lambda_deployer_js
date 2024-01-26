@@ -13,6 +13,7 @@ beforeEach(() => {
   jest.clearAllMocks()
   when(s3.getObject).mockImplementation(returnPromiseObject({}))
   when(s3.putObject).mockImplementation(returnPromiseObject({}))
+  when(s3.deleteObject).mockImplementation(returnPromiseObject({}))
   when(lambda.publishLayerVersion).mockImplementation(returnPromiseObject({ Version: 1 }))
   when(lambda.getLayerVersion).mockImplementation(returnPromiseObject({}))
   when(lambda.updateFunctionConfiguration).mockImplementation(returnPromiseObject({}))

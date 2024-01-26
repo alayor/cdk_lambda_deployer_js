@@ -20,10 +20,10 @@ test('it builds libs.', async () => {
   await libs.buildLibs(config)
   //then
   const expectedLibFilePaths = [
-    ['libs', 'db', 'nodejs', 'package.json'],
-    ['libs', 'db', 'nodejs', 'node_modules', 'lodash', 'package.json'],
-    ['libs', 'util', 'nodejs', 'package.json'],
-    ['libs', 'util', 'nodejs', 'node_modules', 'lodash', 'package.json'],
+    ['libs', 'db', 'nodejs', 'db', 'package.json'],
+    ['libs', 'db', 'nodejs', 'db', 'node_modules', 'lodash', 'package.json'],
+    ['libs', 'util', 'nodejs', 'util', 'package.json'],
+    ['libs', 'util', 'nodejs', 'util', 'node_modules', 'lodash', 'package.json'],
   ]
   await Bluebird.each(expectedLibFilePaths, async (expectedLibFilePath) => {
     expect(await fileExists(path.join(outputAbsolutePath, ...expectedLibFilePath))).toBeTruthy()
