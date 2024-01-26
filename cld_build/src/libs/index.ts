@@ -25,5 +25,5 @@ export async function buildLib(config: Config, lib: string) {
     `rsync ${libsAbsolutePath}/${lib}/* -a --include "*/" --include="*.js" --include="*.json" --exclude="*" ${libFolder}`,
   )
 
-  await exec(`cd ${rootFolder} && npm install --no-save --no-optional --production`)
+  await exec(`cd ${libFolder} && npm install --no-save --no-optional --production`)
 }
