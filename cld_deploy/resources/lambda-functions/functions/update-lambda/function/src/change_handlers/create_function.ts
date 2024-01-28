@@ -10,6 +10,7 @@ export async function createFunctions(
   changesSummary: ChangesSummary,
   subnetIds: string[],
   securityGroupIds: string[],
+  databaseProxyName?: string,
 ) {
   const changes = changesSummary.changes?.create ?? []
   for await (const apiName of Object.keys(changes)) {
@@ -23,6 +24,7 @@ export async function createFunctions(
           apiFunction,
           subnetIds,
           securityGroupIds,
+          databaseProxyName,
         )
       } catch (err: any) {
         if (err.code === 'ResourceConflictException') {
@@ -42,6 +44,7 @@ async function createFunction(
   apiFunction: MetadataBody,
   subnetIds: SubnetId[],
   securityGroupIds: SecurityGroupId[],
+  databaseProxyName?: string,
 ) {
   const completeFunctionName = `${apiName}_${functionName}`
   const params: Lambda.Types.CreateFunctionRequest = {
@@ -56,6 +59,12 @@ async function createFunction(
     VpcConfig: {
       SubnetIds: subnetIds,
       SecurityGroupIds: securityGroupIds,
+    },
+    Environment: {
+      Variables: {
+        NODE_ENV: 'production',
+        DB_PROXY_NAME: databaseProxyName ?? '',
+      },
     },
   }
   console.log('function create params: ', params)

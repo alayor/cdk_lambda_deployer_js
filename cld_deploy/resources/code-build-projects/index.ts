@@ -14,12 +14,20 @@ export type CodeBuildProjectsConstructProps = MainConstructProps & {
   cldOutputFolder: string
   subnets: ISubnet[]
   securityGroupIds: string[]
+  databaseProxyName?: string
 }
 
 export class CodeBuildProjectsConstruct extends MainConstruct {
   constructor(scope: Construct, id: string, props: CodeBuildProjectsConstructProps) {
     super(scope, id, props)
-    const { context, cldOutputFolder, githubRepoSubFolder, subnets, securityGroupIds } = props
+    const {
+      context,
+      cldOutputFolder,
+      githubRepoSubFolder,
+      subnets,
+      securityGroupIds,
+      databaseProxyName,
+    } = props
     const updateSourceFunction = context.getLambdaFunction(
       LambdaFunctionType.UPDATE_FUNCTIONS_SOURCE,
     )
@@ -32,6 +40,7 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
       body: {
         subnetIds: subnets.map((s) => s.subnetId),
         securityGroupIds: [securityGroupIds.join(',')],
+        databaseProxyName,
       },
     })
 

@@ -151,7 +151,8 @@ new CDKLambdaDeployerConstruct(
         githubRepoBranch: 'master',
         githubTokenSecretId: 'github_token_secret_id',
         lambdaSubnets: [],
-        lambdaSecurityGroups: []
+        lambdaSecurityGroups: [],
+        databaseProxyName: ''
       },
     )
 ```
@@ -168,7 +169,8 @@ new cld_deploy.CDKLambdaDeployerStack(app, 'CDKLambdaDeployer', {
     githubRepoBranch: 'master',
     githubTokenSecretId: 'github_token_secret_id',
     lambdaSubnets: [],
-    lambdaSecurityGroups: []
+    lambdaSecurityGroups: [],
+    databaseProxyName: ''
 })
 ```
 

@@ -43,6 +43,7 @@ test('Create lambda function for each -create- action in the changes summary.', 
     body: {
       securityGroupIds: [],
       subnetIds: [],
+      databaseProxyName: 'proxy'
     },
   })
   //then
@@ -69,6 +70,12 @@ test('Create lambda function for each -create- action in the changes summary.', 
       VpcConfig: {
         SecurityGroupIds: [],
         SubnetIds: [],
+      },
+      Environment: {
+        Variables: {
+          DB_PROXY_NAME: 'proxy',
+          NODE_ENV: 'production',
+        },
       },
       //TODO: Add Layer
     })

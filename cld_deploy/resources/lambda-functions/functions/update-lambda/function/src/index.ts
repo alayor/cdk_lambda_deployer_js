@@ -20,7 +20,7 @@ export async function handler(event: any) {
   if (!lambda) {
     lambda = new aws.Lambda({ apiVersion: '2015-03-31' })
   }
-  const { subnetIds, securityGroupIds } = event?.body ?? {}
+  const { subnetIds, securityGroupIds, databaseProxyName } = event?.body ?? {}
   const changesSummary = await getS3File(FUNCTIONS_CHANGES_SUMMARY_FILE_NAME)
   if (!hasChanges(changesSummary)) {
     console.log('No changes detected.')
@@ -31,7 +31,14 @@ export async function handler(event: any) {
     changesSummary: JSON.stringify(changesSummary),
     metadata: JSON.stringify(metadata),
   })
-  await createFunctions(lambda, metadata.functions, changesSummary, subnetIds, securityGroupIds)
+  await createFunctions(
+    lambda,
+    metadata.functions,
+    changesSummary,
+    subnetIds,
+    securityGroupIds,
+    databaseProxyName,
+  )
   await updateFunctions(lambda, metadata.functions, changesSummary)
   await deleteFunctions(lambda, metadata.functions, changesSummary)
   await deleteLock()
