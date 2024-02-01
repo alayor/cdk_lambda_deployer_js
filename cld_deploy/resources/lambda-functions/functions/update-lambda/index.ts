@@ -70,6 +70,16 @@ export class UpdateLambdaConstruct extends MainConstruct {
         Action: ['ec2:DescribeVpcs'],
         Resource: ['*'],
       },
+      {
+        Effect: 'Allow',
+        Action: ['ec2:DescribeNetworkInterfaces'],
+        Resource: ['*'],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['ec2:CreateNetworkInterface'],
+        Resource: ['*'],
+      },
     ]
     rolePolicies.forEach((policy) => {
       func?.role?.addToPrincipalPolicy(iam.PolicyStatement.fromJson(policy))
