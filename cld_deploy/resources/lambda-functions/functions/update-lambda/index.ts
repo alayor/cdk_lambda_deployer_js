@@ -80,6 +80,11 @@ export class UpdateLambdaConstruct extends MainConstruct {
         Action: ['ec2:CreateNetworkInterface'],
         Resource: ['*'],
       },
+      {
+        Effect: 'Allow',
+        Action: ['secretsmanager:GetSecretValue'],
+        Resource: ['*'],
+      },
     ]
     rolePolicies.forEach((policy) => {
       func?.role?.addToPrincipalPolicy(iam.PolicyStatement.fromJson(policy))
