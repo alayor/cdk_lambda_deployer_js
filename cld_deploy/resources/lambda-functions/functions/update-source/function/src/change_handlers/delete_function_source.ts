@@ -1,5 +1,4 @@
 import { Metadata } from '../types'
-import { PROD_BUCKET } from '../constants'
 import ChangesSummary, { CHANGE_TYPE } from '../changes_summary'
 import * as aws from 'aws-sdk'
 
@@ -8,6 +7,7 @@ export async function deleteFunctionSource(
   stageMetadata: Metadata,
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
+  prodBucketName: string,
 ) {
   const stageFunctionsMetadata = stageMetadata.functions || {}
   const prodFunctionsMetadata = prodMetadata.functions || {}
@@ -17,7 +17,13 @@ export async function deleteFunctionSource(
     const functionsToDelete = Object.keys(functionNames).filter(
       (functionName) => !stageFunctionsMetadata?.[apiName]?.[functionName],
     )
-    const changedVersions = await deleteFunctions(s3, prodMetadata, apiName, functionsToDelete)
+    const changedVersions = await deleteFunctions(
+      s3,
+      prodMetadata,
+      apiName,
+      functionsToDelete,
+      prodBucketName,
+    )
     Object.keys(changedVersions).forEach((functionName) => {
       changesSummary.addChange(
         CHANGE_TYPE.DELETE,
@@ -34,13 +40,14 @@ async function deleteFunctions(
   prodMetadata: Metadata,
   apiName: string,
   functionsToDelete: string[],
+  prodBucketName: string,
 ): Promise<Record<string, string>> {
   const versions: Record<string, string> = {}
   for await (const functionName of functionsToDelete) {
     const func = prodMetadata.functions[apiName][functionName]
     const s3Response = await s3
       .deleteObject({
-        Bucket: PROD_BUCKET,
+        Bucket: prodBucketName,
         Key: func.zipPath,
       })
       .promise()

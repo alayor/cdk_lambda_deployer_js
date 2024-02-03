@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk'
 import { FunctionsMetadata, Metadata } from '../types'
-import { LOCK_FILE, METADATA_FILE_NAME, PROD_BUCKET } from '../constants'
+import { LOCK_FILE, METADATA_FILE_NAME } from '../constants'
 import ChangesSummary from '../changes_summary'
 
 export async function saveNewMetadata(
@@ -8,6 +8,7 @@ export async function saveNewMetadata(
   stageMetadata: Metadata,
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
+  prodBucketName: string,
 ) {
   const stageFunctionsMetadata = stageMetadata.functions || {}
   const prodFunctionsMetadata = prodMetadata.functions || {}
@@ -34,21 +35,21 @@ export async function saveNewMetadata(
 
   await s3
     .putObject({
-      Bucket: PROD_BUCKET,
+      Bucket: prodBucketName,
       Key: METADATA_FILE_NAME,
       Body: JSON.stringify(newProdMetadata),
     })
     .promise()
   await s3
     .putObject({
-      Bucket: PROD_BUCKET,
+      Bucket: prodBucketName,
       Key: 'functions/changes_summary.json',
       Body: changesSummary.getChangesSummary(),
     })
     .promise()
   await s3
     .putObject({
-      Bucket: PROD_BUCKET,
+      Bucket: prodBucketName,
       Key: LOCK_FILE,
       Body: '',
     })

@@ -8,6 +8,8 @@ export async function createFunctionSource(
   stageMetadata: Metadata,
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
+  stageBucketName: string,
+  prodBucketName: string,
 ) {
   const stageFunctionsMetadata = stageMetadata.functions || {}
   const apiNames = Object.keys(stageFunctionsMetadata)
@@ -16,7 +18,14 @@ export async function createFunctionSource(
     const functionsToCreate = functionNames.filter(
       (functionName) => !prodMetadata.functions?.[apiName]?.[functionName],
     )
-    const changedVersions = await copyFunctions(s3, stageMetadata, apiName, functionsToCreate)
+    const changedVersions = await copyFunctions(
+      s3,
+      stageMetadata,
+      apiName,
+      functionsToCreate,
+      stageBucketName,
+      prodBucketName,
+    )
     Object.keys(changedVersions).forEach((functionName) => {
       changesSummary.addChange(
         CHANGE_TYPE.CREATE,

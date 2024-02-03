@@ -1,5 +1,5 @@
 import { s3 } from 'cld_deploy/_util/tests/mocking/aws_sdk' // this must be at the top
-import { METADATA_FILE_NAME, LOCK_FILE, PROD_BUCKET, STAGE_BUCKET } from '../src/constants'
+import { METADATA_FILE_NAME, LOCK_FILE } from '../src/constants'
 import { handler } from '../src/index'
 import {
   whenS3GetObjectReturnsBody,
@@ -9,28 +9,36 @@ import { Metadata } from '../src/types'
 import { when } from 'jest-when'
 import { returnPromiseObject } from 'cld_deploy/_util/tests/mocking/promises'
 
+const prodBucketName = 'prodBucketName'
+const stageBucketName = 'stageBucketName'
+
 beforeEach(() => {
   jest.clearAllMocks()
   when(s3.getObject).mockImplementation(returnPromiseObject({}))
   when(s3.putObject).mockImplementation(returnPromiseObject({}))
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '1' }))
-  whenS3GetObjectThrowsError({ Bucket: PROD_BUCKET, Key: LOCK_FILE }, { code: 'NoSuchKey' })
+  whenS3GetObjectThrowsError({ Bucket: prodBucketName, Key: LOCK_FILE }, { code: 'NoSuchKey' })
 })
 
 test('Do Not Update Layer Version If No Changes In Metadata.', async () => {
   //given
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: stageBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
   const prodMetadata = require('./data/metadata/prod1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: prodBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(prodMetadata),
   )
   //when
-  await handler(null)
+  await handler({
+    body: {
+      prodBucketName,
+      stageBucketName,
+    },
+  })
   //then
   expect(s3.copyObject).not.toBeCalled()
 })
@@ -39,42 +47,52 @@ test('Update Layer Version If Changes In New Functions In Metadata.', async () =
   //given
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: stageBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
   const prodMetadata = require('./data/metadata/prod2.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: prodBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(prodMetadata),
   )
   //when
-  await handler(null)
+  await handler({
+    body: {
+      prodBucketName,
+      stageBucketName,
+    },
+  })
   //then
   expect(s3.copyObject).toBeCalledWith({
-    Bucket: PROD_BUCKET,
+    Bucket: prodBucketName,
     Key: `libs/admin_lib/nodejs.zip`,
-    CopySource: `${STAGE_BUCKET}/libs/admin_lib/nodejs.zip`,
+    CopySource: `${stageBucketName}/libs/admin_lib/nodejs.zip`,
   })
 })
 
 test('Update Layer Version If Changes In Hashes Are Different.', async () => {
-//given
+  //given
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
-      JSON.stringify(stageMetadata),
+    { Bucket: stageBucketName, Key: METADATA_FILE_NAME },
+    JSON.stringify(stageMetadata),
   )
   const prodMetadata = require('./data/metadata/prod3.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
-      JSON.stringify(prodMetadata),
+    { Bucket: prodBucketName, Key: METADATA_FILE_NAME },
+    JSON.stringify(prodMetadata),
   )
   //when
-  await handler(null)
+  await handler({
+    body: {
+      prodBucketName,
+      stageBucketName,
+    },
+  })
   //then
   expect(s3.copyObject).toBeCalledWith({
-    Bucket: PROD_BUCKET,
+    Bucket: prodBucketName,
     Key: `libs/deliverer_lib/nodejs.zip`,
-    CopySource: `${STAGE_BUCKET}/libs/deliverer_lib/nodejs.zip`,
+    CopySource: `${stageBucketName}/libs/deliverer_lib/nodejs.zip`,
   })
 })

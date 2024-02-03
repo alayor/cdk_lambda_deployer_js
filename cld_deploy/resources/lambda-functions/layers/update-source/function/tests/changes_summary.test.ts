@@ -1,12 +1,6 @@
 import { s3 } from 'cld_deploy/_util/tests/mocking/aws_sdk' // this must be at the top
 import { when } from 'jest-when'
-import {
-  LIBS_CHANGES_SUMMARY_FILE_NAME,
-  METADATA_FILE_NAME,
-  LOCK_FILE,
-  PROD_BUCKET,
-  STAGE_BUCKET
-} from '../src/constants'
+import { LIBS_CHANGES_SUMMARY_FILE_NAME, METADATA_FILE_NAME, LOCK_FILE } from '../src/constants'
 import { handler } from '../src/index'
 import {
   whenS3GetObjectReturnsBody,
@@ -15,35 +9,41 @@ import {
 import { Metadata } from '../src/types'
 import { returnPromiseObject } from 'cld_deploy/_util/tests/mocking/promises'
 
+const prodBucketName = 'prodBucketName'
+const stageBucketName = 'stageBucketName'
+
 beforeEach(() => {
   jest.clearAllMocks()
   when(s3.getObject).mockImplementation(returnPromiseObject({}))
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '1' }))
   when(s3.putObject).mockImplementation(returnPromiseObject({ VersionId: '1' }))
-  whenS3GetObjectThrowsError({ Bucket: PROD_BUCKET, Key: LOCK_FILE }, { code: 'NoSuchKey' })
 })
 
 test('New changes summary is created from stage metadata.', async () => {
   //given
+  whenS3GetObjectThrowsError({ Bucket: prodBucketName, Key: LOCK_FILE }, { code: 'NoSuchKey' })
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '2' }))
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-    { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: stageBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(stageMetadata),
   )
-  whenS3GetObjectThrowsError(
-    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
-    { code: 'NoSuchKey' },
-  )
   //when
-  await handler(null)
+  await handler({
+    body: {
+      prodBucketName,
+      stageBucketName,
+    },
+  })
   //then
-  expectNewChangesSummaryToBe(JSON.stringify(require('./data/changes_summary/new_from_stage1.json')))
+  expectNewChangesSummaryToBe(
+    JSON.stringify(require('./data/changes_summary/new_from_stage1.json')),
+  )
 })
 
 function expectNewChangesSummaryToBe(body: string) {
   expect(s3.putObject).toBeCalledWith({
-    Bucket: PROD_BUCKET,
+    Bucket: prodBucketName,
     Key: LIBS_CHANGES_SUMMARY_FILE_NAME,
     Body: body,
   })
@@ -54,16 +54,23 @@ test('Changes summary from new lib versions.', async () => {
   when(s3.copyObject).mockImplementation(returnPromiseObject({ VersionId: '2' }))
   const stageMetadata = require('./data/metadata/stage1.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: STAGE_BUCKET, Key: METADATA_FILE_NAME },
-      JSON.stringify(stageMetadata),
+    { Bucket: stageBucketName, Key: METADATA_FILE_NAME },
+    JSON.stringify(stageMetadata),
   )
   const prodMetadata = require('./data/metadata/prod3.json') as Metadata
   whenS3GetObjectReturnsBody(
-      { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
-      JSON.stringify(prodMetadata),
+    { Bucket: prodBucketName, Key: METADATA_FILE_NAME },
+    JSON.stringify(prodMetadata),
   )
   //when
-  await handler(null)
+  await handler({
+    body: {
+      prodBucketName,
+      stageBucketName,
+    },
+  })
   //then
-  expectNewChangesSummaryToBe(JSON.stringify(require('./data/changes_summary/from_stage1_and_prod3.json')))
+  expectNewChangesSummaryToBe(
+    JSON.stringify(require('./data/changes_summary/from_stage1_and_prod3.json')),
+  )
 })

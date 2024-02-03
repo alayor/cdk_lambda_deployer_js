@@ -1,10 +1,10 @@
 import * as aws from 'aws-sdk'
 import { MetadataBody, ChangesSummary, FunctionsMetadata } from '../types'
-import { PROD_BUCKET } from '../constants'
 import { Lambda } from 'aws-sdk'
 import { SecurityGroupId, SubnetId } from 'aws-sdk/clients/lambda'
 
 export async function createFunctions(
+  prodBucketName: string,
   lambda: aws.Lambda,
   metadata: FunctionsMetadata,
   changesSummary: ChangesSummary,
@@ -22,6 +22,7 @@ export async function createFunctions(
           apiName,
           functionName,
           apiFunction,
+          prodBucketName,
           subnetIds,
           securityGroupIds,
           databaseProxyName,
@@ -42,6 +43,7 @@ async function createFunction(
   apiName: string,
   functionName: string,
   apiFunction: MetadataBody,
+  prodBucketName: string,
   subnetIds: SubnetId[],
   securityGroupIds: SecurityGroupId[],
   databaseProxyName?: string,
@@ -49,7 +51,7 @@ async function createFunction(
   const completeFunctionName = `${apiName}_${functionName}`
   const params: Lambda.Types.CreateFunctionRequest = {
     Code: {
-      S3Bucket: PROD_BUCKET,
+      S3Bucket: prodBucketName,
       S3Key: apiFunction.zipPath,
     },
     FunctionName: completeFunctionName,

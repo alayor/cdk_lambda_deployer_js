@@ -34,13 +34,38 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
     const updateLambdaFunction = context.getLambdaFunction(LambdaFunctionType.UPDATE_LAMBDA)
     const updateSourceLayer = context.getLambdaFunction(LambdaFunctionType.UPDATE_LIBS_SOURCE)
     const updateLayer = context.getLambdaFunction(LambdaFunctionType.UPDATE_LAYER)
+    const prodBucket = context.getS3Bucket(S3BucketType.PROD)
     const stageBucket = context.getS3Bucket(S3BucketType.STAGE)
+
+    const s3BucketNames = {
+      prodBucketName: prodBucket.bucketName,
+      stageBucketName: stageBucket.bucketName,
+    }
+
+    const updateSourceFunctionPayload = JSON.stringify({
+      body: {
+        ...s3BucketNames,
+      },
+    })
 
     const updateLambdaFunctionPayload = JSON.stringify({
       body: {
+        ...s3BucketNames,
         subnetIds: subnets.map((s) => s.subnetId),
         securityGroupIds: [securityGroupIds.join(',')],
         databaseProxyName,
+      },
+    })
+
+    const updateSourceLayerPayload = JSON.stringify({
+      body: {
+        ...s3BucketNames,
+      },
+    })
+
+    const updateLayerPayload = JSON.stringify({
+      body: {
+        ...s3BucketNames,
       },
     })
 
@@ -66,10 +91,10 @@ export class CodeBuildProjectsConstruct extends MainConstruct {
               'tsc',
               'node ./node_modules/.bin/cld_build',
               `aws s3 sync --only-show-errors --delete ${cldOutputFolder} s3://${stageBucket.bucketName}/`,
-              `aws lambda invoke --function-name ${updateSourceFunction.functionName} response.json`,
+              `aws lambda invoke --function-name ${updateSourceFunction.functionName} --cli-binary-format raw-in-base64-out --payload '${updateSourceFunctionPayload} response.json`,
               `aws lambda invoke --function-name ${updateLambdaFunction.functionName} --cli-binary-format raw-in-base64-out --payload '${updateLambdaFunctionPayload}' response.json`,
-              `aws lambda invoke --function-name ${updateSourceLayer.functionName} response.json`,
-              `aws lambda invoke --function-name ${updateLayer.functionName} response.json`,
+              `aws lambda invoke --function-name ${updateSourceLayer.functionName} --cli-binary-format raw-in-base64-out --payload '${updateSourceLayerPayload} response.json`,
+              `aws lambda invoke --function-name ${updateLayer.functionName} --cli-binary-format raw-in-base64-out --payload '${updateLayerPayload} response.json`,
             ],
           },
         },

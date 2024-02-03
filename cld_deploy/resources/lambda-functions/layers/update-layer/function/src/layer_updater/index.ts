@@ -1,11 +1,11 @@
 import * as aws from 'aws-sdk'
-import { PROD_BUCKET } from '../constants'
-import { ChangesSummary, LayerVersions, Metadata, FunctionMetadata } from '../types'
+import { ChangesSummary, LayerVersions, Metadata } from '../types'
 
 export async function publishLayerVersions(
   lambda: aws.Lambda,
   changesSummary: ChangesSummary,
   metadata: Metadata,
+  prodBucketName: string,
 ): Promise<LayerVersions> {
   const layerVersions: LayerVersions = {}
   const libsMetadata = metadata.libs
@@ -14,7 +14,7 @@ export async function publishLayerVersions(
     const params = {
       LayerName: libName,
       Content: {
-        S3Bucket: PROD_BUCKET,
+        S3Bucket: prodBucketName,
         S3Key: `libs/${libName}/nodejs.zip`,
         S3ObjectVersion: s3Version,
       },

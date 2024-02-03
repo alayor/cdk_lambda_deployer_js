@@ -8,6 +8,8 @@ export async function updateFunctionSource(
   stageMetadata: Metadata,
   prodMetadata: Metadata,
   changesSummary: ChangesSummary,
+  stageBucketName: string,
+  prodBucketName: string,
 ) {
   const stageFunctionsMetadata = stageMetadata.functions || {}
   const prodFunctionsMetadata = prodMetadata.functions || {}
@@ -17,9 +19,17 @@ export async function updateFunctionSource(
     const functionsToUpdate = functionNames.filter(
       (functionName) =>
         !!prodFunctionsMetadata?.[apiName]?.[functionName] &&
-        prodFunctionsMetadata[apiName][functionName].hash !== stageFunctionsMetadata[apiName][functionName].hash,
+        prodFunctionsMetadata[apiName][functionName].hash !==
+          stageFunctionsMetadata[apiName][functionName].hash,
     )
-    const changedVersions = await copyFunctions(s3, stageMetadata, apiName, functionsToUpdate)
+    const changedVersions = await copyFunctions(
+      s3,
+      stageMetadata,
+      apiName,
+      functionsToUpdate,
+      stageBucketName,
+      prodBucketName,
+    )
     Object.keys(changedVersions).forEach((functionName) => {
       changesSummary.addChange(
         CHANGE_TYPE.UPDATE,

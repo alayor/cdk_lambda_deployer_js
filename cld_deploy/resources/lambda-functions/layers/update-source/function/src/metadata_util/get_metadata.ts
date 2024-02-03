@@ -1,16 +1,23 @@
 import * as aws from 'aws-sdk'
 import { Metadata } from '../types'
-import { METADATA_FILE_NAME, PROD_BUCKET, STAGE_BUCKET } from '../constants'
+import { METADATA_FILE_NAME } from '../constants'
 
-export async function getLibsMetadata(s3: aws.S3): Promise<{
+export async function getLibsMetadata(
+  s3: aws.S3,
+  stageBucketName: string,
+  prodBucketName: string,
+): Promise<{
   stageMetadata: Metadata
   prodMetadata: Metadata
 }> {
-  const stageMetadata = await getMetadata(s3, STAGE_BUCKET)
+  const stageMetadata = await getMetadata(s3, stageBucketName)
   if (!stageMetadata) {
     throw new Error('The stage metadata was not found!')
   }
-  const prodMetadata = (await getMetadata(s3, PROD_BUCKET)) || { libs: {}, functionGroupLibs: {} }
+  const prodMetadata = (await getMetadata(s3, prodBucketName)) || {
+    libs: {},
+    functionGroupLibs: {},
+  }
   return { stageMetadata, prodMetadata }
 }
 

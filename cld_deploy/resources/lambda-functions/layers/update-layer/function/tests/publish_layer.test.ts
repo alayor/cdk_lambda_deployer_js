@@ -6,8 +6,11 @@ import {
 } from 'cld_deploy/_util/tests/mocking/promises'
 import { LibMetadata } from '../src/types'
 import { whenS3GetObjectReturnsBody } from 'cld_deploy/_util/tests/mocking/s3'
-import { METADATA_FILE_NAME, LIBS_CHANGES_SUMMARY_FILE_NAME, PROD_BUCKET } from '../src/constants'
+import { METADATA_FILE_NAME, LIBS_CHANGES_SUMMARY_FILE_NAME } from '../src/constants'
 import { handler } from '../src/index'
+
+const prodBucketName = 'prodBucketName'
+const stageBucketName = 'stageBucketName'
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -23,17 +26,22 @@ test('Do Not Publish Layer Versions For Lib Changes If Version is Already Publis
   //given
   const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
+    { Bucket: prodBucketName, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
     JSON.stringify(changesSummary),
   )
   const metadata = require('./data/metadata/libs_and_functions1.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: prodBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(metadata),
   )
   when(lambda.getLayerVersion).mockImplementation(returnPromiseObject({}))
   //when
-  await handler({})
+  await handler({
+    body: {
+      prodBucketName,
+      stageBucketName,
+    },
+  })
   //then
   expect(lambda.publishLayerVersion).not.toBeCalled()
 })
@@ -42,22 +50,27 @@ test('Publish Layer Versions For Lib Metadata Has No Layer Versions', async () =
   //given
   const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
+    { Bucket: prodBucketName, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
     JSON.stringify(changesSummary),
   )
   const metadata = require('./data/metadata/libs_with_no_layer_versions.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: prodBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(metadata),
   )
   when(lambda.getLayerVersion).mockImplementation(returnPromiseObject({}))
   //when
-  await handler({})
+  await handler({
+    body: {
+      prodBucketName,
+      stageBucketName,
+    },
+  })
   //then
   expect(lambda.publishLayerVersion).toBeCalledWith({
     LayerName: 'customer_lib',
     Content: {
-      S3Bucket: PROD_BUCKET,
+      S3Bucket: prodBucketName,
       S3Key: 'libs/customer_lib/nodejs.zip',
       S3ObjectVersion: '2',
     },
@@ -69,19 +82,24 @@ test('Publish Layer Versions For A Single Lib Change', async () => {
   //given
   const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
+    { Bucket: prodBucketName, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
     JSON.stringify(changesSummary),
   )
   const metadata = require('./data/metadata/libs_and_functions1.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: prodBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(metadata),
   )
   when(lambda.getLayerVersion).mockImplementation(
     returnPromiseObjectWithError({ code: 'ResourceNotFoundException' }),
   )
   //when
-  await handler({})
+  await handler({
+    body: {
+      prodBucketName,
+      stageBucketName,
+    },
+  })
   //then
   expectPublishLayerVersionToBeCalledForLib('customer_lib', '2')
 })
@@ -90,7 +108,7 @@ function expectPublishLayerVersionToBeCalledForLib(libName: string, version: str
   expect(lambda.publishLayerVersion).toBeCalledWith({
     LayerName: `${libName}`,
     Content: {
-      S3Bucket: PROD_BUCKET,
+      S3Bucket: prodBucketName,
       S3Key: `libs/${libName}/nodejs.zip`,
       S3ObjectVersion: version,
     },
@@ -102,19 +120,24 @@ test('Publish Layer Versions For Multiple Lib Changes', async () => {
   //given
   const changesSummary = require('./data/changes_summary/multiple_changes.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
+    { Bucket: prodBucketName, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
     JSON.stringify(changesSummary),
   )
   const metadata = require('./data/metadata/libs_and_functions1.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: prodBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(metadata),
   )
   when(lambda.getLayerVersion).mockImplementation(
     returnPromiseObjectWithError({ code: 'ResourceNotFoundException' }),
   )
   //when
-  await handler({})
+  await handler({
+    body: {
+      prodBucketName,
+      stageBucketName,
+    },
+  })
   //then
   expectPublishLayerVersionToBeCalledForLib('customer_lib', '2')
   expectPublishLayerVersionToBeCalledForLib('deliverer_lib', '1')
@@ -123,16 +146,17 @@ test('Publish Layer Versions For Multiple Lib Changes', async () => {
 test('Update Lambda Functions Configuration With New Layer Version', async () => {
   //given
   const context = {
-    invokedFunctionArn: 'arn:aws:lambda:us-west-1:123456789012:function:CdkLambdaDeployer_UpdateLayer\n'
+    invokedFunctionArn:
+      'arn:aws:lambda:us-west-1:123456789012:function:CdkLambdaDeployer_UpdateLayer\n',
   }
   const changesSummary = require('./data/changes_summary/single_change.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
+    { Bucket: prodBucketName, Key: LIBS_CHANGES_SUMMARY_FILE_NAME },
     JSON.stringify(changesSummary),
   )
   const metadata = require('./data/metadata/libs_and_functions1.json') as LibMetadata
   whenS3GetObjectReturnsBody(
-    { Bucket: PROD_BUCKET, Key: METADATA_FILE_NAME },
+    { Bucket: prodBucketName, Key: METADATA_FILE_NAME },
     JSON.stringify(metadata),
   )
   when(lambda.getLayerVersion).mockImplementation(
@@ -140,7 +164,15 @@ test('Update Lambda Functions Configuration With New Layer Version', async () =>
   )
   when(lambda.publishLayerVersion).mockImplementation(returnPromiseObject({ Version: 4 }))
   //when
-  await handler({}, context)
+  await handler(
+    {
+      body: {
+        prodBucketName,
+        stageBucketName,
+      },
+    },
+    context,
+  )
   //then
   const functionNames = [
     'customer_orders_place',
